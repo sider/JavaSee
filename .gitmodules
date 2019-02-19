@@ -1,0 +1,3 @@
+[submodule "querly"]
+	path = querly
+	url = git@github.com:soutaro/querly.git
