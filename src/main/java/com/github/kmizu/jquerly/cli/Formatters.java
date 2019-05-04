@@ -18,6 +18,11 @@ public class Formatters {
         public abstract void onStart();
 
         /**
+         * Called when analyzer finished
+         */
+        public abstract void onFinish();
+
+        /**
          * Called when config is successfully loaded
          * @param config
          */
@@ -26,13 +31,13 @@ public class Formatters {
          * Called when failed to load config
          * Exit(status == 0) after the call
          */
-        public abstract void onConfigError(Object path, Object error);
+        public abstract void onConfigError(String path, Exception error);
 
         /**
          * Called when script is successfully loaded
          * @param script
          */
-        public abstract void onScriptLoaded(Object script);
+        public abstract void onScriptLoaded(Script script);
 
         /**
          * Called when failed to load script
@@ -40,7 +45,7 @@ public class Formatters {
          * @param path
          * @param error
          */
-        public abstract void onScriptError(Object path, Object error);
+        public abstract void onScriptError(String path, Exception error);
 
         /**
          *
@@ -56,7 +61,7 @@ public class Formatters {
          * Abort(status != 0) after the call
          * @param error
          */
-        public void onFatalError(String error) {
+        public void onFatalError(Exception error) {
             System.err.println("Fatal error: " + error);
             //TODO print backtrace
         }
@@ -68,6 +73,14 @@ public class Formatters {
          */
         @Override
         public void onStart() {
+
+        }
+
+        /**
+         * Called when analyzer finished
+         */
+        @Override
+        public void onFinish() {
 
         }
 
@@ -89,7 +102,7 @@ public class Formatters {
          * @param error
          */
         @Override
-        public void onConfigError(Object path, Object error) {
+        public void onConfigError(String path, Exception error) {
             System.err.println("Failed to load configuration: " + path);
             System.err.println(error);
             System.err.println("Backtrace:");
@@ -102,7 +115,7 @@ public class Formatters {
          * @param script
          */
         @Override
-        public void onScriptLoaded(Object script) {
+        public void onScriptLoaded(Script script) {
 
         }
 
@@ -114,7 +127,7 @@ public class Formatters {
          * @param error
          */
         @Override
-        public void onScriptError(Object path, Object error) {
+        public void onScriptError(String path, Exception error) {
             System.err.println("Failed to load script: " + path);
             System.err.println(error);
         }
@@ -153,13 +166,21 @@ public class Formatters {
         }
 
         /**
+         * Called when analyzer finished
+         */
+        @Override
+        public void onFinish() {
+
+        }
+
+        /**
          * Called on other error
          * Abort(status != 0) after the call
          *
          * @param error
          */
         @Override
-        public void onFatalError(String error) {
+        public void onFatalError(Exception error) {
             super.onFatalError(error);
             fatalError = error;
         }
@@ -182,7 +203,7 @@ public class Formatters {
          * @param error
          */
         @Override
-        public void onConfigError(Object path, Object error) {
+        public void onConfigError(String path, Exception error) {
             configErrors.add(List.of(path, error));
         }
 
@@ -192,8 +213,7 @@ public class Formatters {
          * @param script
          */
         @Override
-        public void onScriptLoaded(Object script) {
-
+        public void onScriptLoaded(Script script) {
         }
 
         /**
@@ -204,7 +224,7 @@ public class Formatters {
          * @param error
          */
         @Override
-        public void onScriptError(Object path, Object error) {
+        public void onScriptError(String path, Exception error) {
             scriptErrors.add(List.of(path, error));
 
         }
