@@ -57,7 +57,7 @@ public class Rule {
         this.examples = examples;
     }
 
-    public boolean matches(String identifier, List<String> tags) {
+    public boolean matches(String identifier, Set<String> tags) {
         if(identifier != null) {
             if((!id.equals(identifier)) && (!id.startsWith(identifier + "."))) {
                 return false;

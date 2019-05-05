@@ -1,231 +1,134 @@
 package com.github.kmizu.jquerly;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class  Check {
+public class Check {
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class Query {
+        public final String opr;
+        public final Set<String> tags;
+        public final String identifier;
 
-    @Option(name="-config")
-    private String config;
-
-    @Option(name="-root")
-    private String root;
-
-    @Option(name="-format")
-    private String format;
-
-    @Option(name="-rule")
-    private String rule;
-
-    private File configPath() {
-        var path = new File(config);
-        if(path.isFile()) return path;
-        return new File("querly.yaml");
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public String getRoot() {
-        return root;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public String getRule() {
-        return rule;
-    }
-
-    public final CmdLineParser parser;
-
-    public Check() {
-        parser = new CmdLineParser(this);
-    }
-
-    private void println(String line) {
-        System.err.println(line);
-    }
-
-    public void run(String[] args) throws CmdLineException {
-        parser.parseArgument(args);
-        println(config);
-        println(root);
-        println(format);
-        println(rule);
-    }
-
-    public static void main(String[] args) throws CmdLineException {
-        new Check().run(args);
-    }
-
-    /**
-     * Check paths based on configuration
-     * @param paths
-     */
-    private void check(String... paths) {
-        if(config == null) {
-            config = "querly.yml";
+        public Set<Rule> apply(Set<Rule> current, Set<Rule> all) {
+            switch(opr) {
+                case "append":
+                    Set<Rule> newSet = new HashSet<>(current);
+                    newSet.addAll(all.stream().filter(this::matches).collect(Collectors.toSet()));
+                    return newSet;
+                case "except":
+                    return current.stream().filter((rule) -> !matches(rule)).collect(Collectors.toSet());
+                case "only":
+                    return all.stream().filter((rule) -> matches(rule)).collect(Collectors.toSet());
+                default:
+                    throw new RuntimeException("cannot reach here");
+            }
         }
-        if(format == null) {
-            format = "text";
+
+        public boolean matches(Rule rule) {
+            return rule.matches(identifier, tags);
         }
     }
 
+    public final List<String> patterns;
+    public final List<Query> rules;
 
-    /*
-    desc "check [paths]", "Check paths based on configuration"
-    option :config, default: "querly.yml"
-    option :root
-    option :format, default: "text", type: :string, enum: %w(text json)
-    option :rule, type: :string
-    def check(*paths)
-      require 'querly/cli/formatter'
+    public final boolean hasTrailingSlash;
+    public final boolean hasMiddleSlash;
 
-      formatter = case options[:format]
-                  when "text"
-                    Formatter::Text.new
-                  when "json"
-                    Formatter::JSON.new
-                  end
-      formatter.start
+    public Check(String pattern, List<Query> rules) {
+        this.rules = rules;
+        this.hasTrailingSlash = pattern.endsWith("/");
+        this.hasMiddleSlash = Pattern.compile(".*\\..*").matcher(pattern).matches();
+        this.patterns = new ArrayList<>();
 
-      begin
-        unless config_path.file?
-          STDERR.puts <<-Message
-Configuration file #{config_path} does not look a file.
-Specify configuration file by --config option.
-          Message
-          exit 1
-        end
+        pattern = pattern.replaceAll("\\A/", "");
 
-        root_option = options[:root]
-        root_path = root_option ? Pathname(root_option).realpath : config_path.parent.realpath
-
-        config = begin
-          yaml = YAML.load(config_path.read)
-          Config.load(yaml, config_path: config_path, root_dir: root_path, stderr: STDERR)
-        rescue => exn
-          formatter.config_error config_path, exn
-          exit 1
-        end
-
-        analyzer = Analyzer.new(config: config, rule: options[:rule])
-
-        ScriptEnumerator.new(paths: paths.empty? ? [Pathname.pwd] : paths.map {|path| Pathname(path) }, config: config).each do |path, script|
-          case script
-          when Script
-            analyzer.scripts << script
-            formatter.script_load script
-          when StandardError, LoadError
-            formatter.script_error path, script
-          end
-        end
-
-        analyzer.run do |script, rule, pair|
-          formatter.issue_found script, rule, pair
-        end
-      rescue => exn
-        formatter.fatal_error exn
-        exit 1
-      ensure
-        formatter.finish
-      end
-    end
-    */
-
-    /**
-     * This is a subcommand method.
-     * Find for the pattern in given paths
-     * @param pattern
-     * @param paths
-     */
-    private void find(String pattern, String... paths) {
-
+        if(hasTrailingSlash && hasMiddleSlash) {
+            patterns.add(pattern + File.separator + "**");
+        } else if(hasTrailingSlash) {
+            patterns.add(pattern + File.separator + "**");
+            patterns.add("**" + File.separator + pattern + File.separator + "**");
+        } else {
+            patterns.add(pattern);
+            patterns.add("**" + File.separator + pattern);
+            patterns.add(pattern + File.separator + "**");
+            patterns.add("**" + File.separator + pattern + File.separator + "**");
+        }
     }
 
-    /*
-    desc "find pattern [paths]", "Find for the pattern in given paths"
-    def find(pattern, *paths)
-      require 'querly/cli/find'
-
-      Find.new(
-        pattern: pattern,
-        paths: paths.empty? ? [Pathname.pwd] : paths.map {|path| Pathname(path) },
-      ).start
-    end
-    */
-
-    /**
-     * This is a subcommand method.
-     * Check configuration
-     */
-    private void test() {
-        config = "querly.yml";
-    }
-    /*
-    desc "test", "Check configuration"
-    option :config, default: "querly.yml"
-    def test()
-      require "querly/cli/test"
-      exit Test.new(config_path: config_path).run
-    end
-    */
-
-    /**
-     * This is a subcommand method.
-     * Print loaded rules
-     */
-    private void rules() {
-        config = "querly.yml";
+    public boolean hasTrainingSlash() {
+        return hasTrailingSlash;
     }
 
-    /*
-    desc "rules", "Print loaded rules"
-    option :config, default: "querly.yml"
-    def rules(*ids)
-      require "querly/cli/rules"
-      Rules.new(config_path: config_path, ids: ids).run
-    end
-    */
+    public boolean hasMiddleSlash() {
+        return hasMiddleSlash;
+    }
 
-    /**
-     * This is a subcommand method.
-     * Print version
-     */
-    private void version() {
-        System.out.println("jquerly " + Version.VERSION);
+    private static List<?> single(Object object) {
+        if(object instanceof List<?>) {
+            return (List<?>)object;
+        }else {
+            return List.of(object);
+        }
+    }
+
+    public static Check load(Map<String, Object> map) {
+        String pattern = (String)map.get("path");
+        List<Query> rules = single(map.get("rules")).stream().map((object) -> {
+            if(object instanceof String) {
+                return parseRuleQuery("append", (String)object);
+            } else {
+                Map<String, Object> rule = (Map<String, Object>)object;
+                if(rule.containsKey("append")) {
+                    return parseRuleQuery("append", rule.get("append"));
+                }else if(rule.containsKey("except")) {
+                    return parseRuleQuery("except", rule.get("except"));
+                } else if (rule.containsKey("only")) {
+                    return parseRuleQuery("only", rule.get("only"));
+                } else {
+                    return parseRuleQuery("append", rule);
+                }
+            }
+        }).collect(Collectors.toList());
+
+        return new Check(pattern, rules);
+    }
+
+    public static Query parseRuleQuery(String opr, Object query) {
+        if(query instanceof String) {
+            return new Query(opr, new HashSet<>(), (String)query);
+        } else {
+            Map<String, Object> queryMap = (Map<String, Object>)query;
+
+            Set<String> tags;
+            String identifier;
+            if(queryMap.containsKey("tags")) {
+                var ts = queryMap.get("tags");
+                if(ts instanceof String) {
+                    tags = new HashSet<String>(Arrays.asList(((String)ts).split(" ")));
+                } else {
+                    tags = new HashSet<String>((List<String>)ts);
+                }
+            } else {
+                tags = new HashSet<>();
+            }
+            identifier = (String)queryMap.get("id");
+
+            return new Query(opr, tags, identifier);
+        }
     }
 
 
-    /**
-     * This is a subcommand method.
-     * Generate Querly config file (querly.yml)
-     */
-    private void init() throws IOException  {
-        Files.copy(Paths.get("template.yml"), Paths.get("querly.yml"));
+    public boolean matches(File path) {
+        return patterns.stream().anyMatch((pattern) -> new File(pattern).equals(path));
     }
-
-    /*
-    def self.source_root
-      File.join(__dir__, "../..")
-    end
-
-    include Thor::Actions
-
-    desc "init", "Generate Querly config file (querly.yml)"
-    def init()
-      copy_file("template.yml", "querly.yml")
-    end
-
-end
-            */
 }

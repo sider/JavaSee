@@ -18,7 +18,7 @@ sourceSets {
 }
 jar {
     manifest {
-        attributes "Main-Class" : "com.github.kmizu.jquerly.CLI"
+        attributes "Main-Class" : "com.github.kmizu.jquerly.Main"
     }
 }
 javacc {
@@ -50,7 +50,12 @@ dependencies {
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
 application {
-    mainClassName = 'com.github.kmizu.jquerly.CLI'
+    mainClassName = 'com.github.kmizu.jquerly.Main'
+}
+run {
+    if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
+        args project.args.split('\\s+')   // 空白文字で split して、 run タスクの args オプションにセットする
+    }
 }
 compileJava {
     sourceCompatibility = '11'
