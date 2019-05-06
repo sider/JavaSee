@@ -170,7 +170,7 @@ public class Formatters {
          */
         @Override
         public void onFinish() {
-
+            System.out.print(asJSON(toJSON(), 0));
         }
 
         /**
@@ -241,6 +241,66 @@ public class Formatters {
             issues.add(List.of(script, rule, pair));
         }
 
+        private static String indent(int indentLevel) {
+            var builder = new StringBuilder();
+            for(int i = 0; i < indentLevel; i++) {
+                builder.append("  ");
+            }
+            return new String(builder);
+        }
+
+        public String asJSON(Object jvalue, int indentLevel) {
+            var builder = new StringBuilder();
+            if(jvalue instanceof Map<?, ?>) {
+                var object = (Map<String, Object>) jvalue;
+                builder.append("{\n");
+                indentLevel++;
+                var entries = object.entrySet().stream().collect(Collectors.toList());
+                boolean first = true;
+                for (var entry : entries) {
+                    if (!first) {
+                        builder.append(",\n");
+                    }
+                    builder.append(indent(indentLevel));
+                    builder.append("\"");
+                    builder.append(entry.getKey());
+                    builder.append("\"");
+                    builder.append(":");
+                    var value = entry.getValue();
+                    builder.append(asJSON(value, indentLevel));
+                    first = false;
+                }
+                builder.append("}\n");
+            } else if(jvalue instanceof List<?>) {
+                var array = (List<Object>)jvalue;
+                builder.append("[");
+                indentLevel++;
+                boolean first = true;
+                for(var value: array) {
+                    if (!first) {
+                        builder.append(", ");
+                    }
+                    builder.append(asJSON(value, indentLevel));
+                    first = false;
+                }
+                builder.append("]");
+            } else if(jvalue instanceof String) {
+                var string = (String)jvalue;
+                builder.append("\"");
+                builder.append(string);
+                builder.append("\"");
+            } else if(jvalue instanceof Integer) {
+                builder.append(((Integer)jvalue).intValue());
+            } else if(jvalue instanceof Double) {
+                builder.append(((Double)jvalue).doubleValue());
+            } else if(jvalue instanceof Boolean) {
+                builder.append(((Boolean)jvalue).booleanValue());
+            } else {
+                throw new RuntimeException("cannot reach here: " + jvalue);
+            }
+            return new String(builder);
+        }
+
 
         public Map<String, Object> toJSON() {
             if (fatalError != null) {
@@ -261,7 +321,7 @@ public class Formatters {
                             Rule rule = (Rule) args.get(1);
                             NodePair pair = (NodePair) args.get(2);
                             return Map.of(
-                                    "script", script.path,
+                                    "script", script.path.getPath(),
                                     "rule", Map.of(
                                             "id", rule.id,
                                             "messages", rule.messages,
