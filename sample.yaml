@@ -2,4 +2,5 @@ rules:
   - id: sample.println
     pattern:
       - _.println(_)
-    message: This is an example message.
+    message: |
+      This is an example message.

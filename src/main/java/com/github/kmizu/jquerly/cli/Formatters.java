@@ -287,7 +287,17 @@ public class Formatters {
             } else if(jvalue instanceof String) {
                 var string = (String)jvalue;
                 builder.append("\"");
-                builder.append(string);
+                for(char ch:string.toCharArray()) {
+                    if(ch == '\n') {
+                        builder.append("\\");
+                        builder.append("n");
+                    } else if(ch == '\r') {
+                        builder.append("\\");
+                        builder.append("r");
+                    } else {
+                        builder.append(ch);
+                    }
+                }
                 builder.append("\"");
             } else if(jvalue instanceof Integer) {
                 builder.append(((Integer)jvalue).intValue());
