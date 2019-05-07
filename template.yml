@@ -14,3 +14,8 @@ rules:
       - _ - _
     message: |
       Subtraction is seen.
+  - id: example.int_literal
+    pattern:
+      - ":int:"
+    message: |
+      int literal is found
