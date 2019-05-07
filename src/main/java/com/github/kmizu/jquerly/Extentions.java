@@ -13,4 +13,13 @@ public class Extentions {
         }
         return result;
     }
+    public static List<?> single(Object object) {
+        if(object == null) {
+            return List.of();
+        } else if(object instanceof List<?>) {
+            return (List<?>)object;
+        } else {
+            return List.of(object);
+        }
+    }
 }

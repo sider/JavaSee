@@ -73,17 +73,9 @@ public class Check {
         return hasMiddleSlash;
     }
 
-    private static List<?> single(Object object) {
-        if(object instanceof List<?>) {
-            return (List<?>)object;
-        }else {
-            return List.of(object);
-        }
-    }
-
     public static Check load(Map<String, Object> map) {
         String pattern = (String)map.get("path");
-        List<Query> rules = single(map.get("rules")).stream().map((object) -> {
+        List<Query> rules = Extentions.single(map.get("rules")).stream().map((object) -> {
             if(object instanceof String) {
                 return parseRuleQuery("append", (String)object);
             } else {
