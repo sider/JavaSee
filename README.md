@@ -13,7 +13,8 @@ JQuerly requires Java(JDK) 11 or later and Gradle 5.0 or later.
 
 ## Quick start
 
-As a first step, you can write the following YAML file
+As a first step, you can run jquerly init command to create an example 
+jquerly.yml:
 
 ```yaml
 rules:
@@ -24,9 +25,7 @@ rules:
       Trap println() method.
 ```
 
-and save it to `jquerly.yaml`
-
-Next you can run `jquerly check` command to **jquerly** patterns against your code base.
+Next you can run `jquerly check -config=jquerly.yml` command to **jquerly** patterns against your code base.
 
 ```
 $ java -jar build/libs/jquerly-all.jar check -config jquerly.yaml

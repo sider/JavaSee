@@ -67,7 +67,7 @@ public class Main {
     }
 
     private void help() {
-        println("java -jar jquerly.jar (check|test) ...");
+        println("java -jar jquerly.jar (check|init) ...");
     }
 
     public void run(String[] args) throws CmdLineException {
@@ -84,6 +84,12 @@ public class Main {
             switch(subCommand) {
                 case "check":
                     check(this.paths);
+                    break;
+                case "version":
+                    version();
+                    break;
+                case "init":
+                    init();
                     break;
             }
         }
@@ -160,31 +166,6 @@ public class Main {
         }
     }
 
-    /*
-        analyzer = Analyzer.new(config: config, rule: options[:rule])
-
-        ScriptEnumerator.new(paths: paths.empty? ? [Pathname.pwd] : paths.map {|path| Pathname(path) }, config: config).each do |path, script|
-          case script
-          when Script
-            analyzer.scripts << script
-            formatter.script_load script
-          when StandardError, LoadError
-            formatter.script_error path, script
-          end
-        end
-
-        analyzer.run do |script, rule, pair|
-          formatter.issue_found script, rule, pair
-        end
-      rescue => exn
-        formatter.fatal_error exn
-        exit 1
-      ensure
-        formatter.finish
-      end
-    end
-    */
-
     /**
      * This is a subcommand method.
      * Find for the pattern in given paths
@@ -225,23 +206,6 @@ public class Main {
 
     /**
      * This is a subcommand method.
-     * Print loaded rules
-     */
-    private void rules() {
-        config = "querly.yml";
-    }
-
-    /*
-    desc "rules", "Print loaded rules"
-    option :config, default: "querly.yml"
-    def rules(*ids)
-      require "querly/cli/rules"
-      Rules.new(config_path: config_path, ids: ids).run
-    end
-    */
-
-    /**
-     * This is a subcommand method.
      * Print version
      */
     private void version() {
@@ -251,10 +215,14 @@ public class Main {
 
     /**
      * This is a subcommand method.
-     * Generate Querly config file (querly.yml)
+     * Generate JQuerly config file (jquerly.yml)
      */
-    private void init() throws IOException  {
-        Files.copy(Paths.get("template.yml"), Paths.get("querly.yml"));
+    private void init() {
+        try {
+            Files.copy(Paths.get("template.yml"), Paths.get("jquerly.yml"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*
