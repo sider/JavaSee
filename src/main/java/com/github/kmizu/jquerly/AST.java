@@ -53,6 +53,18 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
+    public static class RepeatedParameter extends Expression {
+        public final Location location;
+
+        @Override
+        public boolean testNode(Node node) {
+            return false;
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
     public static class ID extends Expression {
         public final Location location;
         public final String name;
@@ -79,6 +91,156 @@ public class AST {
             var expr = (ArrayAccessExpr) node;
             if (!lhs.testNode(expr.getName())) return false;
             return rhs.testNode(expr.getIndex());
+        }
+
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static abstract class UnaryExpression extends Expression {
+        public final Location location;
+        public final Expression expression;
+    }
+
+    public static class Positive extends UnaryExpression {
+        public Positive(Location location, Expression expression) {
+            super(location, expression);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr) node;
+            if(!expression.testNode(expr)) return false;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.PLUS)) return false;
+            return true;
+        }
+
+
+    }
+
+    public static class Negative extends UnaryExpression {
+        public Negative(Location location, Expression expression) {
+            super(location, expression);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr) node;
+            if(!expression.testNode(expr)) return false;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.MINUS)) return false;
+            return true;
+        }
+    }
+
+    public static class Not extends UnaryExpression {
+        public Not(Location location, Expression expression) {
+            super(location, expression);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr) node;
+            if(!expression.testNode(expr)) return false;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.LOGICAL_COMPLEMENT)) return false;
+            return true;
+        }
+
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static abstract class BinaryExpression extends Expression {
+        public final Location location;
+        public final Expression lhs;
+        public final Expression rhs;
+    }
+
+    public static class Addition extends BinaryExpression {
+        public Addition(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.PLUS)) return false;
+            return true;
+        }
+
+    }
+
+    public static class Subtraction extends BinaryExpression {
+        public Subtraction(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.MINUS)) return false;
+            return true;
+        }
+
+    }
+
+    public static class Multiplication extends BinaryExpression {
+        public Multiplication(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.MULTIPLY)) return false;
+            return true;
+        }
+
+    }
+
+    public static class Division extends BinaryExpression {
+        public Division(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.DIVIDE)) return false;
+            return true;
+        }
+
+    }
+
+    public static class Modulo extends BinaryExpression {
+        public Modulo(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.REMAINDER)) return false;
+            return true;
         }
     }
 
@@ -135,6 +297,7 @@ public class AST {
         }
 
         private boolean testArgs(NodeList<com.github.javaparser.ast.expr.Expression> parameters) {
+            if(this.parameters.size() == 1 && this.parameters.get(0) instanceof RepeatedParameter) return true;
             if(this.parameters.size() != parameters.size()) return false;
             int size = parameters.size();
             for(int i = 0; i < size; i++) {
