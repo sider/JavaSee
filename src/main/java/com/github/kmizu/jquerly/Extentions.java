@@ -22,4 +22,12 @@ public class Extentions {
             return List.of(object);
         }
     }
+
+    public static String repeat(String string, int indent) {
+        var builder = new StringBuilder();
+        for(int i = 0; i < indent; i++) {
+            builder.append(string);
+        }
+        return new String(builder);
+    }
 }

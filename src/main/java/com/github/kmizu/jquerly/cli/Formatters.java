@@ -3,15 +3,17 @@ package com.github.kmizu.jquerly.cli;
 import com.github.kmizu.jquerly.NodePair;
 import com.github.kmizu.jquerly.Rule;
 import com.github.kmizu.jquerly.Script;
+import com.github.kmizu.jquerly.StacktraceFormatting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Formatters {
-    public static abstract class AbstractFormatter {
+    public static abstract class AbstractFormatter implements StacktraceFormatting {
         /**
          * Called when analyzer started
          */
@@ -63,7 +65,8 @@ public class Formatters {
          */
         public void onFatalError(Exception error) {
             System.err.println("Fatal error: " + error);
-            //TODO print backtrace
+            System.err.println("Backtrace:");
+            System.err.println(formatStacktrace(error.getStackTrace(), 2));
         }
     }
 
@@ -314,13 +317,24 @@ public class Formatters {
 
         public Map<String, Object> toJSON() {
             if (fatalError != null) {
-                return Map.of("fatal_error", Map.of("message", fatalError.toString()));
+                Exception e = (Exception)fatalError;
+                return Map.of("fatal_error",
+                        Map.of(
+                                "message", e.getMessage(),
+                                "backtrace", Arrays.asList(e.getStackTrace()).stream().map((x) -> x.toString()).collect(Collectors.toList())
+                        )
+                );
             } else if (!configErrors.isEmpty()) {
                 return Map.of(
                         "config_errors", configErrors.stream().map((arg) -> {
                             var path = (String) ((List<?>) arg).get(0);
-                            var error = ((List<?>) arg).get(0);
-                            return Map.of("path", path, "error", Map.of("message", error.toString()));
+                            var error = (Exception)((List<?>) arg).get(0);
+                            return Map.of("path", path, "error",
+                                    Map.of(
+                                            "message", error.getMessage(),
+                                            "backtrace", Arrays.asList(error.getStackTrace()).stream().map((x) -> x.toString()).collect(Collectors.toList())
+                                    )
+                            );
                         }).collect(Collectors.toList())
                 );
             } else {
@@ -349,11 +363,12 @@ public class Formatters {
                         "errors", scriptErrors.stream().map((arg) -> {
                             List<?> args = (List<?>) arg;
                             String path = (String) args.get(0);
-                            Object error = (Object) args.get(1);
+                            Exception error = (Exception) args.get(1);
                             return Map.of(
                                     "path", path,
                                     "error", Map.of(
-                                            "message", error.toString()
+                                            "message", error.getMessage(),
+                                            "backtrace", Arrays.asList(error.getStackTrace()).stream().map((x) -> x.toString()).collect(Collectors.toList())
                                     )
                             );
                         }).collect(Collectors.toList())
