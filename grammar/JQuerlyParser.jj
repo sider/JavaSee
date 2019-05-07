@@ -219,6 +219,7 @@ TOKEN : {
 | <LBRACKET:       "["            >
 | <RBRACKET:       "]"            >
 | <QUESTION:       "?"            >
+| <VARARGS:        "..."          >
 }
 
 /*
@@ -276,425 +277,7 @@ TOKEN:{
   <ERROR: ~[]>
 }
 
-AST.Expression Target() :{AST.Expression e;} {
-    e=KindedExpression() {return e;}
-}
-
-AST.Expression KindedExpression() :{
-    AST.Expression e;
-} {
-    e=Expression() {return e;}
-}
-
 /*
-AST.CompilationUnit unit() :{
-  AST.ModuleDeclaration module = null; AST.ImportClause imports = null;
-  AST.Toplevel top = null;  ArrayBuffer<AST.Toplevel> tops = new ArrayBuffer<AST.Toplevel>();
-}{
-  [module=module_decl()]
-  [imports=import_decl()]
-  (top=top_level() {append(tops, top);})+ <EOF> {
-    return new AST.CompilationUnit(p(1, 1),  null, module, imports, toList(tops));
-  }
-}
-
-AST.ModuleDeclaration module_decl() :{Token t1, t2; StringBuffer sb = new StringBuffer();}{
-  t1="module" t2=<ID> {sb.append(t2.image);} ("." t2=<ID> {sb.append(t2.image);})* ";" {
-    return new AST.ModuleDeclaration(p(t1), new String(sb));
-  }
-}
-
-AST.ImportClause import_decl() :{
-  Token t = null, n;
-  StringBuffer sb;
-  String s = null;
-  ArrayBuffer<Tuple2<String, String>> imports = new ArrayBuffer<Tuple2<String, String>>();
-}{
-  t="import" "{"
-    ( {sb = new StringBuffer();}
-      ( LOOKAHEAD(2)
-        (n=<ID> {s = n.image;} "=" n=<ID> {sb.append(n.image);} ("." n=<ID> {sb.append("."); sb.append(n.image);})+ ";")
-      | ((LOOKAHEAD(2) n=<ID> "." {sb.append(n.image); sb.append(".");})+ (n=<ID> | n="*") ";" {
-           s = n.image; sb.append(s);
-         }
-        )
-      ){ append(imports, new Tuple2<String, String>(s, new String(sb))); }
-    )*
-  "}"{ return new AST.ImportClause(p(t), toList(imports)); }
-}
-
-AST.Toplevel top_level():{int mset = 0; AST.Toplevel top;}{
-( LOOKAHEAD(2)
-  top=statement()
-| [mset=modifiers()]
-  ( top=type_decl(mset)
-  | top=fun_decl(mset)
-  | top=var_decl(mset)
-  )
-) {return top;}
-}
-
-AST.GlobalVariableDeclaration var_decl(int modifiers) : {
-  Token t1, t2;
-  AST.TypeNode ty = null;
-  AST.Expression e = null;
-}{
-  t1="var" t2=<FID> [":" ty=type()] ["=" e=term()] ";" {
-    return new AST.GlobalVariableDeclaration(
-      p(t1), modifiers, t2.image.substring(1), ty, e
-    );
-  }
-}
-
-AST.FunctionDeclaration fun_decl(int modifiers) : {
-  Token t1, t2;
-  List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
-  AST.TypeNode ty = null;
-  AST.BlockExpression b = null;
-  AST.Expression e = null;
-}{
-  t1="def" t2=<ID> ["(" args=args() ")"] [":" ty=return_type()]
-  (  (b=block() | ";") {
-       return new AST.FunctionDeclaration(p(t1), modifiers, t2.image, args, ty, b);
-     }
-  |  ("=" e=term() ";") {
-       return new AST.FunctionDeclaration(
-         p(t1), modifiers, t1.image, args, ty,
-         new AST.BlockExpression(p(t1), asList(new AST.ReturnExpression(p(t1), e)))
-       );
-     }
-  )
-}
-
-AST.TypeDeclaration type_decl(int modifiers) :{AST.TypeDeclaration ty = null;}{
-  (ty=interface_decl(modifiers) | ty=class_decl(modifiers) | ty=record_decl(modifiers)) {return ty;}
-}
-
-AST.BlockExpression block():{Token t; List<AST.CompoundExpression> statements = (List<AST.CompoundExpression>)AST.NIL(); AST.BlockExpression s;}{
-  t="{" [statements=statements()] "}" {return new AST.BlockExpression(p(t), statements);}
-}
-
-List<AST.CompoundExpression> statements():{ AST.CompoundExpression s; ArrayBuffer<AST.CompoundExpression> statements = new ArrayBuffer<AST.CompoundExpression>(); }{
-  (s=statement() { append(statements, s); })+ {return toList(statements);}
-}
-
-int modifiers():{ mset = 0; Token t = null, last = null; }{
-  ( t = "final"        {mset = AST.M_FINAL();}
-  | t = "internal"     {mset = AST.M_INTERNAL();}
-  | t = "volatile"     {mset = AST.M_VOLATILE();}
-  | t = "abstract"     {mset = AST.M_ABSTRACT();}
-  | t = "synchronized" {mset = AST.M_SYNCHRONIZED();}
-  | t = "static"       {mset = AST.M_STATIC();}
-  | t = "override"    {mset = AST.M_OVERRIDE();}
-  )
-  ( LOOKAHEAD(1,{no(AST.M_FINAL(), mset)})        t = "final"        { mset |= AST.M_FINAL(); }
-  | LOOKAHEAD(1,{no(AST.M_INTERNAL(), mset)})     t = "internal"     { mset |= AST.M_INTERNAL(); }
-  | LOOKAHEAD(1,{no(AST.M_VOLATILE(), mset)})     t = "volatile"     { mset |= AST.M_VOLATILE(); }
-  | LOOKAHEAD(1,{no(AST.M_ABSTRACT(), mset)})     t = "abstract"     { mset |= AST.M_ABSTRACT(); }
-  | LOOKAHEAD(1,{no(AST.M_SYNCHRONIZED(), mset)}) t = "synchronized" { mset |= AST.M_SYNCHRONIZED(); }
-  | LOOKAHEAD(1,{no(AST.M_STATIC(), mset)})       t = "static"       { mset |= AST.M_STATIC(); }
-  | LOOKAHEAD(1,{no(AST.M_OVERRIDE(), mset)})    t = "override"    { mset |= AST.M_OVERRIDE(); }
-  )* {return mset;}
-}
-
-AST.AccessSection default_section() : {
-  ArrayBuffer<AST.MemberDeclaration> members = new ArrayBuffer<AST.MemberDeclaration>();
-  AST.MemberDeclaration m; int mset; Location location;
-}{
-  {mset = 0;}
-  ([mset=modifiers()] m=member_decl(mset) {
-     append(members, m); location = m.location();
-   }
-  )
-  {mset = 0;}
-  ([mset=modifiers()] m=member_decl(mset) {append(members, m);})*
-  {return new AST.AccessSection(location, AST.M_PRIVATE(), toList(members));}
-}
-
-AST.AccessSection access_section() :{
-  ArrayBuffer<AST.MemberDeclaration> members = new ArrayBuffer<AST.MemberDeclaration>();
-  Token t; int mset; AST.MemberDeclaration m;
-  int sectionType = 0;
-}{
-  (t="public"    {sectionType = AST.M_PUBLIC();}
-  |t="protected" {sectionType = AST.M_PROTECTED();}
-  |t="private"   {sectionType = AST.M_PRIVATE();}
-  ) ":"
-  {mset = 0;}
-  ([mset=modifiers()] m=member_decl(mset) {append(members, m);})*
-  {return new AST.AccessSection(p(t), sectionType, toList(members));}
-}
-
-AST.MemberDeclaration member_decl(int mset) :{AST.MemberDeclaration m;}{
-  LOOKAHEAD(2) m=field_decl(mset)         {return m;}
-| LOOKAHEAD(2) m=method_decl(mset)        {return m;}
-| LOOKAHEAD(2) m=delegate_decl(mset)      {return m;}
-| LOOKAHEAD(2) m=constructor_decl(mset)   {return m;}
-}
-
-AST.ClassDeclaration class_decl(int mset) : {
-  Token t1, t2; AST.TypeNode ty1 = null, ty2 = null;
-  AST.AccessSection sec1 = null;
-  AST.AccessSection sec2 = null;
-  Option<AST.AccessSection> sec3 = null;
-  ArrayBuffer<AST.TypeNode> ty2s = new ArrayBuffer<AST.TypeNode>();
-  ArrayBuffer<AST.AccessSection> sec2s = new ArrayBuffer<AST.AccessSection>();
-}{
-  t1="class" t2=<ID> [":" ty1=class_type()]
-  ["<:" ty2=class_type() {append(ty2s, ty2);} ("," ty2=class_type() {append(ty2s, ty2);})*] "{"
-    [sec1=default_section()] { sec3 = option(sec1); }
-    (sec2=access_section() {append(sec2s, sec2);})*
-  "}" {
-    return new AST.ClassDeclaration(
-      p(t1), mset, t2.image, ty1, toList(ty2s), sec3, toList(sec2s)
-    );
-  }
-}
-
-AST.RecordDeclaration record_decl(int mset) : {
-  Token t1, t2; List<AST.Argument> args;
-}{
-  t1="record" t2=<ID> "(" args=args() ")" {
-    return new AST.RecordDeclaration(
-      p(t1), mset, t2.image, args
-    );
-  }
-}
-
-AST.InterfaceDeclaration interface_decl(int mset) : {
-  Token start, name;
-  AST.TypeNode superType;
-  AST.MethodDeclaration signature;
-  ArrayBuffer<AST.TypeNode> superTypes = new ArrayBuffer<AST.TypeNode>();
-  ArrayBuffer<AST.MethodDeclaration> signatures = new ArrayBuffer<AST.MethodDeclaration>();
-}{
-  start = "interface" name = <ID>
-  [ "<:"
-    superType = class_type() {append(superTypes, superType);}
-    ("," superType = class_type() {append(superTypes, superType);})*
-  ] "{"
-    (signature = interface_method_decl() {append(signatures, signature); })*
-  "}" {
-    return new AST.InterfaceDeclaration(
-      p(start), mset, name.image, toList(superTypes), toList(signatures)
-    );
-  }
-}
-
-AST.ConstructorDeclaration constructor_decl(int mset) : {
-  Token t;
-  List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
-  List<AST.Expression> params = (List<AST.Expression>)AST.NIL();
-  AST.BlockExpression block;
-}{
-  "def" t = "new" ["(" args = args() ")"] [":" "(" params = terms() ")"] block = block() {
-    return new AST.ConstructorDeclaration(p(t), mset, args, params, block);
-  }
-}
-
-AST.MethodDeclaration method_decl(int mset) : {
-  Token t;
-  List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
-  AST.TypeNode ty = null;
-  AST.BlockExpression b = null;
-  AST.Expression e = null;
-}{
-  "def" t=<ID> ["(" args=args() ")"] [":" ty=return_type()]
-  (  (b=block() | ";" ) {
-       return new AST.MethodDeclaration(p(t), mset, t.image, args, ty, b);
-     }
-  |  ("=" e=term() ";") {
-       return new AST.MethodDeclaration(
-         p(t), mset, t.image, args, ty,
-         new AST.BlockExpression(p(t), asList(new AST.ReturnExpression(p(t), e)))
-       );
-     }
-  )
-}
-
-AST.MethodDeclaration interface_method_decl() : {
-  Token n;
-  List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
-  AST.TypeNode ty  = null;
-}{
-  "def" n=<ID> ["(" args=args() ")"] [":" ty=return_type()] ";" {
-    return new AST.MethodDeclaration(p(n), AST.M_PUBLIC(), n.image, args, ty, null);
-  }
-}
-
-AST.TypeNode basic_type() : {
-  Token t = null; AST.PrimitiveTypeKind kind = null;
-}{
-( t=<K_BYTE>     {kind = AST.K_BYTE();}
-| t=<K_SHORT>    {kind = AST.K_SHORT();}
-| t=<K_CHAR>     {kind = AST.K_CHAR();}
-| t=<K_INT>      {kind = AST.K_INT();}
-| t=<K_LONG>     {kind = AST.K_LONG();}
-| t=<K_FLOAT>    {kind = AST.K_FLOAT();}
-| t=<K_DOUBLE>   {kind = AST.K_DOUBLE();}
-| t=<K_BOOLEAN>  {kind = AST.K_BOOLEAN();}
-) {return new AST.TypeNode(p(t), new AST.PrimitiveType(kind));}
-}
-
-AST.TypeNode class_type() : {Token n;}{
-  n=<FQCN> {return new AST.TypeNode(p(n), new AST.ReferenceType(n.image, true));}
-| n=<ID>   {return new AST.TypeNode(p(n), new AST.ReferenceType(n.image, false));}
-}
-
-AST.TypeNode raw_type() :{AST.TypeNode c;}{
-  (c = basic_type() | c = class_type()) {return c;}
-}
-
-AST.TypeNode void_type() :{Token t;}{
-  t=<K_VOID> {return new AST.TypeNode(p(t), new AST.PrimitiveType(AST.K_VOID()));}
-}
-
-AST.TypeNode type() : {
-  int d = 0; ArrayBuffer<AST.TypeDescriptor> args = new ArrayBuffer<AST.TypeDescriptor>();
-  AST.TypeNode arg, c;
-}{
-  c=raw_type()
-  [LOOKAHEAD(2) "<" arg=type() {append(args, arg.desc());} ("," arg=type() {append(args, arg.desc());})* ">" ]
-  (LOOKAHEAD(2) "[" "]" {d++;})* {
-    AST.TypeDescriptor desc = args.size() > 0 ? new AST.ParameterizedType(c.desc(), toList(args)) : c.desc();
-    for(int i = 0; i < d; i++) {
-      desc = new AST.ArrayType(desc);
-    }
-    return new AST.TypeNode(c.location(), desc);
-  }
-}
-
-AST.TypeNode return_type() :{AST.TypeNode type;}{
-  (type = void_type() | type = type()) {return type;}
-}
-
-AST.Argument argument() :{Token t; AST.TypeNode type;}{
-  t=<ID> ":" type = type() {return new AST.Argument(p(t), t.image, type);}
-}
-
-List<AST.Argument> args() :{ArrayBuffer<AST.Argument> as = new ArrayBuffer<AST.Argument>(); AST.Argument a;}{
-  [a = argument() {append(as, a);} ("," a = argument() {append(as, a);})*] {return toList(as);}
-}
-
-AST.DelegatedFieldDeclaration delegate_decl(int modifiers) : {
-  Token start, name;
-  AST.TypeNode type = null;
-  AST.Expression init = null;
-}{
-  start="forward" name=<FID> [":" type = type()]
-  ["=" init=term()] ";" {
-    return new AST.DelegatedFieldDeclaration(p(start), modifiers, name.image.substring(1), type, init);
-  }
-}
-
-AST.FieldDeclaration field_decl(int modifiers):{
-  Token name;
-  AST.TypeNode type = null;
-  AST.Expression init = null;
-}{
-  name=<FID> ":" [type=type()]
-  ["=" init=term()] ";" {
-    return new AST.FieldDeclaration(p(name), modifiers, name.image.substring(1), type, init);
-  }
-}
-
-AST.CompoundExpression statement():{AST.CompoundExpression s;}{
-  LOOKAHEAD(2)
-  s=local_var_statement()    {return s;}
-| s=if_statement()           {return s;}
-| s=while_statement()        {return s;}
-| s=for_statement()          {return s;}
-| s=select_statement()       {return s;}
-| s=block()                  {return s;}
-| s=try_statement()          {return s;}
-| s=throw_statement()        {return s;}
-| s=break_statement()        {return s;}
-| s=continue_statement()     {return s;}
-| s=return_statement()       {return s;}
-| s=exp_statement()          {return s;}
-| s=empty_statement()        {return s;}
-| s=synchronized_statement() {return s;}
-| s=foreach_statement()      {return s;}
-}
-
-AST.LocalVariableDeclaration local_var_statement() :{Token t; AST.TypeNode ty; AST.Expression e = null;}{
-  t=<ID> ":" ty=type() ["=" e=term()] ";" {return new AST.LocalVariableDeclaration(p(t), t.image, ty, e);}
-}
-
-AST.BreakExpression break_statement() :{Token t;}{
-  t="break" ";" {return new AST.BreakExpression(p(t));}
-}
-
-AST.ContinueExpression continue_statement() :{Token t; AST.ContinueExpression st;}{
-  t="continue" ";" {return new AST.ContinueExpression(p(t));}
-}
-
-AST.ThrowExpression throw_statement() :{Token t; AST.Expression e;}{
-  t="throw" e=term() ";" {return new AST.ThrowExpression(p(t), e);}
-}
-
-AST.TryExpression try_statement() :{
-  Token t; AST.Argument a; AST.BlockExpression b1, b2, b3 = null;
-  ArrayBuffer<Tuple2<AST.Argument,AST.BlockExpression>> as = new ArrayBuffer<Tuple2<AST.Argument, AST.BlockExpression>>();
-}{
-  t="try"  b1=block() ("catch" a=argument() b2=block() {append(as, new Tuple2<AST.Argument, AST.BlockExpression>(a, b2));})*
-  ["finally" b3=block()] {return new AST.TryExpression(p(t), b1, toList(as), b3);}
-}
-
-AST.ExpressionBox exp_statement() :{AST.Expression e;}{
-  e=term() ";" {return new AST.ExpressionBox(e.location(), e);}
-}
-
-AST.EmptyExpression empty_statement() :{Token t;}{
-  t=";" {return new AST.EmptyExpression(p(t));}
-}
-
-AST.IfExpression if_statement() :{Token t; AST.Expression e; AST.BlockExpression b1, b2 = null;}{
-  t="if" e=term() b1=block() [LOOKAHEAD(2) "else" b2=block()] {return new AST.IfExpression(p(t), e, b1, b2);}
-}
-
-AST.SelectExpression select_statement() :{
-  Token t1, t2; AST.Expression e1, e2;
-  ArrayBuffer<AST.Expression> es = new ArrayBuffer<AST.Expression>();
-  List<AST.CompoundExpression> ss = null;
-  ArrayBuffer<Tuple2<List<AST.Expression>, AST.BlockExpression>> branches = new ArrayBuffer<Tuple2<List<AST.Expression>, AST.BlockExpression>>();
-  AST.BlockExpression elseBlock = null ;
-}{
-  t1="select" e1=term() "{"
-    ((t2="case" e2=term() {append(es, e2);} ("," e2=term() {append(es, e2);})* ":" ss=statements()) {
-      append(branches, new Tuple2<List<AST.Expression>, AST.BlockExpression>(toList(es), new AST.BlockExpression(p(t2), ss)));
-    })*
-    [t2="else" ":" [ss=statements()] { elseBlock = new AST.BlockExpression(p(t2), ss); }]
-  "}" {
-    return new AST.SelectExpression(p(t1), e1, toList(branches), elseBlock);
-  }
-}
-
-AST.ReturnExpression return_statement() :{Token t; AST.Expression e = null;}{
-  t="return" [e=term()] ";" {return new AST.ReturnExpression(p(t), e);}
-}
-
-AST.SynchronizedExpression synchronized_statement() :{Token t; AST.Expression e = null; AST.BlockExpression b;}{
-  t="synchronized" [e=term()] b=block() {return new AST.SynchronizedExpression(p(t), e, b);}
-}
-
-AST.WhileExpression while_statement() :{Token t; AST.Expression e; AST.BlockExpression b;}{
-  t="while" e=term() b=block() {return new AST.WhileExpression(p(t), e, b);}
-}
-
-AST.ForeachExpression foreach_statement() :{Token t; AST.Argument a; AST.Expression e; AST.BlockExpression b;}{
-  t="foreach" a=argument() (LOOKAHEAD({la("in")}) <ID>) e=term() b=block() {
-    return new AST.ForeachExpression(p(t), a, e, b);
-  }
-}
-
-AST.ForExpression for_statement() :{Token t; AST.CompoundExpression s; AST.Expression e1 = null, e2 = null; AST.BlockExpression b;}{
-  t="for" (LOOKAHEAD(2) s=local_var_statement() | s=exp_statement() | s=empty_statement())
-  [e1=term()] ";" [e2=term()] b=block() {
-  	return new AST.ForExpression(p(t), s, e1, e2, b);
-  }
-}
-
 AST.Expression term() :{AST.Expression e;}{
   e = assignable() { return e; }
 }
@@ -711,30 +294,29 @@ AST.Expression assignable() :{Token t; AST.Expression a, b; }{
   ]{return a;}
 }
 
-AST.Expression logical_or() :{Token t; AST.Expression a, b; }{
+AST.Expression LogicalOr() :{Token t; AST.Expression a, b; }{
   a=logical_and()
   ( t="||" b=logical_and() {a = new AST.LogicalOr(p(t), a, b);}
-  | t="?:" b=logical_and() {a = new AST.Elvis(p(t), a, b);})*
   { return a; }
 }
 
-AST.Expression logical_and() :{Token t; AST.Expression a, b; }{
+AST.Expression LogicalAnd() :{Token t; AST.Expression a, b; }{
   a=bit_or() (t="&&" b=bit_or() {a = new AST.LogicalAnd(p(t), a, b);})* {return a;}
 }
 
-AST.Expression bit_or() :{Token t; AST.Expression a, b; }{
+AST.Expression BitOr() :{Token t; AST.Expression a, b; }{
   a=xor() (t="|" b=xor() {a = new AST.BitOr(p(t), a, b);})* {return a;}
 }
 
-AST.Expression xor() :{Token t; AST.Expression a, b;}{
+AST.Expression XOr() :{Token t; AST.Expression a, b;}{
   a = bit_and() (t="^" b=bit_and() {a = new AST.XOR(p(t), a, b);})* {return a;}
 }
 
-AST.Expression bit_and() :{Token t; AST.Expression a, b; }{
+AST.Expression BitAnd() :{Token t; AST.Expression a, b; }{
   a=equal() (t = "&" b=equal() {a = new AST.BitAnd(p(t), a, b);})* {return a;}
 }
 
-AST.Expression equal() :{ Token t; AST.Expression a, b; }{
+AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
   a=comparative()
   ( ( t="===" b=comparative() {a= new AST.ReferenceEqual(p(t), a, b);}
     | t="!==" b=comparative() {a= new AST.ReferenceNotEqual(p(t), a, b);}
@@ -744,7 +326,7 @@ AST.Expression equal() :{ Token t; AST.Expression a, b; }{
   )* {return a;}
 }
 
-AST.Expression comparative() : { Token t; AST.Expression a, b; AST.TypeNode type; }{
+AST.Expression Comparative() : { Token t; AST.Expression a, b; AST.TypeNode type; }{
   a=bit_shift()
   ( ( t="<=" b=bit_shift() {a = new AST.LessOrEqual(p(t), a, b);}
     | t=">=" b=bit_shift() {a = new AST.GreaterOrEqual(p(t), a, b);}
@@ -755,7 +337,7 @@ AST.Expression comparative() : { Token t; AST.Expression a, b; AST.TypeNode type
   )* {return a;}
 }
 
-AST.Expression bit_shift() :{Token t; AST.Expression e1, e2;}{
+AST.Expression BitShift() :{Token t; AST.Expression e1, e2;}{
   e1=additive()
 ( t="<<" e2=additive()    {e1 = new AST.MathLeftShift(p(t), e1, e2);}
 | t=">>" e2=additive()    {e1 = new AST.MathRightShift(p(t), e1, e2);}
@@ -763,32 +345,44 @@ AST.Expression bit_shift() :{Token t; AST.Expression e1, e2;}{
 )* { return e1; }
 }
 
-AST.Expression additive() :{Token t; AST.Expression e1, e2;}{
-  e1=unary_prefix()
-( t="+" e2=unary_prefix() {e1 = new AST.Addition(p(t), e1, e2);}
-| t="-" e2=unary_prefix() {e1 = new AST.Subtraction(p(t), e1, e2);}
+*/
+
+AST.Expression Target() :{AST.Expression e;} {
+    e=KindedExpression() {return e;}
+}
+
+AST.Expression KindedExpression() :{
+    AST.Expression e;
+} {
+    e=Expression() {return e;}
+}
+
+
+AST.Expression Expression(): {AST.Expression e;} {
+    e=Additive() {return e;}
+}
+
+AST.Expression Additive() :{Token t; AST.Expression e1, e2;}{
+  e1=UnaryPrefix()
+( t="+" e2=UnaryPrefix() {e1 = new AST.Addition(p(t), e1, e2);}
+| t="-" e2=UnaryPrefix() {e1 = new AST.Subtraction(p(t), e1, e2);}
 )* {return e1;}
 }
 
-AST.Expression unary_prefix() :{Token t; AST.Expression e;}{
-( t="+" e=unary_prefix() {e = new AST.Posit(p(t), e);}
-| t="-" e=unary_prefix() {e = new AST.Negate(p(t), e);}
-| t="!" e=unary_prefix() {e = new AST.Not(p(t), e);}
-| e=multitive()
+AST.Expression UnaryPrefix() :{Token t; AST.Expression e;}{
+( t="+" e=UnaryPrefix() {e = new AST.Positive(p(t), e);}
+| t="-" e=UnaryPrefix() {e = new AST.Negative(p(t), e);}
+| t="!" e=UnaryPrefix() {e = new AST.Not(p(t), e);}
+| e=Multitive()
 ) {return e;}
 }
 
-AST.Expression multitive() :{Token t; AST.Expression e1, e2;}{
-  e1=primary_suffix()
-( t="*" e2=primary_suffix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
-| t="/" e2=primary_suffix()  {e1 = new AST.Division(p(t), e1, e2);}
-| t="%" e2=primary_suffix()  {e1 = new AST.Modulo(p(t), e1, e2);}
+AST.Expression Multitive() :{Token t; AST.Expression e1, e2;}{
+  e1=PrimarySuffix()
+( t="*" e2=PrimarySuffix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
+| t="/" e2=PrimarySuffix()  {e1 = new AST.Division(p(t), e1, e2);}
+| t="%" e2=PrimarySuffix()  {e1 = new AST.Modulo(p(t), e1, e2);}
 )* {return e1;}
-}
-*/
-
-AST.Expression Expression(): {AST.Expression e;} {
-    e=PrimarySuffix() {return e;}
 }
 
 AST.Expression PrimarySuffix() : {
@@ -821,8 +415,13 @@ AST.Expression Primary() : /*{
 |   e=Wildcard()                                                            {return e;}
 |   e=ThisPattern()                                                         {return e;}
 |   e=Identifier()                                                          {return e;}
+|   e=RepeatedParameter()                                                   {return e;}
 |   "(" e=Expression() ")"                                                  {return e;}
 |   e=NewObject()                                                           {return e;}
+}
+
+AST.Expression RepeatedParameter(): {Token t;} {
+    t="..."                                                                 {return new AST.RepeatedParameter(p(t));}
 }
 
 AST.Expression NewObject(): {Token t; AST.ID id; List<AST.Expression> es;} {

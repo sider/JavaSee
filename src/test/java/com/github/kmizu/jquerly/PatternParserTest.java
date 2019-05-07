@@ -30,6 +30,75 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testAdd() throws Exception {
+        var e = parser("_ + _").Expression();
+        assertTrue(e instanceof AST.Addition);
+        var et = (AST.Addition)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testSubtract() throws Exception {
+        var e = parser("_ - _").Expression();
+        assertTrue(e instanceof AST.Subtraction);
+        var et = (AST.Subtraction)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testMultiply() throws Exception {
+        var e = parser("_ * _").Expression();
+        assertTrue(e instanceof AST.Multiplication);
+        var et = (AST.Multiplication)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testDivide() throws Exception {
+        var e = parser("_ / _").Expression();
+        assertTrue(e instanceof AST.Division);
+        var et = (AST.Division)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testModulo() throws Exception {
+        var e = parser("_ %  _").Expression();
+        assertTrue(e instanceof AST.Modulo);
+        var et = (AST.Modulo)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testPositive() throws Exception {
+        var e = parser("+ _").Expression();
+        assertTrue(e instanceof AST.Positive);
+        var et = (AST.Positive)e;
+        assertTrue(et.expression instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testNegative() throws Exception {
+        var e = parser("-_").Expression();
+        assertTrue(e instanceof AST.Negative);
+        var et = (AST.Negative)e;
+        assertTrue(et.expression instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testNot() throws Exception {
+        var e = parser("!_").Expression();
+        assertTrue(e instanceof AST.Not);
+        var et = (AST.Not)e;
+        assertTrue(et.expression instanceof AST.Wildcard);
+    }
+
+    @Test
     public void testBooleanWildcard() throws Exception {
         var e = parser(":boolean:").Expression();
         assertTrue(e instanceof AST.BooleanWildcard);

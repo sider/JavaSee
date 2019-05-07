@@ -1,6 +1,16 @@
 rules:
-  - id: sample.println
+  - id: example.println
     pattern:
-      - _.println(_)
+      - _.println(...)
     message: |
       This is an example message.
+  - id: example.addition
+    pattern:
+      - _ + _
+    message: |
+      Addition is seen.
+  - id: example.subtraction
+    pattern:
+      - _ - _
+    message: |
+      Subtraction is seen.
