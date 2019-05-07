@@ -125,8 +125,8 @@ public class Main {
 
         try {
             if(!configPath().isFile()) {
-                println("Configuration file " + configPath() + "does not look a file.");
-                println("Specify configuration file by --config option");
+                println("Configuration file " + configPath() + " does not look a file.");
+                println("Specify configuration file by -config option");
                 return;
             }
             File rootPath;
