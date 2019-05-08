@@ -140,7 +140,6 @@ public class Main {
             try {
                 yaml = new Yaml().load(new FileInputStream(configPath()));
                 config = Config.load(yaml, configPath(), rootPath);
-                // in Ruby, Config.load(yaml, config_path: config_path, root_dir: root_path, stderr: STDERR)
             } catch (Exception e) {
                 e.printStackTrace();
                 formatter.onConfigError(this.config, e);
