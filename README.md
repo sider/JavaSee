@@ -16,6 +16,11 @@ JQuerly requires Java(JDK) 11 or later and Gradle 5.0 or later.
 As a first step, you can run jquerly init command to create an example 
 jquerly.yml:
 
+```
+$ java -jar build/libs/jquerly-all.jar init
+$ cat jquerly.yaml
+```
+
 ```yaml
 rules:
   - id: jquerly.example
