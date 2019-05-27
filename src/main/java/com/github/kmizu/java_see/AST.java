@@ -268,7 +268,7 @@ public class AST {
         public boolean testNode(Node node) {
             if(node instanceof ObjectCreationExpr) {
                 var newObject = (ObjectCreationExpr)node;
-                if(!newObject.getType().asString().equals(name)) return false;
+                if(!newObject.getType().getNameAsString().equals(name)) return false;
                 if(!testArgs(((ObjectCreationExpr) node).getArguments())) return false;
                 return true;
             } else {
