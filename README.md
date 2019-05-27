@@ -19,8 +19,8 @@ As a first step, you can run JavaSee init command to create an example
 java_see.yml:
 
 ```
-$ java -jar build/libs/jquerly-all.jar init
-$ cat jquerly.yaml
+$ java -jar build/libs/JavaSee-all.jar init
+$ cat java_see.yaml
 ```
 
 ```yaml
