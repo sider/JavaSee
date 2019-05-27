@@ -105,7 +105,7 @@ public class Main {
      */
     private void check(List<String> paths) {
         if(this.config == null) {
-            this.config = "querly.yml";
+            this.config = "java_see.yml";
         }
         if(format == null) {
             this.format = "text";
