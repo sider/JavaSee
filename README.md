@@ -37,3 +37,7 @@ Next you can run `JavaSee check -config=java_see.yml` command to **JavaSee** pat
 ```
 $ java -jar build/libs/JavaSee-all.jar check -config java_see.yaml
 ```
+
+## Documentation
+
+- [Pattern syntax](doc/pattern_syntax.md)
