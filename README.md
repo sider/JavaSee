@@ -40,4 +40,4 @@ $ java -jar build/libs/JavaSee-all.jar check -config java_see.yaml
 
 ## Documentation
 
-- [Pattern syntax](doc/pattern_syntax.md)
+- [Pattern syntax](doc/pattern-syntax.md)
