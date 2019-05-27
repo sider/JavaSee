@@ -1,4 +1,6 @@
-# JavaSee 
+![JavaSee logo](https://github.com/sider/JavaSee/blob/master/logo/JavaSee.png?raw=true)
+
+# JavaSee: Java Code Piece Finder
 
 Query Method Calls from Java Programs.  It's Java version of querly https://github.com/soutaro/querly
 
