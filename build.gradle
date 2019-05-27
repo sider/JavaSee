@@ -16,16 +16,20 @@ sourceSets {
         }
     }
 }
+shadowJar {
+    baseName = 'JavaSee'
+}
 jar {
+    baseName = 'JavaSee'
     manifest {
-        attributes "Main-Class" : "com.github.kmizu.jquerly.Main"
+        attributes "Main-Class" : "com.github.kmizu.java_see.Main"
     }
 }
 javacc {
     configs {
         template {
-            inputFile = file('grammar/JQuerlyParser.jj')
-            packageName = 'com.github.kmizu.jquerly.parser'
+            inputFile = file('grammar/JavaSeeParser.jj')
+            packageName = 'com.github.kmizu.java_see.parser'
             lookahead = '2'
         }
     }
@@ -50,7 +54,7 @@ dependencies {
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
 application {
-    mainClassName = 'com.github.kmizu.jquerly.Main'
+    mainClassName = 'com.github.kmizu.java_see.Main'
 }
 run {
     if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
