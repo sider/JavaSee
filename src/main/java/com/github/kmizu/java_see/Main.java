@@ -37,7 +37,7 @@ public class Main {
     private File configPath() {
         var path = new File(config);
         if(path.isFile()) return path;
-        return new File("querly.yaml");
+        return new File("java_see.yaml");
     }
 
     public String getConfig() {

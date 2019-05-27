@@ -1,15 +1,17 @@
 package com.github.kmizu.java_see.cli;
 
-import com.github.kmizu.java_see.NodePair;
-import com.github.kmizu.java_see.Rule;
-import com.github.kmizu.java_see.Script;
-import com.github.kmizu.java_see.StacktraceFormatting;
+import com.github.kmizu.java_see.*;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.github.kmizu.java_see.Libs.wrapException;
 
 public class Formatters {
     public static abstract class AbstractFormatter implements StacktraceFormatting {
@@ -135,6 +137,14 @@ public class Formatters {
         }
 
         /**
+         * Note that line is 1-origin
+         */
+        private String getLine(File path, int line) {
+            var lines = Libs.wrapException(() -> Files.readAllLines(path.toPath()));
+            return lines.get(line - 1);
+        }
+
+        /**
          * Called when issue is found
          *
          * @param script
@@ -144,10 +154,10 @@ public class Formatters {
         @Override
         public void onIssueFound(Script script, Rule rule, NodePair pair) {
             var path = script.path;
-            var src = pair.node.toString().split("\n")[0];
             var position = pair.node.getRange().get().begin;
             var line = position.line;
             var column = position.column;
+            var src = getLine(path, line);
             var message = rule.messages.get(0).split("\n")[0];
             System.out.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
         }
