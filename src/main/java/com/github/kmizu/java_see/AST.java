@@ -71,9 +71,9 @@ public class AST {
 
         @Override
         public boolean testNode(Node node) {
-            if(!(node instanceof SimpleName)) return false;
-            var expr = (SimpleName)node;
-            return expr.asString().equals(this.name);
+            if(!(node instanceof NameExpr)) return false;
+            var expr = (NameExpr)node;
+            return expr.getName().asString().equals(this.name);
         }
     }
 
