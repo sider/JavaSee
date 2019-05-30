@@ -1,0 +1,6 @@
+rules:
+  - id: example.println
+    pattern:
+      - x.getType(_)
+    message: |
+      This is an example message.

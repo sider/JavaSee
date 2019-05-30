@@ -157,7 +157,7 @@ public class Formatters {
             var position = pair.node.getRange().get().begin;
             var line = position.line;
             var column = position.column;
-            var src = getLine(path, line);
+            var src = "\033[31m" + getLine(path, line) + "\033[0m";
             var message = rule.messages.get(0).split("\n")[0];
             System.out.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
         }
