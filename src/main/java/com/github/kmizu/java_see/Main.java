@@ -218,7 +218,8 @@ public class Main {
      */
     private void init() {
         try {
-            Files.copy(Paths.get("template.yml"), Paths.get("java_see.yml"));
+            var template = ClassLoader.getSystemResourceAsStream("template.yml");
+            Files.copy(template, Paths.get("java_see.yml"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
