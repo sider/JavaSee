@@ -224,19 +224,4 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-
-    /*
-    def self.source_root
-      File.join(__dir__, "../..")
-    end
-
-    include Thor::Actions
-
-    desc "init", "Generate Querly config file (querly.yml)"
-    def init()
-      copy_file("template.yml", "querly.yml")
-    end
-
-end
-            */
 }
