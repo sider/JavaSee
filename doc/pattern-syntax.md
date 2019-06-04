@@ -23,6 +23,16 @@ Basically, Java expressions are valid JavaSee patterns. JavaSee provides followi
 - `x * y`: multiplication.
 - `x / y`: division.
 - `x % y`: remainder.
+- `x > y`: greater than.
+- `x >= y`: greater or equal.
+- `x < y`: less than.
+- `x <= y`: less or equal.
+- `x == y`: equal.
+- `x != y`: not equal.
+- `x << y`: left shift.
+- `x >> y`: signed rifht shift.
+- `x >>> y`: unsigned rifht shift.
+- `x instanceof type`: instance of operator (Currently, type must not be wildcard).
 - `!x`: negation.
 - `x++`: postfix increment.
 - `y++`: postfix decrement.

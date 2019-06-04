@@ -244,6 +244,172 @@ public class AST {
         }
     }
 
+    public static class Equal extends BinaryExpression {
+        public Equal(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.EQUALS)) return false;
+            return true;
+        }
+    }
+
+    public static class NotEqual extends BinaryExpression {
+        public NotEqual(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.NOT_EQUALS)) return false;
+            return true;
+        }
+    }
+
+    public static class GreaterOrEqual extends BinaryExpression {
+        public GreaterOrEqual(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.GREATER_EQUALS)) return false;
+            return true;
+        }
+    }
+
+    public static class GreaterThan extends BinaryExpression {
+        public GreaterThan(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.GREATER)) return false;
+            return true;
+        }
+    }
+
+    public static class LessOrEqual extends BinaryExpression {
+        public LessOrEqual(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.LESS_EQUALS)) return false;
+            return true;
+        }
+    }
+
+    public static class LessThan extends BinaryExpression {
+        public LessThan(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.LESS)) return false;
+            return true;
+        }
+    }
+
+    public static class MathLeftShift extends BinaryExpression {
+        public MathLeftShift(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.LEFT_SHIFT)) return false;
+            return true;
+        }
+    }
+
+    public static class MathRightShift extends BinaryExpression {
+        public MathRightShift(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.SIGNED_RIGHT_SHIFT)) return false;
+            return true;
+        }
+    }
+
+    public static class LogicalRightShift extends BinaryExpression {
+        public LogicalRightShift(Location location, Expression lhs, Expression rhs) {
+            super(location, lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.UNSIGNED_RIGHT_SHIFT)) return false;
+            return true;
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class Instanceof extends Expression {
+        public final Location location;
+        public final Expression target;
+        public final String type;
+
+
+        @Override
+        public boolean testNode(Node node) {
+            if(node instanceof InstanceOfExpr) {
+                var instanceofExpr = (InstanceOfExpr)node;
+                if(target.testNode(instanceofExpr.getExpression())) return false;
+                if(!instanceofExpr.getType().asClassOrInterfaceType().getNameAsString().equals(type)) return false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     @AllArgsConstructor
     @Getter
     @ToString
