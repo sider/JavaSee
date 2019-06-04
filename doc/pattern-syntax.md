@@ -1,3 +1,5 @@
+# Pattern syntax
+
 Basically, Java expressions are valid JavaSee patterns. JavaSee provides following patterns:
 
 - `_`: any single expression
@@ -38,3 +40,29 @@ Basically, Java expressions are valid JavaSee patterns. JavaSee provides followi
 - `y++`: postfix decrement.
 
 Sevral Java expression patterns are not supported yet.  They will be supported in the future version.
+
+## Usage by example
+
+- Find `System.out.println()` calls:
+
+```
+System.out.println(...)
+```
+
+- Find all usage of `println` calls:
+
+```
+_.println(...)
+```
+
+- Find all usage of `+` operators:
+
+```
+_ + _
+```
+
+- Find `instanceof Integer` :
+
+```
+_ instanceof Integer
+```
