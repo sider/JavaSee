@@ -310,35 +310,6 @@ AST.Expression BitAnd() :{Token t; AST.Expression a, b; }{
   a=equal() (t = "&" b=equal() {a = new AST.BitAnd(p(t), a, b);})* {return a;}
 }
 
-AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
-  a=comparative()
-  ( ( t="===" b=comparative() {a= new AST.ReferenceEqual(p(t), a, b);}
-    | t="!==" b=comparative() {a= new AST.ReferenceNotEqual(p(t), a, b);}
-    | t="=="  b=comparative() {a= new AST.Equal(p(t), a, b);}
-    | t="!="  b=comparative() {a= new AST.NotEqual(p(t), a, b);}
-    )
-  )* {return a;}
-}
-
-AST.Expression Comparative() : { Token t; AST.Expression a, b; AST.TypeNode type; }{
-  a=bit_shift()
-  ( ( t="<=" b=bit_shift() {a = new AST.LessOrEqual(p(t), a, b);}
-    | t=">=" b=bit_shift() {a = new AST.GreaterOrEqual(p(t), a, b);}
-    | t="<"  b=bit_shift() {a = new AST.LessThan(p(t), a, b);}
-    | t=">"  b=bit_shift() {a = new AST.GreaterThan(p(t), a, b);}
-    | t="is" type = type() {a = new AST.IsInstance(p(t), a, type);}
-    )
-  )* {return a;}
-}
-
-AST.Expression BitShift() :{Token t; AST.Expression e1, e2;}{
-  e1=additive()
-( t="<<" e2=additive()    {e1 = new AST.MathLeftShift(p(t), e1, e2);}
-| t=">>" e2=additive()    {e1 = new AST.MathRightShift(p(t), e1, e2);}
-| t=">>>"e2=additive()    {e1 = new AST.LogicalRightShift(p(t), e1, e2);}
-)* { return e1; }
-}
-
 */
 
 AST.Expression Target() :{AST.Expression e;} {
@@ -353,7 +324,34 @@ AST.Expression KindedExpression() :{
 
 
 AST.Expression Expression(): {AST.Expression e;} {
-    e=Additive() {return e;}
+    e=Equal() {return e;}
+}
+
+AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
+  a=Comparative()
+  ( ( t="=="  b=Comparative() {a= new AST.Equal(p(t), a, b);}
+    | t="!="  b=Comparative() {a= new AST.NotEqual(p(t), a, b);}
+    )
+  )* {return a;}
+}
+
+AST.Expression Comparative() : { Token t; AST.Expression a, b; Token n; }{
+  a=BitShift()
+  ( ( t="<=" b=BitShift() {a = new AST.LessOrEqual(p(t), a, b);}
+    | t=">=" b=BitShift() {a = new AST.GreaterOrEqual(p(t), a, b);}
+    | t="<"  b=BitShift() {a = new AST.LessThan(p(t), a, b);}
+    | t=">"  b=BitShift() {a = new AST.GreaterThan(p(t), a, b);}
+    | t="instanceof" n=<ID> {a = new AST.Instanceof(p(t), a, c(n));}
+    )
+  )* {return a;}
+}
+
+AST.Expression BitShift() :{Token t; AST.Expression e1, e2;}{
+  e1=Additive()
+( t="<<" e2=Additive()    {e1 = new AST.MathLeftShift(p(t), e1, e2);}
+| t=">>" e2=Additive()    {e1 = new AST.MathRightShift(p(t), e1, e2);}
+| t=">>>"e2=Additive()    {e1 = new AST.LogicalRightShift(p(t), e1, e2);}
+)* { return e1; }
 }
 
 AST.Expression Additive() :{Token t; AST.Expression e1, e2;}{
