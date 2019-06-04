@@ -1,4 +1,4 @@
-![JavaSee logo](https://github.com/sider/JavaSee/blob/master/logo/JavaSee.png?raw=true)
+![JavaSee logo](logo/JavaSee.png)
 
 # JavaSee: Java Code Piece Finder
 
