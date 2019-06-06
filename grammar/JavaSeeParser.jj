@@ -3,10 +3,10 @@ options {
 }
 
 PARSER_BEGIN(JavaSeeParser)
-package com.github.kmizu.java_see.parser;
+package com.github.sider.java_see.parser;
 
-import com.github.kmizu.java_see.AST;
-import com.github.kmizu.java_see.Location;
+import com.github.sider.java_see.AST;
+import com.github.sider.java_see.Location;
 import java.util.List;
 import java.util.ArrayList;
 
