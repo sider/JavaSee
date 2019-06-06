@@ -4,6 +4,7 @@ plugins {
     id "io.freefair.lombok" version "3.2.0"
     id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
+def packagePrefix = 'com.github.sider.java_see'
 apply plugin: 'java'
 apply plugin: 'com.intershop.gradle.javacc'
 sourceSets {
@@ -22,14 +23,14 @@ shadowJar {
 jar {
     baseName = 'JavaSee'
     manifest {
-        attributes "Main-Class" : "com.github.kmizu.java_see.Main"
+        attributes "Main-Class" : "${packagePrefix}.Main"
     }
 }
 javacc {
     configs {
         template {
             inputFile = file('grammar/JavaSeeParser.jj')
-            packageName = 'com.github.kmizu.java_see.parser'
+            packageName = "${packagePrefix}.parser"
             lookahead = '2'
         }
     }
@@ -54,7 +55,7 @@ dependencies {
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
 application {
-    mainClassName = 'com.github.kmizu.java_see.Main'
+    mainClassName = "${packagePrefix}.Main"
 }
 run {
     if (project.hasProperty('args')) {    // "args" というプロパティが渡されていたら
