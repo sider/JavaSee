@@ -192,7 +192,7 @@ public class Main {
      * Main configuration
      */
     private void test() {
-        config = "querly.yml";
+        config = "java_see.yml";
     }
     /*
     desc "test", "Main configuration"
