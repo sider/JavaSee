@@ -19,3 +19,8 @@ rules:
       - ":int:"
     message: |
       int literal is found
+  - id: example.println_without_receiver
+    pattern:
+      - println(...)
+    message: |
+      println call wihout receiver

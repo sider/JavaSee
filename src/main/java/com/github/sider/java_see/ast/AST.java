@@ -494,6 +494,40 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
+    public static class FunctionCall extends Expression {
+        public final Location location;
+        public final String name;
+        public final List<Expression> parameters;
+
+        private boolean testArgs(NodeList<com.github.javaparser.ast.expr.Expression> parameters) {
+            if(this.parameters.size() == 1 && this.parameters.get(0) instanceof RepeatedParameter) return true;
+            if(this.parameters.size() != parameters.size()) return false;
+            int size = parameters.size();
+            for(int i = 0; i < size; i++) {
+                var p1 = this.parameters.get(i);
+                var p2 = parameters.get(i);
+                if(!p1.testNode(p2)) return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if(node instanceof MethodCallExpr) {
+                var call = (MethodCallExpr)node;
+                if(call.getScope().isPresent()) return false;
+                if(!call.getName().asString().equals(name)) return false;
+                if(!testArgs(((MethodCallExpr) node).getArguments())) return false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
     public static class FieldSelection extends Expression {
         public final Location location;
         public final Expression receiver;
