@@ -1,12 +1,13 @@
 options {
   STATIC = false;
+  FORCE_LA_CHECK = true;
 }
 
 PARSER_BEGIN(JavaSeeParser)
 package com.github.sider.java_see.parser;
 
-import com.github.sider.java_see.AST;
-import com.github.sider.java_see.Location;
+import com.github.sider.java_see.ast.AST;
+import com.github.sider.java_see.ast.Location;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -395,8 +396,9 @@ AST.Expression Primary() : /*{
   List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
   AST.BlockExpression body;
 }*/ {
-    Token t;
+    Token n;
     AST.Expression e;
+    List<AST.Expression> params;
 }{
     e=BooleanPattern()                                                      {return e;}
 |   e=StringPattern()                                                       {return e;}
@@ -406,7 +408,8 @@ AST.Expression Primary() : /*{
 |   e=LambdaPattern()                                                       {return e;}
 |   e=Wildcard()                                                            {return e;}
 |   e=ThisPattern()                                                         {return e;}
-|   e=Identifier()                                                          {return e;}
+|   LOOKAHEAD(2) n=<ID> "(" params=Parameters() ")"                         {return new AST.FunctionCall(p(n), c(n), params);}
+|   LOOKAHEAD(2) e=Identifier()                                             {return e;}
 |   e=RepeatedParameter()                                                   {return e;}
 |   "(" e=Expression() ")"                                                  {return e;}
 |   e=NewObject()                                                           {return e;}
