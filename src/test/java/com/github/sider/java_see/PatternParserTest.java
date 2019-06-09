@@ -2,6 +2,7 @@ package com.github.sider.java_see;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.sider.java_see.ast.AST;
 import com.github.sider.java_see.parser.JavaSeeParser;
 import org.junit.jupiter.api.Test;
 

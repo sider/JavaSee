@@ -1,4 +1,4 @@
-package com.github.sider.java_see;
+package com.github.sider.java_see.ast;
 
 import java.util.Objects;
 

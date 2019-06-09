@@ -1,5 +1,6 @@
-package com.github.sider.java_see;
+package com.github.sider.java_see.libs;
 
+import com.github.sider.java_see.Pair;
 import com.google.common.collect.Lists;
 
 import java.util.List;

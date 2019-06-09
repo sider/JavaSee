@@ -1,8 +1,9 @@
-package com.github.sider.java_see;
+package com.github.sider.java_see.ast;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.*;
+import com.github.sider.java_see.NodePair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
