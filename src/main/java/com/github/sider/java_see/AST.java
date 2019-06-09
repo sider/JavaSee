@@ -156,13 +156,14 @@ public class AST {
     @ToString
     public static abstract class BinaryExpression extends Expression {
         public final Location location;
+        public final String symbol;
         public final Expression lhs;
         public final Expression rhs;
     }
 
     public static class Addition extends BinaryExpression {
         public Addition(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "+", lhs, rhs);
         }
 
         @Override
@@ -179,7 +180,7 @@ public class AST {
 
     public static class Subtraction extends BinaryExpression {
         public Subtraction(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "-", lhs, rhs);
         }
 
         @Override
@@ -196,7 +197,7 @@ public class AST {
 
     public static class Multiplication extends BinaryExpression {
         public Multiplication(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "*", lhs, rhs);
         }
 
         @Override
@@ -213,7 +214,7 @@ public class AST {
 
     public static class Division extends BinaryExpression {
         public Division(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "/", lhs, rhs);
         }
 
         @Override
@@ -230,7 +231,7 @@ public class AST {
 
     public static class Modulo extends BinaryExpression {
         public Modulo(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "%", lhs, rhs);
         }
 
         @Override
@@ -246,7 +247,7 @@ public class AST {
 
     public static class Equal extends BinaryExpression {
         public Equal(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "==", lhs, rhs);
         }
 
         @Override
@@ -262,7 +263,7 @@ public class AST {
 
     public static class NotEqual extends BinaryExpression {
         public NotEqual(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "!=", lhs, rhs);
         }
 
         @Override
@@ -276,9 +277,10 @@ public class AST {
         }
     }
 
+    @ToString
     public static class GreaterOrEqual extends BinaryExpression {
         public GreaterOrEqual(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, ">=", lhs, rhs);
         }
 
         @Override
@@ -294,7 +296,7 @@ public class AST {
 
     public static class GreaterThan extends BinaryExpression {
         public GreaterThan(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, ">", lhs, rhs);
         }
 
         @Override
@@ -310,7 +312,7 @@ public class AST {
 
     public static class LessOrEqual extends BinaryExpression {
         public LessOrEqual(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "<=", lhs, rhs);
         }
 
         @Override
@@ -326,7 +328,7 @@ public class AST {
 
     public static class LessThan extends BinaryExpression {
         public LessThan(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "<", lhs, rhs);
         }
 
         @Override
@@ -342,7 +344,7 @@ public class AST {
 
     public static class MathLeftShift extends BinaryExpression {
         public MathLeftShift(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, "<<", lhs, rhs);
         }
 
         @Override
@@ -358,7 +360,7 @@ public class AST {
 
     public static class MathRightShift extends BinaryExpression {
         public MathRightShift(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, ">>", lhs, rhs);
         }
 
         @Override
@@ -374,7 +376,7 @@ public class AST {
 
     public static class LogicalRightShift extends BinaryExpression {
         public LogicalRightShift(Location location, Expression lhs, Expression rhs) {
-            super(location, lhs, rhs);
+            super(location, ">>>", lhs, rhs);
         }
 
         @Override

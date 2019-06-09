@@ -1,6 +1,8 @@
 package com.github.sider.java_see.cli;
 
 import com.github.sider.java_see.*;
+import com.github.sider.java_see.libs.ConsoleColors;
+import com.github.sider.java_see.libs.Libs;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -154,7 +156,7 @@ public class Formatters {
             var position = pair.node.getRange().get().begin;
             var line = position.line;
             var column = position.column;
-            var src = "\033[31m" + getLine(path, line) + "\033[0m";
+            var src = ConsoleColors.red(getLine(path, line));
             var message = rule.messages.get(0).split("\n")[0];
             System.out.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
         }
