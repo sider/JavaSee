@@ -18,48 +18,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {
-
-    @Option(name="-config")
-    private String config;
-
-    @Option(name="-root")
-    private String root;
-
-    @Option(name="-format")
-    private String format;
-
-    @Option(name="-rule")
-    private String rule;
-
-    @Argument
-    private List<String> paths = new ArrayList<>();
+    private MainOptions options = new MainOptions();
 
     private File configPath() {
-        var path = new File(config);
+        var path = new File(options.config);
         if(path.isFile()) return path;
         return new File("java_see.yaml");
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public String getRoot() {
-        return root;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public String getRule() {
-        return rule;
-    }
-
-    public final CmdLineParser parser;
-
-    public Main() {
-        parser = new CmdLineParser(this);
     }
 
     private void println(String line) {
@@ -80,10 +44,13 @@ public class Main {
                 tmpArgs[i] = args[i + 1];
             }
             args = tmpArgs;
-            this.parser.parseArgument(args);
+            options.parser.parseArgument(args);
             switch(subCommand) {
                 case "check":
-                    check(this.paths);
+                    check(options.paths);
+                    break;
+                case "test":
+                    test();
                     break;
                 case "version":
                     version();
@@ -104,14 +71,14 @@ public class Main {
      * @param paths
      */
     private void check(List<String> paths) {
-        if(this.config == null) {
-            this.config = "java_see.yml";
+        if(options.config == null) {
+            options.config = "java_see.yml";
         }
-        if(format == null) {
-            this.format = "text";
+        if(options.format == null) {
+            options.format = "text";
         }
         Formatters.AbstractFormatter formatter;
-        switch(this.format) {
+        switch(options.format) {
             case "text":
                 formatter = new Formatters.TextFormatter();
                 break;
@@ -130,8 +97,8 @@ public class Main {
                 return;
             }
             File rootPath;
-            if(this.root != null) {
-                rootPath = new File(this.root);
+            if(options.root != null) {
+                rootPath = new File(options.root);
             } else {
                 rootPath = configPath().getParentFile();
             }
@@ -142,9 +109,9 @@ public class Main {
                 config = Config.load(yaml, configPath(), rootPath);
             } catch (Exception e) {
                 e.printStackTrace();
-                formatter.onConfigError(this.config, e);
+                formatter.onConfigError(options.config, e);
             }
-            var analyzer = new Analyzer(config, rule, new ArrayList<>());
+            var analyzer = new Analyzer(config, options.rule, new ArrayList<>());
 
             new ScriptEnumerator(paths.isEmpty() ? List.of(new File(".")) : paths.stream().map(p -> new File(p)).collect(Collectors.toList()),  config).forEach((path , script) -> {
                 analyzer.scripts.add(script);
@@ -192,16 +159,33 @@ public class Main {
      * Main configuration
      */
     private void test() {
-        config = "java_see.yml";
+        options.config = "java_see.yml";
+        try {
+            if(!configPath().isFile()) {
+                println("There is nothing to test at " + configPath() + " ...");
+                println("Make a configuration and run test again!");
+                return;
+            }
+            File rootPath;
+            if(options.root != null) {
+                rootPath = new File(options.root);
+            } else {
+                rootPath = configPath().getParentFile();
+            }
+            Map<String, Object> yaml;
+            Config config = null;
+            try {
+                yaml = new Yaml().load(new FileInputStream(configPath()));
+                config = Config.load(yaml, configPath(), rootPath);
+            } catch (Exception e) {
+                throw e;
+            }
+            var test = new Test(options, config.rules, System.out, System.err);
+            test.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-    /*
-    desc "test", "Main configuration"
-    option :config, default: "querly.yml"
-    def test()
-      require "querly/cli/test"
-      exit Test.new(config_path: config_path).run
-    end
-    */
 
     /**
      * This is a subcommand method.

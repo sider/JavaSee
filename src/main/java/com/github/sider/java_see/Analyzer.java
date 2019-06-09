@@ -1,6 +1,6 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.tools.Tuple3;
+import com.github.sider.java_see.libs.Tuple3;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -28,7 +28,7 @@ public class Analyzer {
         }
     }
 
-    private boolean testPair(NodePair pair, AST.PatternNode pattern) {
+    public boolean testPair(NodePair pair, AST.PatternNode pattern) {
         return pattern.matches(pair);
     }
 }

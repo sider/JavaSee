@@ -1,5 +1,6 @@
 package com.github.sider.java_see;
 
+import com.github.sider.java_see.libs.Libs;
 import org.buildobjects.process.StartupException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
