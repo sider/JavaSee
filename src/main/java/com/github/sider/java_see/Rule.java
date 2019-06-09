@@ -1,5 +1,6 @@
 package com.github.sider.java_see;
 
+import com.github.sider.java_see.ast.AST;
 import com.github.sider.java_see.parser.JavaSeeParser;
 import com.github.sider.java_see.parser.ParseException;
 
