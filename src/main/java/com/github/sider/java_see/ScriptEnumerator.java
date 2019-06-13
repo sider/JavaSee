@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class ScriptEnumerator {
             JavaParser parser = new JavaParser();
             var script = new Script(path, parser.parse(content).getResult().get());
             block.accept(path, script);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
