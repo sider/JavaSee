@@ -1,6 +1,5 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.cli.Formatters;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -18,7 +17,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Main {
-    private MainOptions options = new MainOptions();
+    public static class Options {
+        @Option(name="-config")
+        public String config;
+
+        @Option(name="-root")
+        public String root;
+
+        @Option(name="-format")
+        public String format;
+
+        @Option(name="-rule")
+        public String rule;
+
+        @Argument
+        public List<String> paths = new ArrayList<>();
+
+        public final CmdLineParser parser = new CmdLineParser(this);
+    }
+
+    private Options options = new Options();
 
     private File configPath() {
         var path = new File(options.config);

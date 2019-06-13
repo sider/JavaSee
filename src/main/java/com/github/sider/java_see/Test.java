@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class Test {
     @Getter
-    public final MainOptions options;
+    public final Main.Options options;
 
     @Getter
     public final Set<Rule> rules;
@@ -25,7 +25,7 @@ public class Test {
 
     private boolean success;
 
-    public Test(MainOptions options, Set<Rule> rules, PrintStream stdout, PrintStream stderr) {
+    public Test(Main.Options options, Set<Rule> rules, PrintStream stdout, PrintStream stderr) {
         this.options = options;
         this.rules = rules;
         this.stdout = stdout;

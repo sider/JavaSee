@@ -1,4 +1,4 @@
-package com.github.sider.java_see.cli;
+package com.github.sider.java_see;
 
 import com.github.sider.java_see.*;
 import com.github.sider.java_see.libs.ConsoleColors;
