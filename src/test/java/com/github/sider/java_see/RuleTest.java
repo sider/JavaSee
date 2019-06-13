@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 
 /*
-class RuleTest < Minitest::Test
+class RuleTest < Minitest::TestCommand
         def test_load_rule_before_and_after_examples
         rule = Rule.load(
         "id" => "foo.bar.baz",

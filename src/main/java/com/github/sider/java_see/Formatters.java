@@ -1,8 +1,7 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.*;
-import com.github.sider.java_see.libs.ConsoleColors;
-import com.github.sider.java_see.libs.Libs;
+import com.github.sider.java_see.lib.ConsoleColors;
+import com.github.sider.java_see.lib.Libs;
 
 import java.io.File;
 import java.nio.file.Files;

@@ -1,5 +1,8 @@
 package com.github.sider.java_see;
 
+import com.github.sider.java_see.command.FindCommand;
+import com.github.sider.java_see.command.InitCommand;
+import com.github.sider.java_see.command.TestCommand;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -35,15 +38,17 @@ public class Main {
         public List<String> paths = new ArrayList<>();
 
         public final CmdLineParser parser = new CmdLineParser(this);
+
+        public File configPath() {
+            var path = new File(config);
+            if(path.isFile()) return path;
+            return new File("java_see.yaml");
+        }
     }
 
     private Options options = new Options();
 
-    private File configPath() {
-        var path = new File(options.config);
-        if(path.isFile()) return path;
-        return new File("java_see.yaml");
-    }
+
 
     private void println(String line) {
         System.err.println(line);
@@ -119,8 +124,8 @@ public class Main {
         formatter.onStart();
 
         try {
-            if(!configPath().isFile()) {
-                println("Configuration file " + configPath() + " does not look a file.");
+            if(!options.configPath().isFile()) {
+                println("Configuration file " + options.configPath() + " does not look a file.");
                 println("Specify configuration file by -config option");
                 return;
             }
@@ -128,13 +133,13 @@ public class Main {
             if(options.root != null) {
                 rootPath = new File(options.root);
             } else {
-                rootPath = configPath().getParentFile();
+                rootPath = options.configPath().getParentFile();
             }
             Map<String, Object> yaml;
             Config config = null;
             try {
-                yaml = new Yaml().load(new FileInputStream(configPath()));
-                config = Config.load(yaml, configPath(), rootPath);
+                yaml = new Yaml().load(new FileInputStream(options.configPath()));
+                config = Config.load(yaml, options.configPath(), rootPath);
             } catch (Exception e) {
                 e.printStackTrace();
                 formatter.onConfigError(options.config, e);
@@ -162,12 +167,13 @@ public class Main {
 
     /**
      * This is a subcommand method.
-     * Find for the pattern in given paths
+     * FindCommand for the pattern in given paths
      * @param pattern
      * @param paths
      */
     private void find(String pattern, String... paths) {
-        new Find(
+        new FindCommand(
+                options,
                 pattern,
                 paths.length == 0 ?
                         List.of(new File(".")) :
@@ -179,33 +185,8 @@ public class Main {
      * This is a subcommand method.
      * Main configuration
      */
-    private void test() {
-        options.config = "java_see.yml";
-        try {
-            if(!configPath().isFile()) {
-                println("There is nothing to test at " + configPath() + " ...");
-                println("Make a configuration and run test again!");
-                return;
-            }
-            File rootPath;
-            if(options.root != null) {
-                rootPath = new File(options.root);
-            } else {
-                rootPath = configPath().getParentFile();
-            }
-            Map<String, Object> yaml;
-            Config config = null;
-            try {
-                yaml = new Yaml().load(new FileInputStream(configPath()));
-                config = Config.load(yaml, configPath(), rootPath);
-            } catch (Exception e) {
-                throw e;
-            }
-            var test = new Test(options, config.rules, System.out, System.err);
-            test.run();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private boolean test() {
+        return new TestCommand(options, System.out, System.err).start();
     }
 
     /**
@@ -221,12 +202,7 @@ public class Main {
      * This is a subcommand method.
      * Generate JavaSee config file (java_see.yml)
      */
-    private void init() {
-        try {
-            var template = ClassLoader.getSystemResourceAsStream("template.yml");
-            Files.copy(template, Paths.get("java_see.yml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private boolean init() {
+        return new InitCommand(options, "template.yml", Paths.get("java_see.yml")).start();
     }
 }

@@ -1,4 +1,4 @@
-package com.github.sider.java_see.libs;
+package com.github.sider.java_see.lib;
 
 public class ConsoleColors {
     public static String red(String src) {

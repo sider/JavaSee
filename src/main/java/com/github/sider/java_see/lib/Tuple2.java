@@ -1,4 +1,4 @@
-package com.github.sider.java_see.libs;
+package com.github.sider.java_see.lib;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
