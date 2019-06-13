@@ -10,7 +10,7 @@ import java.io.File;
 @AllArgsConstructor
 @Getter
 @ToString
-public class Script {
+public class JavaFile {
     public final File path;
     public final Node node;
 

@@ -15,23 +15,23 @@ import java.util.function.Consumer;
 public class Analyzer {
     public final Config config;
     public final String rule;
-    public final List<Script> scripts;
+    public final List<JavaFile> javaFiles;
 
-    public void run(Consumer<Tuple3<Script, Rule, NodePair>> consumer) {
-        for(Script script:this.scripts) {
-            Set<Rule> rules = config.rulesForPath(script.path);
-            script.rootPair().eachSubPair((nodePair) -> {
+    public void run(Consumer<Tuple3<JavaFile, Rule, NodePair>> consumer) {
+        for(JavaFile javaFile :this.javaFiles) {
+            Set<Rule> rules = config.rulesForPath(javaFile.path);
+            javaFile.rootPair().eachSubPair((nodePair) -> {
                 for(Rule rule:rules) {
                     if(rule.patterns.stream().anyMatch((pattern) -> testPair(nodePair, pattern))) {
-                        consumer.accept(new Tuple3<>(script, rule, nodePair));
+                        consumer.accept(new Tuple3<>(javaFile, rule, nodePair));
                     }
                 }
             });
         }
     }
 
-    public void find(AST.Expression pattern, BiConsumer<Script, NodePair> consumer) {
-        for(var script:scripts) {
+    public void find(AST.Expression pattern, BiConsumer<JavaFile, NodePair> consumer) {
+        for(var script: javaFiles) {
             script.rootPair().eachSubPair((nodePair) -> {
                 if(testPair(nodePair, pattern)) {
                     consumer.accept(script, nodePair);

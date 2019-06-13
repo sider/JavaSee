@@ -11,8 +11,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,8 +144,8 @@ public class Main {
             }
             var analyzer = new Analyzer(config, options.rule, new ArrayList<>());
 
-            new ScriptEnumerator(paths.isEmpty() ? List.of(new File(".")) : paths.stream().map(p -> new File(p)).collect(Collectors.toList()),  config).forEach((path , script) -> {
-                analyzer.scripts.add(script);
+            new JavaFileEnumerator(paths.isEmpty() ? List.of(new File(".")) : paths.stream().map(p -> new File(p)).collect(Collectors.toList()),  config).forEach((path , script) -> {
+                analyzer.javaFiles.add(script);
                 formatter.onScriptLoaded(script);
             });
 
