@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ public class Main {
         println("java -jar JavaSee-all.jar (check|init) ...");
     }
 
+
     public void run(String[] args) throws CmdLineException {
         if(args.length == 0) {
             help();
@@ -70,6 +72,14 @@ public class Main {
                 case "test":
                     test();
                     break;
+                case "find":
+                    String pattern = args[0];
+                    String[] restArgs = new String[args.length - 1];
+                    for(int i = 0; i < restArgs.length; i++) {
+                        restArgs[i] = args[i + 1];
+                    }
+                    args = restArgs;
+                    find(pattern, restArgs);
                 case "version":
                     version();
                     break;
@@ -157,20 +167,13 @@ public class Main {
      * @param paths
      */
     private void find(String pattern, String... paths) {
-
+        new Find(
+                pattern,
+                paths.length == 0 ?
+                        List.of(new File(".")) :
+                        Arrays.asList(paths).stream().map((path) -> new File(path)).collect(Collectors.toList())
+        ).start();
     }
-
-    /*
-    desc "find pattern [paths]", "Find for the pattern in given paths"
-    def find(pattern, *paths)
-      require 'querly/cli/find'
-
-      Find.new(
-        pattern: pattern,
-        paths: paths.empty? ? [Pathname.pwd] : paths.map {|path| Pathname(path) },
-      ).start
-    end
-    */
 
     /**
      * This is a subcommand method.

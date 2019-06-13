@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -24,6 +25,16 @@ public class Analyzer {
                     if(rule.patterns.stream().anyMatch((pattern) -> testPair(nodePair, pattern))) {
                         consumer.accept(new Tuple3<>(script, rule, nodePair));
                     }
+                }
+            });
+        }
+    }
+
+    public void find(AST.Expression pattern, BiConsumer<Script, NodePair> consumer) {
+        for(var script:scripts) {
+            script.rootPair().eachSubPair((nodePair) -> {
+                if(testPair(nodePair, pattern)) {
+                    consumer.accept(script, nodePair);
                 }
             });
         }
