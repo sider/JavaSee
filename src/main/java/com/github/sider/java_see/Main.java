@@ -83,6 +83,7 @@ public class Main {
                     }
                     args = restArgs;
                     find(pattern, restArgs);
+                    break;
                 case "version":
                     version();
                     break;
