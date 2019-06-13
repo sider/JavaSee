@@ -16,7 +16,7 @@ public class NodePair {
     public final Node node;
     public final NodePair parent;
 
-    List<NodePair> children() {
+    public List<NodePair> children() {
         List<NodePair> result = new ArrayList<>();
         for(Node child:node.getChildNodes()) {
             result.add(new NodePair(child, this));
@@ -24,14 +24,14 @@ public class NodePair {
         return result;
     }
 
-    void eachSubPair(Consumer<NodePair> block) {
+    public void eachSubPair(Consumer<NodePair> block) {
         block.accept(this);
         children().forEach((child) -> {
             child.eachSubPair(block);
         });
     }
 
-    List<NodePair> getSubPairs() {
+    public List<NodePair> getSubPairs() {
         List<NodePair> result = new ArrayList<>();
         result.add(this);
         children().forEach((child) -> {

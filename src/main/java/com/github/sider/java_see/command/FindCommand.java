@@ -1,12 +1,13 @@
-package com.github.sider.java_see;
+package com.github.sider.java_see.command;
 
+import com.github.sider.java_see.Analyzer;
+import com.github.sider.java_see.Main;
+import com.github.sider.java_see.ScriptEnumerator;
+import com.github.sider.java_see.StacktraceFormatting;
 import com.github.sider.java_see.ast.AST;
-import com.github.sider.java_see.libs.ConsoleColors;
-import com.github.sider.java_see.libs.Libs;
+import com.github.sider.java_see.lib.Libs;
 import com.github.sider.java_see.parser.JavaSeeParser;
 import com.github.sider.java_see.parser.ParseException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.ToString;
 
 import java.io.File;
@@ -15,16 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Files;
 
-import static com.github.sider.java_see.libs.ConsoleColors.*;
+import static com.github.sider.java_see.lib.ConsoleColors.*;
 
 @ToString
-public class Find implements StacktraceFormatting {
+public class FindCommand extends CLICommand implements StacktraceFormatting {
     public final String patternString;
     public final AST.Expression pattern;
     public final List<File> paths;
     private Analyzer analyzer;
 
-    public Find(String patternString, List<File> paths) {
+    public FindCommand(Main.Options options, String patternString, List<File> paths) {
+        super(options);
         this.patternString = patternString;
         try {
             this.pattern = new JavaSeeParser(new StringReader(patternString)).Expression();
@@ -34,7 +36,8 @@ public class Find implements StacktraceFormatting {
         this.paths = paths;
     }
 
-    public void start() {
+    @Override
+    public boolean start() {
         var count = 0;
         getAnalyzer().find(pattern, (script, pair) -> {
             var path = script.path;
@@ -47,6 +50,7 @@ public class Find implements StacktraceFormatting {
 
             System.out.println("  " + path+ ":" + lineNumber + ":" + startColumn + "\t" + src);
         });
+        return true;
     }
 
     /**

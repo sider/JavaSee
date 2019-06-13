@@ -1,6 +1,6 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.libs.Extentions;
+import com.github.sider.java_see.lib.Extentions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Check {
+public class Matcher {
     @AllArgsConstructor
     @Getter
     @ToString
@@ -45,7 +45,7 @@ public class Check {
     public final boolean hasTrailingSlash;
     public final boolean hasMiddleSlash;
 
-    public Check(String pattern, List<Query> rules) {
+    public Matcher(String pattern, List<Query> rules) {
         this.rules = rules;
         this.hasTrailingSlash = pattern.endsWith("/");
         this.hasMiddleSlash = Pattern.compile(".*\\..*").matcher(pattern).matches();
@@ -74,7 +74,7 @@ public class Check {
         return hasMiddleSlash;
     }
 
-    public static Check load(Map<String, Object> map) {
+    public static Matcher load(Map<String, Object> map) {
         String pattern = (String)map.get("path");
         List<Query> rules = Extentions.single(map.get("rules")).stream().map((object) -> {
             if(object instanceof String) {
@@ -93,7 +93,7 @@ public class Check {
             }
         }).collect(Collectors.toList());
 
-        return new Check(pattern, rules);
+        return new Matcher(pattern, rules);
     }
 
     public static Query parseRuleQuery(String opr, Object query) {

@@ -111,7 +111,6 @@ public class Rule {
             } else {
                 assert false;
             }
-            //FIXME process where clause
             try {
                 return new JavaSeeParser(new StringReader(subject)).Target();
             } catch (ParseException e) {

@@ -1,6 +1,6 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.libs.Extentions;
+import com.github.sider.java_see.lib.Extentions;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

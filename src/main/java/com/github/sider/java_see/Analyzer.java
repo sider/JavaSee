@@ -1,7 +1,7 @@
 package com.github.sider.java_see;
 
 import com.github.sider.java_see.ast.AST;
-import com.github.sider.java_see.libs.Tuple3;
+import com.github.sider.java_see.lib.Tuple3;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

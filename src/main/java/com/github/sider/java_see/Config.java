@@ -1,6 +1,6 @@
 package com.github.sider.java_see;
 
-import com.github.sider.java_see.libs.Extentions;
+import com.github.sider.java_see.lib.Extentions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 
 public class Config {
     public final Set<Rule> rules;
-    public final List<Check> checks;
+    public final List<Matcher> matchers;
     public final File rootDirectory;
-    public final Map<List<Check>, Set<Rule>> rulesCache;
+    public final Map<List<Matcher>, Set<Rule>> rulesCache;
 
-    public Config(Set<Rule> rules, List<Check> checks, File rootDirectory) {
+    public Config(Set<Rule> rules, List<Matcher> matchers, File rootDirectory) {
         this.rules = rules;
-        this.checks = checks;
+        this.matchers = matchers;
         this.rootDirectory = rootDirectory;
         this.rulesCache = new HashMap<>();
     }
@@ -32,13 +32,13 @@ public class Config {
     }
 
     public Set<Rule> rulesForPath(File path) {
-        var matchingChecks = checks.stream().filter((check) -> check.matches(path)).collect(Collectors.toList());
+        var matchingChecks = matchers.stream().filter((matcher) -> matcher.matches(path)).collect(Collectors.toList());
         if(rulesCache.containsKey(matchingChecks)) {
             return rulesCache.get(matchingChecks);
         } else {
             Set<Rule> finalRules = allRules();
-            for(Check check:matchingChecks) {
-                for(Check.Query query:check.rules) {
+            for(Matcher check:matchingChecks) {
+                for(Matcher.Query query:check.rules) {
                     finalRules = query.apply(finalRules, allRules());
                 }
             }
@@ -56,7 +56,7 @@ public class Config {
 
         public Config config() {
             var rules = Extentions.single(yaml.get("rules")).stream().map(map -> Rule.load((Map<String, Object>)map)).collect(Collectors.toSet());
-            var checks = Extentions.single(yaml.get("check")).stream().map(map -> Check.load((Map<String, Object>)map)).collect(Collectors.toList());
+            var checks = Extentions.single(yaml.get("check")).stream().map(map -> Matcher.load((Map<String, Object>)map)).collect(Collectors.toList());
             return new Config(rules, checks, rootDirectory);
         }
     }

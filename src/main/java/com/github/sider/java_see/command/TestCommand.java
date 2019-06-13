@@ -1,21 +1,22 @@
-package com.github.sider.java_see;
+package com.github.sider.java_see.command;
 
+import com.github.sider.java_see.*;
 import com.github.sider.java_see.ast.AST;
-import com.github.sider.java_see.libs.ConsoleColors;
-import com.github.sider.java_see.libs.Libs;
-import com.github.sider.java_see.libs.Ref;
+import com.github.sider.java_see.lib.ConsoleColors;
+import com.github.sider.java_see.lib.Libs;
+import com.github.sider.java_see.lib.Ref;
 import lombok.Getter;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-public class Test {
-    @Getter
-    public final Main.Options options;
-
-    @Getter
-    public final Set<Rule> rules;
+public class TestCommand extends CLICommand {
+    private Config config;
 
     @Getter
     public final PrintStream stdout;
@@ -25,9 +26,8 @@ public class Test {
 
     private boolean success;
 
-    public Test(Main.Options options, Set<Rule> rules, PrintStream stdout, PrintStream stderr) {
-        this.options = options;
-        this.rules = rules;
+    public TestCommand(Main.Options options, PrintStream stdout, PrintStream stderr) {
+        super(options);
         this.stdout = stdout;
         this.stderr = stderr;
     }
@@ -40,11 +40,36 @@ public class Test {
         return !success;
     }
 
-    public int run() {
-        validateRuleUniqueness(rules);
-        validateRulePatterns(rules);
+    @Override
+    public boolean start() {
+        options.config = "java_see.yml";
+        try {
+            if(!options.configPath().isFile()) {
+                System.out.println("There is nothing to test at " + options.configPath() + " ...");
+                System.out.println("Make a configuration and run test again!");
+                return false;
+            }
+            File rootPath;
+            if(options.root != null) {
+                rootPath = new File(options.root);
+            } else {
+                rootPath = options.configPath().getParentFile();
+            }
+            Map<String, Object> yaml;
+            try {
+                yaml = new Yaml().load(new FileInputStream(options.configPath()));
+                config = Config.load(yaml, options.configPath(), rootPath);
+            } catch (Exception e) {
+                throw e;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        validateRuleUniqueness(config.rules);
+        validateRulePatterns(config.rules);
 
-        return isFailed() ? 1 : 0;
+        return isFailed() ? false : true;
     }
 
     private void validateRuleUniqueness(Set<Rule> rules) {
@@ -125,7 +150,6 @@ public class Test {
                         }
 
                         try {
-                            stdout.println("[DEBUG]" + "example.after: " + example.after);
                             if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, example.after, false))) {
                                 stdout.println(ConsoleColors.red("  " + rule.id) + ":\tafter of " + Libs.ordinalize(exampleIndex) + " example matched with some of patterns");
                                 falsePositives += 1;

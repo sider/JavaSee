@@ -1,4 +1,4 @@
-package com.github.sider.java_see.libs;
+package com.github.sider.java_see.lib;
 
 public class Libs {
     public static interface SupplierWithException<T> {
