@@ -15,22 +15,22 @@ import java.util.function.BiConsumer;
 
 @AllArgsConstructor
 @Getter
-public class ScriptEnumerator {
+public class JavaFileEnumerator {
     public final List<File> paths;
     public final Config config;
 
-    private void loadScript(File path, BiConsumer<File, Script> block) {
+    private void loadScript(File path, BiConsumer<File, JavaFile> block) {
         try {
             var content = Files.readString(Paths.get(path.toURI()));
             JavaParser parser = new JavaParser();
-            var script = new Script(path, parser.parse(content).getResult().get());
+            var script = new JavaFile(path, parser.parse(content).getResult().get());
             block.accept(path, script);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void enumerateFilesInDirectory(File path, Set<File> visit, BiConsumer<File, Script> block) {
+    private void enumerateFilesInDirectory(File path, Set<File> visit, BiConsumer<File, JavaFile> block) {
         if (visit.contains(path)) {
             return;
         }
@@ -46,7 +46,7 @@ public class ScriptEnumerator {
         }
     }
 
-    public void forEach(BiConsumer<File, Script> block) {
+    public void forEach(BiConsumer<File, JavaFile> block) {
         System.out.println(paths);
         for(File path:paths) {
             if(path.isDirectory()) {

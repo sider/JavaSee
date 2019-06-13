@@ -35,10 +35,10 @@ public class Formatters {
         public abstract void onConfigError(String path, Exception error);
 
         /**
-         * Called when script is successfully loaded
-         * @param script
+         * Called when javaFile is successfully loaded
+         * @param javaFile
          */
-        public abstract void onScriptLoaded(Script script);
+        public abstract void onScriptLoaded(JavaFile javaFile);
 
         /**
          * Called when failed to load script
@@ -51,11 +51,11 @@ public class Formatters {
         /**
          *
          * Called when issue is found
-         * @param script
+         * @param javaFile
          * @param rule
          * @param pair
          */
-        public abstract void onIssueFound(Script script, Rule rule, NodePair pair);
+        public abstract void onIssueFound(JavaFile javaFile, Rule rule, NodePair pair);
 
         /**
          * Called on other error
@@ -112,12 +112,12 @@ public class Formatters {
         }
 
         /**
-         * Called when script is successfully loaded
+         * Called when javaFile is successfully loaded
          *
-         * @param script
+         * @param javaFile
          */
         @Override
-        public void onScriptLoaded(Script script) {
+        public void onScriptLoaded(JavaFile javaFile) {
 
         }
 
@@ -145,13 +145,13 @@ public class Formatters {
         /**
          * Called when issue is found
          *
-         * @param script
+         * @param javaFile
          * @param rule
          * @param pair
          */
         @Override
-        public void onIssueFound(Script script, Rule rule, NodePair pair) {
-            var path = script.path;
+        public void onIssueFound(JavaFile javaFile, Rule rule, NodePair pair) {
+            var path = javaFile.path;
             var position = pair.node.getRange().get().begin;
             var line = position.line;
             var column = position.column;
@@ -218,12 +218,12 @@ public class Formatters {
         }
 
         /**
-         * Called when script is successfully loaded
+         * Called when javaFile is successfully loaded
          *
-         * @param script
+         * @param javaFile
          */
         @Override
-        public void onScriptLoaded(Script script) {
+        public void onScriptLoaded(JavaFile javaFile) {
         }
 
         /**
@@ -242,13 +242,13 @@ public class Formatters {
         /**
          * Called when issue is found
          *
-         * @param script
+         * @param javaFile
          * @param rule
          * @param pair
          */
         @Override
-        public void onIssueFound(Script script, Rule rule, NodePair pair) {
-            issues.add(List.of(script, rule, pair));
+        public void onIssueFound(JavaFile javaFile, Rule rule, NodePair pair) {
+            issues.add(List.of(javaFile, rule, pair));
         }
 
         private static String indent(int indentLevel) {
@@ -348,11 +348,11 @@ public class Formatters {
                 return Map.of(
                         "issues", issues.stream().map((arg) -> {
                             List<?> args = (List<?>) arg;
-                            Script script = (Script) args.get(0);
+                            JavaFile javaFile = (JavaFile) args.get(0);
                             Rule rule = (Rule) args.get(1);
                             NodePair pair = (NodePair) args.get(2);
                             return Map.of(
-                                    "script", script.path.getPath(),
+                                    "javaFile", javaFile.path.getPath(),
                                     "rule", Map.of(
                                             "id", rule.id,
                                             "messages", rule.messages,

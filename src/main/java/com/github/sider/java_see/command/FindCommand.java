@@ -2,7 +2,7 @@ package com.github.sider.java_see.command;
 
 import com.github.sider.java_see.Analyzer;
 import com.github.sider.java_see.Main;
-import com.github.sider.java_see.ScriptEnumerator;
+import com.github.sider.java_see.JavaFileEnumerator;
 import com.github.sider.java_see.StacktraceFormatting;
 import com.github.sider.java_see.ast.AST;
 import com.github.sider.java_see.lib.Libs;
@@ -65,8 +65,8 @@ public class FindCommand extends CLICommand implements StacktraceFormatting {
         if(analyzer != null) return analyzer;
         this.analyzer = new Analyzer(null, null, new ArrayList<>());
 
-        new ScriptEnumerator(paths, null).forEach((path, script) -> {
-            this.analyzer.scripts.add(script);
+        new JavaFileEnumerator(paths, null).forEach((path, script) -> {
+            this.analyzer.javaFiles.add(script);
         });
 
         return this.analyzer;
