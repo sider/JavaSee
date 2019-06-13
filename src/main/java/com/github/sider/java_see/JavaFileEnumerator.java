@@ -47,7 +47,6 @@ public class JavaFileEnumerator {
     }
 
     public void forEach(BiConsumer<File, JavaFile> block) {
-        System.out.println(paths);
         for(File path:paths) {
             if(path.isDirectory()) {
                 enumerateFilesInDirectory(path, new HashSet<>(), block);
