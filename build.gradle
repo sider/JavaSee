@@ -51,6 +51,7 @@ dependencies {
     compile 'org.scala-lang:scala-library:2.12.8'
     compile 'args4j:args4j:2.33'
     compile 'org.buildobjects:jproc:2.2.3'
+    compile 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.0'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
