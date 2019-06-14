@@ -4,7 +4,7 @@ plugins {
     id "io.freefair.lombok" version "3.2.0"
     id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
-def packagePrefix = 'com.github.sider.java_see'
+def packagePrefix = 'com.github.sider.javasee'
 apply plugin: 'java'
 apply plugin: 'com.intershop.gradle.javacc'
 sourceSets {

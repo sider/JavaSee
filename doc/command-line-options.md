@@ -5,17 +5,17 @@
 The following block lists example commands
 
 ```
-# Generate java_see.yml
+# Generate javasee.yml
 java -jar JavaSee-all.jar init
 
 # Analyze all Java codes under current directory
-java -jar JavaSee-all.jar check -config java_see.yml
+java -jar JavaSee-all.jar check -config javasee.yml
 
 # Analyze all Java codes under src
-java -jar JavaSee-all.jar check -config java_see.yml -root src
+java -jar JavaSee-all.jar check -config javasee.yml -root src
 
 # Analyze all Java coces under src and print the result with JSON
-java -jar JavaSee-all.jar check -config java_see.yml -root src -format json
+java -jar JavaSee-all.jar check -config javasee.yml -root src -format json
 
 # Analyze all Java codes under current directory and print lines matching with println()
 java -jar JavaSee-all.jar find "println(_)" .

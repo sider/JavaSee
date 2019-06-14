@@ -4,10 +4,10 @@ options {
 }
 
 PARSER_BEGIN(JavaSeeParser)
-package com.github.sider.java_see.parser;
+package com.github.sider.javasee.parser;
 
-import com.github.sider.java_see.ast.AST;
-import com.github.sider.java_see.ast.Location;
+import com.github.sider.javasee.ast.AST;
+import com.github.sider.javasee.ast.Location;
 import java.util.List;
 import java.util.ArrayList;
 

@@ -16,26 +16,26 @@ JavaSee requires Java(JDK) 11 or later and Gradle 5.0 or later.
 ## Quick start
 
 As a first step, you can run JavaSee init command to create an example
-java_see.yml:
+javasee.yml:
 
 ```
 $ java -jar build/libs/JavaSee-all.jar init
-$ cat java_see.yaml
+$ cat javasee.yml
 ```
 
 ```yaml
 rules:
-  - id: java_see.example
+  - id: javasee.example
     pattern:
       - _.println(_)
     message: |
       Trap println() method.
 ```
 
-Next you can run `JavaSee check -config=java_see.yml` command to **JavaSee** patterns against your code base.
+Next you can run `JavaSee check -config=javasee.yml` command to **JavaSee** patterns against your code base.
 
 ```
-$ java -jar build/libs/JavaSee-all.jar check -config java_see.yaml
+$ java -jar build/libs/JavaSee-all.jar check -config javasee.yml
 ```
 
 ## Documentation
