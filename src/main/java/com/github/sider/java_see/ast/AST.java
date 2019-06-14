@@ -423,6 +423,7 @@ public class AST {
 
 
         private boolean testArgs(NodeList<com.github.javaparser.ast.expr.Expression> parameters) {
+            if(this.parameters.size() == 1 && this.parameters.get(0) instanceof RepeatedParameter) return true;
             if(this.parameters.size() != parameters.size()) return false;
             int size = parameters.size();
             for(int i = 0; i < size; i++) {
