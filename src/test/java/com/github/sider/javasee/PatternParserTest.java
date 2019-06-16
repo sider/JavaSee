@@ -28,6 +28,42 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testConditionalAndExpression() throws Exception {
+        var e = parser("_ && _").Expression();
+        assertTrue(e instanceof AST.ConditionalAndExpression);
+        var et = (AST.ConditionalAndExpression)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testConditionalOrExpression() throws Exception {
+        var e = parser("_ || _").Expression();
+        assertTrue(e instanceof AST.ConditionalOrExpression);
+        var et = (AST.ConditionalOrExpression)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testBitwiseAndExpression() throws Exception {
+        var e = parser("_ & _").Expression();
+        assertTrue(e instanceof AST.BitwiseAndExpression);
+        var et = (AST.BitwiseAndExpression)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testBitwiseOrExpression() throws Exception {
+        var e = parser("_ | _").Expression();
+        assertTrue(e instanceof AST.BitwiseOrExpression);
+        var et = (AST.BitwiseOrExpression)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
     public void testAdd() throws Exception {
         var e = parser("_ + _").Expression();
         assertTrue(e instanceof AST.Addition);

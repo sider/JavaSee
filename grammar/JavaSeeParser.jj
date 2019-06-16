@@ -325,7 +325,27 @@ AST.Expression KindedExpression() :{
 
 
 AST.Expression Expression(): {AST.Expression e;} {
-    e=Equal() {return e;}
+    e=LogicalOr() {return e;}
+}
+
+AST.Expression LogicalOr() :{Token t; AST.Expression a, b;}{
+  a=LogicalAnd() (t="||" b=LogicalAnd() {a = new AST.ConditionalOrExpression(p(t), a, b);})* {return a;}
+}
+
+AST.Expression LogicalAnd() :{Token t; AST.Expression a, b; }{
+  a=BitwiseOr() (t="&&" b=BitwiseOr() {a = new AST.ConditionalAndExpression(p(t), a, b);})* {return a;}
+}
+
+AST.Expression BitwiseOr() :{Token t; AST.Expression a, b; }{
+  a=Xor() (t="|" b=Xor() {a = new AST.BitwiseOrExpression(p(t), a, b);})* {return a;}
+}
+
+AST.Expression Xor() :{Token t; AST.Expression a, b;}{
+  a =BitwiseAnd() (t="^" b=BitwiseAnd() {a = new AST.XorExpression(p(t), a, b);})* {return a;}
+}
+
+AST.Expression BitwiseAnd() :{Token t; AST.Expression a, b; }{
+  a=Equal() (t = "&" b=Equal() {a = new AST.BitwiseAndExpression(p(t), a, b);})* {return a;}
 }
 
 AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
