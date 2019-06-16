@@ -371,11 +371,18 @@ AST.Expression UnaryPrefix() :{Token t; AST.Expression e;}{
 }
 
 AST.Expression Multitive() :{Token t; AST.Expression e1, e2;}{
-  e1=PrimarySuffix()
-( t="*" e2=PrimarySuffix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
-| t="/" e2=PrimarySuffix()  {e1 = new AST.Division(p(t), e1, e2);}
-| t="%" e2=PrimarySuffix()  {e1 = new AST.Remainder(p(t), e1, e2);}
+  e1=PrimaryPrefix()
+( t="*" e2=PrimaryPrefix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
+| t="/" e2=PrimaryPrefix()  {e1 = new AST.Division(p(t), e1, e2);}
+| t="%" e2=PrimaryPrefix()  {e1 = new AST.Remainder(p(t), e1, e2);}
 )* {return e1;}
+}
+
+AST.Expression PrimaryPrefix() :{Token t; AST.Expression e;}{
+( t="++" e=PrimaryPrefix() {e = new AST.PrefixIncrementExpression(p(t), e);}
+| t="--" e=PrimaryPrefix() {e = new AST.PrefixDecrementExpression(p(t), e);}
+| e=PrimarySuffix()
+) {return e;}
 }
 
 AST.Expression PrimarySuffix() : {
@@ -385,8 +392,8 @@ AST.Expression PrimarySuffix() : {
 ( t="[" a=Expression() "]"                                                {e = new AST.ArrayAccessExpression(p(t), e, a);}
 | LOOKAHEAD(3) t="." n=<ID> "(" params=Parameters() ")"                   {e = new AST.MethodCall(p(t), e, c(n), params);}
 | t="." n=<ID>                                                            {e = new AST.FieldSelection(p(t), e, c(n));}
-| t="++"                                                                  {e = new AST.PostIncrement(p(t), e);}
 | t="--"                                                                  {e = new AST.PostDecrement(p(t), e);}
+| t="++"                                                                  {e = new AST.PostIncrement(p(t), e);}
 )* {return e;}
 }
 

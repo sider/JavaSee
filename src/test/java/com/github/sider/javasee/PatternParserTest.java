@@ -111,6 +111,30 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testPrefixIncrementExpression() throws Exception {
+        var e = parser("++x").Expression();
+        assertTrue(e instanceof AST.PrefixIncrementExpression);
+    }
+
+    @Test
+    public void testPrefixDecrementExpression() throws Exception {
+        var e = parser("--x").Expression();
+        assertTrue(e instanceof AST.PrefixDecrementExpression);
+    }
+
+    @Test
+    public void testPostfixIncrementExpression() throws Exception {
+        var e = parser("x++").Expression();
+        assertTrue(e instanceof AST.PostIncrement);
+    }
+
+    @Test
+    public void testPostfixDecrementExpression() throws Exception {
+        var e = parser("x--").Expression();
+        assertTrue(e instanceof AST.PostDecrement);
+    }
+
+    @Test
     public void testStringWildcard() throws Exception {
         var e = parser(":String:").Expression();
         assertTrue(e instanceof AST.StringWildcard);
