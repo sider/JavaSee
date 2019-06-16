@@ -3,6 +3,7 @@ package com.github.sider.javasee;
 import com.github.sider.javasee.command.FindCommand;
 import com.github.sider.javasee.command.InitCommand;
 import com.github.sider.javasee.command.TestCommand;
+import com.github.sider.javasee.command.VersionCommand;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -192,8 +193,8 @@ public class Main {
      * This is a subcommand method.
      * Print version
      */
-    private void version() {
-        System.out.println("JavaSee " + Version.VERSION);
+    private boolean version() {
+        return new VersionCommand(options, System.out, System.err).start();
     }
 
 
