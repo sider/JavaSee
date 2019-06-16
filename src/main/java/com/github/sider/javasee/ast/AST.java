@@ -551,6 +551,38 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
+    public static class PrefixIncrementExpression extends Expression {
+        public final Location location;
+        public final Expression target;
+
+        @Override
+        public boolean testNode(Node node) {
+            if(!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr)node;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.PREFIX_INCREMENT)) return false;
+            return this.target.testNode(expr.getExpression());
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class PrefixDecrementExpression extends Expression {
+        public final Location location;
+        public final Expression target;
+
+        @Override
+        public boolean testNode(Node node) {
+            if(!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr)node;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.PREFIX_DECREMENT)) return false;
+            return this.target.testNode(expr.getExpression());
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
     public static class PostIncrement extends Expression {
         public final Location location;
         public final Expression target;
