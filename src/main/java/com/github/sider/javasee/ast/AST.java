@@ -168,6 +168,7 @@ public class AST {
         }
     }
 
+
     public static class Addition extends BinaryExpression {
         public Addition(Location location, Expression lhs, Expression rhs) {
             super(location, "+", lhs, rhs);
@@ -180,6 +181,91 @@ public class AST {
             if(!lhs.testNode(expr.getLeft())) return false;
             if(!rhs.testNode(expr.getRight())) return false;
             if(!expr.getOperator().equals(BinaryExpr.Operator.PLUS)) return false;
+            return true;
+        }
+
+    }
+
+    public static class BitwiseAndExpression extends BinaryExpression {
+        public BitwiseAndExpression(Location location, Expression lhs, Expression rhs) {
+            super(location, "&", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.BINARY_AND)) return false;
+            return true;
+        }
+
+    }
+
+    public static class BitwiseOrExpression extends BinaryExpression {
+        public BitwiseOrExpression(Location location, Expression lhs, Expression rhs) {
+            super(location, "|", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.BINARY_OR)) return false;
+            return true;
+        }
+
+    }
+
+    public static class XorExpression extends BinaryExpression {
+        public XorExpression(Location location, Expression lhs, Expression rhs) {
+            super(location, "^", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.XOR)) return false;
+            return true;
+        }
+
+    }
+
+    public static class ConditionalAndExpression extends BinaryExpression {
+        public ConditionalAndExpression(Location location, Expression lhs, Expression rhs) {
+            super(location, "&&", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.AND)) return false;
+            return true;
+        }
+
+    }
+
+    public static class ConditionalOrExpression extends BinaryExpression {
+        public ConditionalOrExpression(Location location, Expression lhs, Expression rhs) {
+            super(location, "||", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof BinaryExpr)) return false;
+            var expr = (BinaryExpr) node;
+            if(!lhs.testNode(expr.getLeft())) return false;
+            if(!rhs.testNode(expr.getRight())) return false;
+            if(!expr.getOperator().equals(BinaryExpr.Operator.OR)) return false;
             return true;
         }
 
