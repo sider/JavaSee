@@ -1,4 +1,5 @@
 ![JavaSee logo](logo/JavaSee.png)
+[![Build Status](https://travis-ci.com/sider/JavaSee.svg?token=1b3KJqNfDxzAbTA6x5p4&branch=master)](https://travis-ci.com/sider/JavaSee)
 
 # JavaSee: Java Code Piece Finder
 
