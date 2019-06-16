@@ -342,16 +342,16 @@ AST.Expression Comparative() : { Token t; AST.Expression a, b; Token n; }{
     | t=">=" b=BitShift() {a = new AST.GreaterOrEqual(p(t), a, b);}
     | t="<"  b=BitShift() {a = new AST.LessThan(p(t), a, b);}
     | t=">"  b=BitShift() {a = new AST.GreaterThan(p(t), a, b);}
-    | t="instanceof" n=<ID> {a = new AST.Instanceof(p(t), a, c(n));}
+    | t="instanceof" n=<ID> {a = new AST.InstanceofExpression(p(t), a, c(n));}
     )
   )* {return a;}
 }
 
 AST.Expression BitShift() :{Token t; AST.Expression e1, e2;}{
   e1=Additive()
-( t="<<" e2=Additive()    {e1 = new AST.MathLeftShift(p(t), e1, e2);}
-| t=">>" e2=Additive()    {e1 = new AST.MathRightShift(p(t), e1, e2);}
-| t=">>>"e2=Additive()    {e1 = new AST.LogicalRightShift(p(t), e1, e2);}
+( t="<<" e2=Additive()    {e1 = new AST.LeftShiftExpression(p(t), e1, e2);}
+| t=">>" e2=Additive()    {e1 = new AST.RightShiftExpression(p(t), e1, e2);}
+| t=">>>"e2=Additive()    {e1 = new AST.UnsignedRightShiftExpression(p(t), e1, e2);}
 )* { return e1; }
 }
 
@@ -363,9 +363,9 @@ AST.Expression Additive() :{Token t; AST.Expression e1, e2;}{
 }
 
 AST.Expression UnaryPrefix() :{Token t; AST.Expression e;}{
-( t="+" e=UnaryPrefix() {e = new AST.Positive(p(t), e);}
-| t="-" e=UnaryPrefix() {e = new AST.Negative(p(t), e);}
-| t="!" e=UnaryPrefix() {e = new AST.Not(p(t), e);}
+( t="+" e=UnaryPrefix() {e = new AST.UnaryPlusExpression(p(t), e);}
+| t="-" e=UnaryPrefix() {e = new AST.UnaryMinusExpression(p(t), e);}
+| t="!" e=UnaryPrefix() {e = new AST.LogicalComplementExpression(p(t), e);}
 | e=Multitive()
 ) {return e;}
 }
@@ -374,7 +374,7 @@ AST.Expression Multitive() :{Token t; AST.Expression e1, e2;}{
   e1=PrimarySuffix()
 ( t="*" e2=PrimarySuffix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
 | t="/" e2=PrimarySuffix()  {e1 = new AST.Division(p(t), e1, e2);}
-| t="%" e2=PrimarySuffix()  {e1 = new AST.Modulo(p(t), e1, e2);}
+| t="%" e2=PrimarySuffix()  {e1 = new AST.Remainder(p(t), e1, e2);}
 )* {return e1;}
 }
 
@@ -382,7 +382,7 @@ AST.Expression PrimarySuffix() : {
   Token t, n; AST.Expression e, a = null; List<AST.Expression> params;
 }{
   e=Primary()
-( t="[" a=Expression() "]"                                                {e = new AST.Indexing(p(t), e, a);}
+( t="[" a=Expression() "]"                                                {e = new AST.ArrayAccessExpression(p(t), e, a);}
 | LOOKAHEAD(3) t="." n=<ID> "(" params=Parameters() ")"                   {e = new AST.MethodCall(p(t), e, c(n), params);}
 | t="." n=<ID>                                                            {e = new AST.FieldSelection(p(t), e, c(n));}
 | t="++"                                                                  {e = new AST.PostIncrement(p(t), e);}
@@ -420,7 +420,7 @@ AST.Expression RepeatedParameter(): {Token t;} {
 }
 
 AST.Expression NewObject(): {Token t; AST.ID id; List<AST.Expression> es;} {
-  t="new" id=Identifier() "(" es=Parameters() ")" {return new AST.NewObject(p(t), id.name, es);}
+  t="new" id=Identifier() "(" es=Parameters() ")" {return new AST.InstanceCreationExpression(p(t), id.name, es);}
 }
 
 List<AST.Expression> Parameters() :{AST.Expression param; List<AST.Expression> params = new ArrayList<AST.Expression>();}{
