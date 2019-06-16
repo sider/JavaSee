@@ -66,8 +66,8 @@ public class PatternParserTest {
     @Test
     public void testModulo() throws Exception {
         var e = parser("_ %  _").Expression();
-        assertTrue(e instanceof AST.Modulo);
-        var et = (AST.Modulo)e;
+        assertTrue(e instanceof AST.Remainder);
+        var et = (AST.Remainder)e;
         assertTrue(et.lhs instanceof AST.Wildcard);
         assertTrue(et.rhs instanceof AST.Wildcard);
     }
@@ -75,24 +75,24 @@ public class PatternParserTest {
     @Test
     public void testPositive() throws Exception {
         var e = parser("+ _").Expression();
-        assertTrue(e instanceof AST.Positive);
-        var et = (AST.Positive)e;
+        assertTrue(e instanceof AST.UnaryPlusExpression);
+        var et = (AST.UnaryPlusExpression)e;
         assertTrue(et.expression instanceof AST.Wildcard);
     }
 
     @Test
     public void testNegative() throws Exception {
         var e = parser("-_").Expression();
-        assertTrue(e instanceof AST.Negative);
-        var et = (AST.Negative)e;
+        assertTrue(e instanceof AST.UnaryMinusExpression);
+        var et = (AST.UnaryMinusExpression)e;
         assertTrue(et.expression instanceof AST.Wildcard);
     }
 
     @Test
     public void testNot() throws Exception {
         var e = parser("!_").Expression();
-        assertTrue(e instanceof AST.Not);
-        var et = (AST.Not)e;
+        assertTrue(e instanceof AST.LogicalComplementExpression);
+        var et = (AST.LogicalComplementExpression)e;
         assertTrue(et.expression instanceof AST.Wildcard);
     }
 

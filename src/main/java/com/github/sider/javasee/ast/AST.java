@@ -81,7 +81,7 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
-    public static class Indexing extends Expression {
+    public static class ArrayAccessExpression extends Expression {
         public final Location location;
         public final Expression lhs;
         public final Expression rhs;
@@ -104,8 +104,8 @@ public class AST {
         public final Expression expression;
     }
 
-    public static class Positive extends UnaryExpression {
-        public Positive(Location location, Expression expression) {
+    public static class UnaryPlusExpression extends UnaryExpression {
+        public UnaryPlusExpression(Location location, Expression expression) {
             super(location, expression);
         }
 
@@ -121,8 +121,8 @@ public class AST {
 
     }
 
-    public static class Negative extends UnaryExpression {
-        public Negative(Location location, Expression expression) {
+    public static class UnaryMinusExpression extends UnaryExpression {
+        public UnaryMinusExpression(Location location, Expression expression) {
             super(location, expression);
         }
 
@@ -136,8 +136,8 @@ public class AST {
         }
     }
 
-    public static class Not extends UnaryExpression {
-        public Not(Location location, Expression expression) {
+    public static class LogicalComplementExpression extends UnaryExpression {
+        public LogicalComplementExpression(Location location, Expression expression) {
             super(location, expression);
         }
 
@@ -160,6 +160,12 @@ public class AST {
         public final String symbol;
         public final Expression lhs;
         public final Expression rhs;
+    }
+
+    public static abstract class RelationalExpression extends BinaryExpression {
+        public RelationalExpression(Location location, String symbol, Expression lhs, Expression rhs) {
+            super(location, symbol, lhs, rhs);
+        }
     }
 
     public static class Addition extends BinaryExpression {
@@ -230,8 +236,8 @@ public class AST {
 
     }
 
-    public static class Modulo extends BinaryExpression {
-        public Modulo(Location location, Expression lhs, Expression rhs) {
+    public static class Remainder extends BinaryExpression {
+        public Remainder(Location location, Expression lhs, Expression rhs) {
             super(location, "%", lhs, rhs);
         }
 
@@ -279,7 +285,7 @@ public class AST {
     }
 
     @ToString
-    public static class GreaterOrEqual extends BinaryExpression {
+    public static class GreaterOrEqual extends RelationalExpression {
         public GreaterOrEqual(Location location, Expression lhs, Expression rhs) {
             super(location, ">=", lhs, rhs);
         }
@@ -295,7 +301,7 @@ public class AST {
         }
     }
 
-    public static class GreaterThan extends BinaryExpression {
+    public static class GreaterThan extends RelationalExpression {
         public GreaterThan(Location location, Expression lhs, Expression rhs) {
             super(location, ">", lhs, rhs);
         }
@@ -311,7 +317,7 @@ public class AST {
         }
     }
 
-    public static class LessOrEqual extends BinaryExpression {
+    public static class LessOrEqual extends RelationalExpression {
         public LessOrEqual(Location location, Expression lhs, Expression rhs) {
             super(location, "<=", lhs, rhs);
         }
@@ -327,7 +333,7 @@ public class AST {
         }
     }
 
-    public static class LessThan extends BinaryExpression {
+    public static class LessThan extends RelationalExpression {
         public LessThan(Location location, Expression lhs, Expression rhs) {
             super(location, "<", lhs, rhs);
         }
@@ -343,8 +349,8 @@ public class AST {
         }
     }
 
-    public static class MathLeftShift extends BinaryExpression {
-        public MathLeftShift(Location location, Expression lhs, Expression rhs) {
+    public static class LeftShiftExpression extends RelationalExpression {
+        public LeftShiftExpression(Location location, Expression lhs, Expression rhs) {
             super(location, "<<", lhs, rhs);
         }
 
@@ -359,8 +365,8 @@ public class AST {
         }
     }
 
-    public static class MathRightShift extends BinaryExpression {
-        public MathRightShift(Location location, Expression lhs, Expression rhs) {
+    public static class RightShiftExpression extends RelationalExpression {
+        public RightShiftExpression(Location location, Expression lhs, Expression rhs) {
             super(location, ">>", lhs, rhs);
         }
 
@@ -375,8 +381,8 @@ public class AST {
         }
     }
 
-    public static class LogicalRightShift extends BinaryExpression {
-        public LogicalRightShift(Location location, Expression lhs, Expression rhs) {
+    public static class UnsignedRightShiftExpression extends RelationalExpression {
+        public UnsignedRightShiftExpression(Location location, Expression lhs, Expression rhs) {
             super(location, ">>>", lhs, rhs);
         }
 
@@ -394,7 +400,7 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
-    public static class Instanceof extends Expression {
+    public static class InstanceofExpression extends Expression {
         public final Location location;
         public final Expression target;
         public final String type;
@@ -416,11 +422,10 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
-    public static class NewObject extends Expression {
+    public static class InstanceCreationExpression extends Expression {
         public final Location location;
         public final String name;
         public final List<Expression> parameters;
-
 
         private boolean testArgs(NodeList<com.github.javaparser.ast.expr.Expression> parameters) {
             if(this.parameters.size() == 1 && this.parameters.get(0) instanceof RepeatedParameter) return true;
