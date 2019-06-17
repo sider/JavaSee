@@ -168,6 +168,164 @@ public class AST {
         }
     }
 
+    public static abstract class AssignmentExpression extends BinaryExpression {
+        public AssignmentExpression(Location location, String symbol, Expression lhs, Expression rhs) {
+            super(location, symbol, lhs, rhs);
+        }
+    }
+
+    public static class SimpleAssignment extends BinaryExpression {
+        public SimpleAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.ASSIGN)) return false;
+            return true;
+        }
+
+    }
+
+    public static class AdditionAssignment extends BinaryExpression {
+        public AdditionAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "+=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.PLUS)) return false;
+            return true;
+        }
+
+    }
+
+    public static class SubtractionAssignment extends BinaryExpression {
+        public SubtractionAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "-=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.MINUS)) return false;
+            return true;
+        }
+
+    }
+
+    public static class MultiplicationAssignment extends BinaryExpression {
+        public MultiplicationAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.ASSIGN)) return false;
+            return true;
+        }
+
+    }
+
+    public static class DivisionAssignment extends BinaryExpression {
+        public DivisionAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "/=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.DIVIDE)) return false;
+            return true;
+        }
+
+    }
+
+    public static class RemainderAssignment extends BinaryExpression {
+        public RemainderAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "%=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.REMAINDER)) return false;
+            return true;
+        }
+
+    }
+
+    public static class BitwiseAndAssignment extends BinaryExpression {
+        public BitwiseAndAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "&=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.BINARY_AND)) return false;
+            return true;
+        }
+
+    }
+
+    public static class BitwiseOrAssignment extends BinaryExpression {
+        public BitwiseOrAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "|=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.BINARY_OR)) return false;
+            return true;
+        }
+
+    }
+
+    public static class XorAssignment extends BinaryExpression {
+        public XorAssignment(Location location, Expression lhs, Expression rhs) {
+            super(location, "^=", lhs, rhs);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof AssignExpr)) return false;
+            var expr = (AssignExpr) node;
+            if(!lhs.testNode(expr.getTarget())) return false;
+            if(!rhs.testNode(expr.getValue())) return false;
+            if(!expr.getOperator().equals(AssignExpr.Operator.XOR)) return false;
+            return true;
+        }
+
+    }
 
     public static class Addition extends BinaryExpression {
         public Addition(Location location, Expression lhs, Expression rhs) {
