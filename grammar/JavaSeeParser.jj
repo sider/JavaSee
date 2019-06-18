@@ -197,7 +197,10 @@ TOKEN : {
 | <SUBEQ:          "-="           >
 | <MULEQ:          "*="           >
 | <DIVEQ:          "/="           >
-| <MODEQ:          "%="           >
+| <REMEQ:          "%="           >
+| <ANDEQ:          "&="           >
+| <OREQ:           "|="           >
+| <XOREQ:          "^="           >
 | <PLUSPLUS:       "++"           >
 | <MINUSMINUS:     "--"           >
 | <COLON:          ":"            >
@@ -272,47 +275,6 @@ TOKEN:{
   <ERROR: ~[]>
 }
 
-/*
-AST.Expression term() :{AST.Expression e;}{
-  e = assignable() { return e; }
-}
-
-AST.Expression assignable() :{Token t; AST.Expression a, b; }{
-  a=logical_or()
-  [ ( t="="  b=assignable() {a = new AST.Assignment(p(t), a, b);}
-    | t="+=" b=assignable() {a = new AST.AdditionAssignment(p(t), a, b);}
-    | t="-=" b=assignable() {a = new AST.SubtractionAssignment(p(t), a, b);}
-    | t="*=" b=assignable() {a = new AST.MultiplicationAssignment(p(t), a, b);}
-    | t="/=" b=assignable() {a = new AST.DivisionAssignment(p(t), a, b);}
-    | t="%=" b=assignable() {a = new AST.ModuloAssignment(p(t), a, b);}
-    )
-  ]{return a;}
-}
-
-AST.Expression LogicalOr() :{Token t; AST.Expression a, b; }{
-  a=logical_and()
-  ( t="||" b=logical_and() {a = new AST.LogicalOr(p(t), a, b);}
-  { return a; }
-}
-
-AST.Expression LogicalAnd() :{Token t; AST.Expression a, b; }{
-  a=bit_or() (t="&&" b=bit_or() {a = new AST.LogicalAnd(p(t), a, b);})* {return a;}
-}
-
-AST.Expression BitOr() :{Token t; AST.Expression a, b; }{
-  a=xor() (t="|" b=xor() {a = new AST.BitOr(p(t), a, b);})* {return a;}
-}
-
-AST.Expression XOr() :{Token t; AST.Expression a, b;}{
-  a = bit_and() (t="^" b=bit_and() {a = new AST.XOR(p(t), a, b);})* {return a;}
-}
-
-AST.Expression BitAnd() :{Token t; AST.Expression a, b; }{
-  a=equal() (t = "&" b=equal() {a = new AST.BitAnd(p(t), a, b);})* {return a;}
-}
-
-*/
-
 AST.Expression Target() :{AST.Expression e;} {
     e=KindedExpression() {return e;}
 }
@@ -325,7 +287,21 @@ AST.Expression KindedExpression() :{
 
 
 AST.Expression Expression(): {AST.Expression e;} {
-    e=LogicalOr() {return e;}
+    e=Assignment() {return e;}
+}
+
+AST.Expression Assignment(): {Token t; AST.Expression a, b;}{
+  a=LogicalOr()
+  ( ( t="=" b=Assignment() {a = new AST.SimpleAssignment(p(t), a, b);}
+    | t="+=" b=Assignment() {a = new AST.AdditionAssignment(p(t), a, b);}
+    | t="-=" b=Assignment() {a = new AST.SubtractionAssignment(p(t), a, b);}
+    | t="*=" b=Assignment() {a = new AST.MultiplicationAssignment(p(t), a, b);}
+    | t="/=" b=Assignment() {a = new AST.DivisionAssignment(p(t), a, b);})
+    | t="%=" b=Assignment() {a = new AST.RemainderAssignment(p(t), a, b);}
+    | t="&=" b=Assignment() {a = new AST.BitwiseAndAssignment(p(t), a, b);}
+    | t="|=" b=Assignment() {a = new AST.BitwiseOrAssignment(p(t), a, b);}
+    | t="^=" b=Assignment() {a = new AST.XorAssignment(p(t), a, b);}
+  )* {return a;}
 }
 
 AST.Expression LogicalOr() :{Token t; AST.Expression a, b;}{

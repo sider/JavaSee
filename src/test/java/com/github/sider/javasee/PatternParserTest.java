@@ -100,10 +100,91 @@ public class PatternParserTest {
     }
 
     @Test
-    public void testModulo() throws Exception {
+    public void testRemainder() throws Exception {
         var e = parser("_ %  _").Expression();
         assertTrue(e instanceof AST.Remainder);
         var et = (AST.Remainder)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testSimpleAssignment() throws Exception {
+        var e = parser("_ =  _").Expression();
+        assertTrue(e instanceof AST.SimpleAssignment);
+        var et = (AST.SimpleAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testAdditionAssignment() throws Exception {
+        var e = parser("_ +=  _").Expression();
+        assertTrue(e instanceof AST.AdditionAssignment);
+        var et = (AST.AdditionAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testSubtractionAssignment() throws Exception {
+        var e = parser("_ -=  _").Expression();
+        assertTrue(e instanceof AST.SubtractionAssignment);
+        var et = (AST.SubtractionAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testMultiplicationAssignment() throws Exception {
+        var e = parser("_ *=  _").Expression();
+        assertTrue(e instanceof AST.MultiplicationAssignment);
+        var et = (AST.MultiplicationAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testDivisionAssignment() throws Exception {
+        var e = parser("_ /=  _").Expression();
+        assertTrue(e instanceof AST.DivisionAssignment);
+        var et = (AST.DivisionAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testRemainderAssignment() throws Exception {
+        var e = parser("_ %=  _").Expression();
+        assertTrue(e instanceof AST.RemainderAssignment);
+        var et = (AST.RemainderAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testBitwiseAndAssignment() throws Exception {
+        var e = parser("_ &=  _").Expression();
+        assertTrue(e instanceof AST.BitwiseAndAssignment);
+        var et = (AST.BitwiseAndAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testBitwiseOrAssignment() throws Exception {
+        var e = parser("_ |=  _").Expression();
+        assertTrue(e instanceof AST.BitwiseOrAssignment);
+        var et = (AST.BitwiseOrAssignment)e;
+        assertTrue(et.lhs instanceof AST.Wildcard);
+        assertTrue(et.rhs instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testXorAssignment() throws Exception {
+        var e = parser("_ ^=  _").Expression();
+        assertTrue(e instanceof AST.XorAssignment);
+        var et = (AST.XorAssignment)e;
         assertTrue(et.lhs instanceof AST.Wildcard);
         assertTrue(et.rhs instanceof AST.Wildcard);
     }
