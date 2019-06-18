@@ -438,16 +438,16 @@ public class AST {
     public static class ConditionalExpression extends Expression {
         public final Location location;
         public final Expression condition;
-        public final Expression lhs;
-        public final Expression rhs;
+        public final Expression thenPart;
+        public final Expression elsepart;
 
         @Override
         public boolean testNode(Node node) {
             if (!(node instanceof ConditionalExpr)) return false;
             var expr = (ConditionalExpr) node;
             if(!condition.testNode(expr.getCondition())) return false;
-            if(!lhs.testNode(expr.getThenExpr())) return false;
-            if(!rhs.testNode(expr.getElseExpr())) return false;
+            if(!thenPart.testNode(expr.getThenExpr())) return false;
+            if(!elsepart.testNode(expr.getElseExpr())) return false;
             return true;
         }
 
