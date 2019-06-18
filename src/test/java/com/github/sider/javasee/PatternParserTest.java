@@ -207,10 +207,18 @@ public class PatternParserTest {
     }
 
     @Test
-    public void testNot() throws Exception {
+    public void testLogicalComplement() throws Exception {
         var e = parser("!_").WholeExpression();
         assertTrue(e instanceof AST.LogicalComplementExpression);
         var et = (AST.LogicalComplementExpression)e;
+        assertTrue(et.expression instanceof AST.Wildcard);
+    }
+
+    @Test
+    public void testBitwiseComplement() throws Exception {
+        var e = parser("~_").WholeExpression();
+        assertTrue(e instanceof AST.BitwiseComplementExpression);
+        var et = (AST.BitwiseComplementExpression)e;
         assertTrue(et.expression instanceof AST.Wildcard);
     }
 

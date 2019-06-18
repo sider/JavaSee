@@ -422,7 +422,8 @@ AST.Expression UnaryPrefix1() :{Token t; AST.Expression e;}{
 }
 
 AST.Expression UnaryPrefix2() :{Token t; AST.Expression e;}{
-( t="!"  e=UnaryPrefix1() {e = new AST.LogicalComplementExpression(p(t), e);}
+( t="!" e=UnaryPrefix1() {e = new AST.LogicalComplementExpression(p(t), e);}
+| t="~" e=UnaryPrefix1() {e = new AST.BitwiseComplementExpression(p(t), e);}
 | e=Postfix()
 ) {return e;}
 }
