@@ -305,6 +305,16 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testConditionalExpression() throws Exception {
+        var e = parser("_ ? 1 : true").WholeExpression();
+        assertTrue(e instanceof AST.ConditionalExpression);
+        var et = (AST.ConditionalExpression)e;
+        assertTrue(et.condition instanceof AST.Wildcard);
+        assertTrue(et.thenPart instanceof AST.IntLiteral);
+        assertTrue(et.elsepart instanceof AST.BooleanLiteral);
+    }
+
+    @Test
     public void testIntLiteral() throws Exception {
         var e = parser("2").WholeExpression();
         assertTrue(e instanceof AST.IntLiteral);
