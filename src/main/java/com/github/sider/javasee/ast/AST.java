@@ -189,6 +189,22 @@ public class AST {
 
     }
 
+    public static class BitwiseComplementExpression extends UnaryExpression {
+        public BitwiseComplementExpression(Location location, Expression expression) {
+            super(location, expression);
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof UnaryExpr)) return false;
+            var expr = (UnaryExpr) node;
+            if(!expression.testNode(expr)) return false;
+            if(!expr.getOperator().equals(UnaryExpr.Operator.BITWISE_COMPLEMENT)) return false;
+            return true;
+        }
+
+    }
+
     @AllArgsConstructor
     @Getter
     @ToString
