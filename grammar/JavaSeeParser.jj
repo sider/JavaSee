@@ -381,7 +381,7 @@ AST.Expression PrimaryPrefix() :{Token t; AST.Expression e;}{
 ) {return e;}
 }
 
-AST.Expression PrimarySuffix() : {
+AST.Expression PrimarySuffix() :{
   Token t, n; AST.Expression e, a = null; List<AST.Expression> params;
 }{
   e=Primary()
@@ -393,12 +393,7 @@ AST.Expression PrimarySuffix() : {
 )* {return e;}
 }
 
-AST.Expression Primary() : /*{
-  Token n = null, t; AST.TypeNode ty = null; AST.Expression e;
-  List<AST.Expression> es = (List<AST.Expression>)AST.NIL();
-  List<AST.Argument> args = (List<AST.Argument>)AST.NIL();
-  AST.BlockExpression body;
-}*/ {
+AST.Expression Primary() :{
     Token n;
     AST.Expression e;
     List<AST.Expression> params;
@@ -415,7 +410,8 @@ AST.Expression Primary() : /*{
 |   LOOKAHEAD(2) e=Identifier()                                             {return e;}
 |   e=RepeatedParameter()                                                   {return e;}
 |   "(" e=Expression() ")"                                                  {return e;}
-|   e=NewObject()                                                           {return e;}
+|   LOOKAHEAD(3) e=NewObject()                                              {return e;}
+|   LOOKAHEAD(3) e=NewArray()                                               {return e;}
 }
 
 AST.Expression RepeatedParameter(): {Token t;} {
@@ -425,6 +421,11 @@ AST.Expression RepeatedParameter(): {Token t;} {
 AST.Expression NewObject(): {Token t; AST.ID id; List<AST.Expression> es;} {
   t="new" id=Identifier() "(" es=Parameters() ")" {return new AST.InstanceCreationExpression(p(t), id.name, es);}
 }
+
+AST.Expression NewArray(): {Token t; AST.ID id; AST.Expression e; List<AST.Expression> es = new ArrayList<AST.Expression>();} {
+  t="new" id=Identifier() (("[" e=Expression() "]" {es.add(e);})+) {return new AST.ArrayCreationExpression(p(t), id.name, es);}
+}
+
 
 List<AST.Expression> Parameters() :{AST.Expression param; List<AST.Expression> params = new ArrayList<AST.Expression>();}{
   [param=Expression() {params.add(param);} ("," param=Expression() {params.add(param);})*] {
