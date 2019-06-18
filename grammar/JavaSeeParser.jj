@@ -107,7 +107,6 @@ SKIP:
 }
 
 
-
 /*
  * KEYWORDS
  */
@@ -166,33 +165,20 @@ TOKEN:
  * OTHERS
  */
 TOKEN : {
-  <UNDERSCORE:     "_"            >
-| <PLUS:           "+"            >
-| <MINUS:          "-"            >
-| <STAR:           "*"            >
-| <SLASH:          "/"            >
-| <PERC:           "%"            >
-| <DOLLAR:         "$"            >
-| <LT:             "<"            >
-| <GT:             ">"            >
+  <R3S:            ">>>"          >
 | <ARROW:          "->"           >
-| <ARROW2:         "=>"           >
-| <SUBTYPE:        "<:"           >
 | <NOT:            "!"            >
-| <AMP:            "&"            >
 | <AND:            "&&"           >
-| <BAR:            "|"            >
 | <OR:             "||"           >
 | <EOR:            "^"            >
 | <BN:             "~"            >
 | <L2S:            "<<"           >
 | <R2S:            ">>"           >
-| <R3S:            ">>>"          >
-| <ASSIGN:         "="            >
+| <SHARPLT:        "#<"           >
+| <LTSHARP:        ">#"           >
+| <SHARPBRACKET:   "#["           >
 | <EQ:             "=="           >
 | <NOTEQ:          "!="           >
-| <REFEQ:          "==="          >
-| <REFNOTEQ:       "!=="          >
 | <ADDEQ:          "+="           >
 | <SUBEQ:          "-="           >
 | <MULEQ:          "*="           >
@@ -203,6 +189,8 @@ TOKEN : {
 | <XOREQ:          "^="           >
 | <PLUSPLUS:       "++"           >
 | <MINUSMINUS:     "--"           >
+| <ATMARK:         "@"            >
+| <AMP:            "&"            >
 | <COLON:          ":"            >
 | <SEMI:           ";"            >
 | <COLON2:         "::"           >
@@ -218,6 +206,17 @@ TOKEN : {
 | <RBRACKET:       "]"            >
 | <QUESTION:       "?"            >
 | <VARARGS:        "..."          >
+| <ASSIGN:         "="            >
+| <BAR:            "|"            >
+| <PLUS:           "+"            >
+| <MINUS:          "-"            >
+| <STAR:           "*"            >
+| <SLASH:          "/"            >
+| <PERC:           "%"            >
+| <DOLLAR:         "$"            >
+| <LT:             "<"            >
+| <GT:             ">"            >
+| <UNDERSCORE:     "_"            >
 }
 
 /*
@@ -265,7 +264,6 @@ TOKEN:
     "\""
   >
 | <ID:       ["a"-"z", "A"-"Z", "_"] (["a"-"z", "A"-"Z", "_", "0"-"9"])* >
-| <FQCN:     "#" "<" <ID> ("." <ID>)* ">"                                >
 }
 
 /*
@@ -285,23 +283,67 @@ AST.Expression KindedExpression() :{
     e=Expression() {return e;}
 }
 
-
-AST.Expression Expression(): {AST.Expression e;} {
-    e=Assignment() {return e;}
+AST.Expression WholeExpression(): {AST.Expression e;} {
+  e=Expression() <EOF> {return e;}
 }
 
-AST.Expression Assignment(): {Token t; AST.Expression a, b;}{
-  a=LogicalOr()
-  ( ( t="=" b=Assignment() {a = new AST.SimpleAssignment(p(t), a, b);}
-    | t="+=" b=Assignment() {a = new AST.AdditionAssignment(p(t), a, b);}
-    | t="-=" b=Assignment() {a = new AST.SubtractionAssignment(p(t), a, b);}
-    | t="*=" b=Assignment() {a = new AST.MultiplicationAssignment(p(t), a, b);}
-    | t="/=" b=Assignment() {a = new AST.DivisionAssignment(p(t), a, b);})
-    | t="%=" b=Assignment() {a = new AST.RemainderAssignment(p(t), a, b);}
-    | t="&=" b=Assignment() {a = new AST.BitwiseAndAssignment(p(t), a, b);}
-    | t="|=" b=Assignment() {a = new AST.BitwiseOrAssignment(p(t), a, b);}
-    | t="^=" b=Assignment() {a = new AST.XorAssignment(p(t), a, b);}
-  )* {return a;}
+AST.Expression Expression(): {Token t; AST.Expression a, b;}{
+  a=Conditional() [t=AssignmentOperator() b=Expression()
+    {
+        switch(t.image) {
+            case "=":
+                a = new AST.SimpleAssignment(p(t), a, b);
+                break;
+            case "+=":
+                a = new AST.AdditionAssignment(p(t), a, b);
+                break;
+            case "-=":
+                a = new AST.SubtractionAssignment(p(t), a, b);
+                break;
+            case "*=":
+                a = new AST.MultiplicationAssignment(p(t), a, b);
+                break;
+            case "/=":
+                a = new AST.DivisionAssignment(p(t), a, b);
+                break;
+            case "%=":
+                a = new AST.RemainderAssignment(p(t), a, b);
+                break;
+            case "&=":
+                a = new AST.BitwiseAndAssignment(p(t), a, b);
+                break;
+            case "|=":
+                a = new AST.BitwiseOrAssignment(p(t), a, b);
+                break;
+            case "^=":
+                a = new AST.XorAssignment(p(t), a, b);
+                break;
+            default:
+                throw new Error("cannot reach here");
+        }
+    }
+  ] {
+      return a;
+  }
+}
+
+Token AssignmentOperator(): {Token t;} {
+(
+  t="="
+| t="+="
+| t="-="
+| t="*="
+| t="/="
+| t="%="
+| t="&="
+| t="|="
+| t="^="
+) {return t;}
+}
+
+AST.Expression Conditional(): {AST.Expression c, l, r; }
+{
+  c=LogicalOr() ["?" l=Expression() ":" r=Conditional() {c = new AST.ConditionalExpression(c.getLocation(), c, l, r);}] {return c;}
 }
 
 AST.Expression LogicalOr() :{Token t; AST.Expression a, b;}{
@@ -325,11 +367,15 @@ AST.Expression BitwiseAnd() :{Token t; AST.Expression a, b; }{
 }
 
 AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
-  a=Comparative()
+  a=Instanceof()
   ( ( t="=="  b=Comparative() {a= new AST.Equal(p(t), a, b);}
     | t="!="  b=Comparative() {a= new AST.NotEqual(p(t), a, b);}
     )
   )* {return a;}
+}
+
+AST.Expression Instanceof(): {Token n, t; AST.Expression a;} {
+  a=Comparative() [ t="instanceof" n=<ID> {a = new AST.InstanceofExpression(p(n), a, c(n));} ] { return a;}
 }
 
 AST.Expression Comparative() : { Token t; AST.Expression a, b; Token n; }{
@@ -338,7 +384,6 @@ AST.Expression Comparative() : { Token t; AST.Expression a, b; Token n; }{
     | t=">=" b=BitShift() {a = new AST.GreaterOrEqual(p(t), a, b);}
     | t="<"  b=BitShift() {a = new AST.LessThan(p(t), a, b);}
     | t=">"  b=BitShift() {a = new AST.GreaterThan(p(t), a, b);}
-    | t="instanceof" n=<ID> {a = new AST.InstanceofExpression(p(t), a, c(n));}
     )
   )* {return a;}
 }
@@ -352,80 +397,101 @@ AST.Expression BitShift() :{Token t; AST.Expression e1, e2;}{
 }
 
 AST.Expression Additive() :{Token t; AST.Expression e1, e2;}{
-  e1=UnaryPrefix()
-( t="+" e2=UnaryPrefix() {e1 = new AST.Addition(p(t), e1, e2);}
-| t="-" e2=UnaryPrefix() {e1 = new AST.Subtraction(p(t), e1, e2);}
+  e1=Multitive()
+( t="+" e2=Multitive() {e1 = new AST.Addition(p(t), e1, e2);}
+| t="-" e2=Multitive() {e1 = new AST.Subtraction(p(t), e1, e2);}
 )* {return e1;}
-}
-
-AST.Expression UnaryPrefix() :{Token t; AST.Expression e;}{
-( t="+" e=UnaryPrefix() {e = new AST.UnaryPlusExpression(p(t), e);}
-| t="-" e=UnaryPrefix() {e = new AST.UnaryMinusExpression(p(t), e);}
-| t="!" e=UnaryPrefix() {e = new AST.LogicalComplementExpression(p(t), e);}
-| e=Multitive()
-) {return e;}
 }
 
 AST.Expression Multitive() :{Token t; AST.Expression e1, e2;}{
-  e1=PrimaryPrefix()
-( t="*" e2=PrimaryPrefix()  {e1 = new AST.Multiplication(p(t), e1, e2);}
-| t="/" e2=PrimaryPrefix()  {e1 = new AST.Division(p(t), e1, e2);}
-| t="%" e2=PrimaryPrefix()  {e1 = new AST.Remainder(p(t), e1, e2);}
+  e1=UnaryPrefix1()
+( t="*" e2=UnaryPrefix1()  {e1 = new AST.Multiplication(p(t), e1, e2);}
+| t="/" e2=UnaryPrefix1()  {e1 = new AST.Division(p(t), e1, e2);}
+| t="%" e2=UnaryPrefix1()  {e1 = new AST.Remainder(p(t), e1, e2);}
 )* {return e1;}
 }
 
-AST.Expression PrimaryPrefix() :{Token t; AST.Expression e;}{
-( t="++" e=PrimaryPrefix() {e = new AST.PrefixIncrementExpression(p(t), e);}
-| t="--" e=PrimaryPrefix() {e = new AST.PrefixDecrementExpression(p(t), e);}
-| e=PrimarySuffix()
+
+AST.Expression UnaryPrefix1() :{Token t; AST.Expression e;}{
+( t="++" e=UnaryPrefix1() {e = new AST.PrefixIncrementExpression(p(t), e);}
+| t="--" e=UnaryPrefix1() {e = new AST.PrefixDecrementExpression(p(t), e);}
+| t="+"  e=UnaryPrefix1() {e = new AST.UnaryPlusExpression(p(t), e);}
+| t="-"  e=UnaryPrefix1() {e = new AST.UnaryMinusExpression(p(t), e);}
+| e=UnaryPrefix2()
 ) {return e;}
 }
 
+AST.Expression UnaryPrefix2() :{Token t; AST.Expression e;}{
+( t="!"  e=UnaryPrefix1() {e = new AST.LogicalComplementExpression(p(t), e);}
+| e=Postfix()
+) {return e;}
+}
+
+AST.Expression Postfix(): {Token t; AST.Expression e;} {
+  e=PrimarySuffix() [
+    LOOKAHEAD(2)
+    ( t="++"                                                                {e = new AST.PostIncrement(p(t), e);}
+    | t="--"                                                                {e = new AST.PostDecrement(p(t), e);}
+    )
+  ]
+  {return e;}
+}
+
 AST.Expression PrimarySuffix() :{
-  Token t, n; AST.Expression e, a = null; List<AST.Expression> params;
+  Token t, n; AST.Expression e, a = null; List<AST.Expression> params = null;
 }{
   e=Primary()
 ( t="[" a=Expression() "]"                                                {e = new AST.ArrayAccessExpression(p(t), e, a);}
-| LOOKAHEAD(3) t="." n=<ID> "(" params=Parameters() ")"                   {e = new AST.MethodCall(p(t), e, c(n), params);}
-| t="." n=<ID>                                                            {e = new AST.FieldSelection(p(t), e, c(n));}
-| t="--"                                                                  {e = new AST.PostDecrement(p(t), e);}
-| t="++"                                                                  {e = new AST.PostIncrement(p(t), e);}
+| e=Selection(e)
 )* {return e;}
+}
+
+AST.Expression Selection(AST.Expression receiver) : {
+  Token t, n; List<AST.Expression> params = null;
+} {
+  t="." n=<ID> ["(" params=Parameters() ")"]                              {
+    if(params != null) {
+        return new AST.MethodCall(p(t), receiver, c(n), params);
+    } else {
+        return new AST.FieldSelection(p(t), receiver, c(n));
+    }
+  }
 }
 
 AST.Expression Primary() :{
     Token n;
     AST.Expression e;
-    List<AST.Expression> params;
+    List<AST.Expression> params = null;
 }{
+
     e=BooleanPattern()                                                      {return e;}
 |   e=StringPattern()                                                       {return e;}
 |   e=IntPattern()                                                          {return e;}
 |   e=DoublePattern()                                                       {return e;}
+|   e=PlaceholderPattern()                                                  {return e;}
 |   e=NullPattern()                                                         {return e;}
 |   e=LambdaPattern()                                                       {return e;}
 |   e=Wildcard()                                                            {return e;}
 |   e=ThisPattern()                                                         {return e;}
-|   LOOKAHEAD(2) n=<ID> "(" params=Parameters() ")"                         {return new AST.FunctionCall(p(n), c(n), params);}
-|   LOOKAHEAD(2) e=Identifier()                                             {return e;}
+|   e=ClassLiteral()                                                        {return e;}
 |   e=RepeatedParameter()                                                   {return e;}
-|   "(" e=Expression() ")"                                                  {return e;}
-|   LOOKAHEAD(3) e=NewObject()                                              {return e;}
-|   LOOKAHEAD(3) e=NewArray()                                               {return e;}
+|  n=<ID> ["(" params=Parameters() ")"]                                     {return params != null ? new AST.FunctionCall(p(n), c(n), params) : new AST.ID(p(n), n.image); }
+| "(" e=Expression() ")"                                                    {return e;}
+|  e=NewExpression()                                                        {return e;}
 }
+
 
 AST.Expression RepeatedParameter(): {Token t;} {
     t="..."                                                                 {return new AST.RepeatedParameter(p(t));}
 }
 
-AST.Expression NewObject(): {Token t; AST.ID id; List<AST.Expression> es;} {
-  t="new" id=Identifier() "(" es=Parameters() ")" {return new AST.InstanceCreationExpression(p(t), id.name, es);}
+AST.Expression NewExpression(): {Token t; AST.ID id; AST.Expression e; List<AST.Expression> es = null;} {
+  t="new" id=Identifier() (
+    "(" es=Parameters() ")" {return new AST.InstanceCreationExpression(p(t), id.name, es);}
+  | {es = new ArrayList<AST.Expression>();}
+    ("#[" e=Expression() "]" {es.add(e);})+ {return new AST.ArrayCreationExpression(p(t), id.name, es);}
+  )
 }
-
-AST.Expression NewArray(): {Token t; AST.ID id; AST.Expression e; List<AST.Expression> es = new ArrayList<AST.Expression>();} {
-  t="new" id=Identifier() (("[" e=Expression() "]" {es.add(e);})+) {return new AST.ArrayCreationExpression(p(t), id.name, es);}
-}
-
 
 List<AST.Expression> Parameters() :{AST.Expression param; List<AST.Expression> params = new ArrayList<AST.Expression>();}{
   [param=Expression() {params.add(param);} ("," param=Expression() {params.add(param);})*] {
@@ -445,18 +511,33 @@ AST.Expression ThisPattern() :{Token t;}{
     t="this"                      {return new AST.ThisLiteral(p(t));}
 }
 
+AST.Expression ClassLiteral() :{Token t, n; List<String> fragments = new ArrayList<String>(); }{
+    "class" t="[" n=<ID> {fragments.add(n.image);} (LOOKAHEAD(2) "." n=<ID> {fragments.add(n.image);})* "]" {
+        return fragments.size() == 1 ?
+            new AST.ClassLiteral(p(t), List.of(), fragments.get(0)) :
+            new AST.ClassLiteral(p(t), fragments.subList(0, fragments.size() - 1), fragments.get(fragments.size() - 1));
+    }
+}
+
 AST.Expression NullPattern() :{Token t;}{
     t="null"                      {return new AST.NullLiteral(p(t));}
 }
 
+AST.Expression PlaceholderPattern(): {Token t; AST.Expression e;} {
+  t="@" (
+    "int"                    {return new AST.IntWildcard(p(t));}
+  | "double"                 {return new AST.DoubleWildcard(p(t));}
+  | "boolean"                {return new AST.BooleanWildcard(p(t));}
+  | "String"                 {return new AST.StringWildcard(p(t));}
+  )
+}
+
 AST.Expression DoublePattern() :{Token t;}{
     t=<DOUBLE>                    {return new AST.DoubleLiteral(p(t), Double.parseDouble(t.image));}
-|   ":" t="double" ":"            {return new AST.DoubleWildcard(p(t));}
 }
 
 AST.Expression IntPattern() :{Token t;}{
     t=<INTEGER>                   {return new AST.IntLiteral(p(t), Integer.parseInt(t.image));}
-|   ":" t="int" ":"            {return new AST.IntWildcard(p(t));}
 }
 
 AST.Expression LambdaPattern(): {Token t;}{
@@ -466,13 +547,11 @@ AST.Expression LambdaPattern(): {Token t;}{
 
 AST.Expression BooleanPattern() :{Token t;}{
     t=<K_TRUE>                      {return new AST.BooleanLiteral(p(t), true);}
-|   t=<K_FALSE>                     {return new AST.BooleanLiteral(p(t), false);}
-|   <COLON> t=<K_BOOLEAN> <COLON>           {return new AST.BooleanWildcard(p(t));}
+|   t="false"                     {return new AST.BooleanLiteral(p(t), false);}
 }
 
 AST.Expression StringPattern() :{Token t;}{
     t=<STRING>                    {return new AST.StringLiteral(p(t), unescape(chopEdge(t.image)));}
-|  ":" t="String" ":"             {return new AST.StringWildcard(p(t));}
 }
 
 /*

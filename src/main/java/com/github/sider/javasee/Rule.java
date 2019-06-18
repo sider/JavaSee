@@ -112,7 +112,7 @@ public class Rule {
                 assert false;
             }
             try {
-                return new JavaSeeParser(new StringReader(subject)).Target();
+                return new JavaSeeParser(new StringReader(subject)).WholeExpression();
             } catch (ParseException e) {
                 throw new PatternSyntaxException(
                         "Pattern syntax error: rule=" + map.get("id") + ", index=" + index + ", pattern=" + subject + ", where=" + where, e

@@ -29,7 +29,7 @@ public class FindCommand extends CLICommand implements StacktraceFormatting {
         super(options);
         this.patternString = patternString;
         try {
-            this.pattern = new JavaSeeParser(new StringReader(patternString)).Expression();
+            this.pattern = new JavaSeeParser(new StringReader(patternString)).WholeExpression();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
