@@ -28,7 +28,7 @@ public class JavaParserTest {
     @Test
     public void testEachSubPair1() throws Exception {
         var tree = parser().parse("public class A{ public static void main(String[] args) { System.out.println(1); Math.abs(1); } }");
-        var pattern = parser("_.abs(1)").Expression();
+        var pattern = parser("_.abs(1)").WholeExpression();
         new NodePair(tree, null).eachSubPair((pair) -> {
             if(pattern.matches(pair)) {
                 var node = pair.node;
@@ -45,7 +45,7 @@ public class JavaParserTest {
     @Test
     public void testEachSubPair2() throws Exception {
         var tree = parser().parse("public class A{ public static void main(String[] args) { new Hello(1); } }");
-        var pattern = parser("new Hello(_)").Expression();
+        var pattern = parser("new Hello(_)").WholeExpression();
         new NodePair(tree, null).eachSubPair((pair) -> {
             if(pattern.matches(pair)) {
                 var node = pair.node;

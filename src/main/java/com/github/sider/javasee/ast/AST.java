@@ -4,6 +4,8 @@ import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.sider.javasee.NodePair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -76,6 +78,40 @@ public class AST {
             if(!(node instanceof NameExpr)) return false;
             var expr = (NameExpr)node;
             return expr.getName().asString().equals(this.name);
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class ClassLiteral extends Expression {
+        public final Location location;
+        public final List<String> packageFragments;
+        public final String simpleName;
+
+        @Override
+        public boolean testNode(Node node) {
+            if(!(node instanceof com.github.javaparser.ast.expr.ClassExpr)) return false;
+            var expr = (ClassExpr)node;
+            if(expr.getType().isClassOrInterfaceType()) {
+                if(packageFragments.size() == 0) {
+                    if(!((ClassOrInterfaceType)expr.getType()).getNameAsString().equals(simpleName)) {
+                        return false;
+                    }
+                } else {
+                    if(!((ClassOrInterfaceType)expr.getType()).getNameAsString().equals(
+                            packageFragments.stream().reduce(
+                                    (l, r) -> l + r
+                            ) + "." + simpleName
+                    )) {
+                        return false;
+                    }
+                }
+                return false;
+            } else if(expr.getType().isPrimitiveType()) {
+                if(!((PrimitiveType)expr.getType()).getType().asString().equals(simpleName)) return false;
+            }
+            return true;
         }
     }
 
@@ -391,6 +427,27 @@ public class AST {
             if(!lhs.testNode(expr.getLeft())) return false;
             if(!rhs.testNode(expr.getRight())) return false;
             if(!expr.getOperator().equals(BinaryExpr.Operator.XOR)) return false;
+            return true;
+        }
+
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class ConditionalExpression extends Expression {
+        public final Location location;
+        public final Expression condition;
+        public final Expression lhs;
+        public final Expression rhs;
+
+        @Override
+        public boolean testNode(Node node) {
+            if (!(node instanceof ConditionalExpr)) return false;
+            var expr = (ConditionalExpr) node;
+            if(!condition.testNode(expr.getCondition())) return false;
+            if(!lhs.testNode(expr.getThenExpr())) return false;
+            if(!rhs.testNode(expr.getElseExpr())) return false;
             return true;
         }
 
