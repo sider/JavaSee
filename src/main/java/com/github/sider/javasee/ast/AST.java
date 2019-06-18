@@ -1,5 +1,6 @@
 package com.github.sider.javasee.ast;
 
+import com.github.javaparser.ast.ArrayCreationLevel;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.*;
@@ -689,6 +690,46 @@ public class AST {
                 var newObject = (ObjectCreationExpr)node;
                 if(!newObject.getType().getNameAsString().equals(name)) return false;
                 if(!testArgs(((ObjectCreationExpr) node).getArguments())) return false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class ArrayCreationExpression extends Expression {
+        public final Location location;
+        public final String name;
+        public final List<Expression> levels;
+
+        private boolean testLevels(NodeList<ArrayCreationLevel> levels) {
+            if(this.levels.size() == 1 && this.levels.get(0) instanceof RepeatedParameter) return true;
+            if(this.levels.size() != levels.size()) return false;
+            int size = levels.size();
+            for(int i = 0; i < size; i++) {
+                var l1 = this.levels.get(i);
+                var l2 = levels.get(i);
+                if(!l1.testNode(l2)) return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean testNode(Node node) {
+            if(node instanceof ArrayCreationExpr) {
+                var newArray= (ArrayCreationExpr)node;
+                var elementTYpe = newArray.getElementType();
+                if(!elementTYpe.isClassOrInterfaceType()) {
+                // new Object[10], String[20],　...
+                    if(!elementTYpe.asClassOrInterfaceType().getNameAsString().equals(name)) return false;
+                } else {
+                // new int[3], new float[4], ...
+                    if(!elementTYpe.asPrimitiveType().getType().asString().equals(name)) return false;
+                }
+                if(!testLevels(newArray.getLevels())) return false;
                 return true;
             } else {
                 return false;

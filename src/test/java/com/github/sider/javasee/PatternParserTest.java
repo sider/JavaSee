@@ -252,6 +252,38 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testInstanceCreation() throws Exception {
+        AST.Expression e;
+        e = parser("new Object()").Expression();
+        assertTrue(e instanceof AST.InstanceCreationExpression);
+        assertEquals("Object", ((AST.InstanceCreationExpression)e).name);
+        assertEquals(0, ((AST.InstanceCreationExpression)e).parameters.size());
+
+        e = parser("new Object(1)").Expression();
+        assertTrue(e instanceof AST.InstanceCreationExpression);
+        assertEquals("Object", ((AST.InstanceCreationExpression)e).name);
+        assertEquals(1, ((AST.InstanceCreationExpression)e).parameters.size());
+        assertTrue(((AST.InstanceCreationExpression)e).parameters.get(0) instanceof AST.IntLiteral);
+    }
+
+    @Test
+    public void testArrayCreation() throws Exception {
+        AST.Expression e;
+        e = parser("new Object[10]").Expression();
+        assertTrue(e instanceof AST.ArrayCreationExpression);
+        assertEquals("Object", ((AST.ArrayCreationExpression)e).name);
+        assertEquals(1, ((AST.ArrayCreationExpression)e).levels.size());
+        assertEquals(10, ((AST.IntLiteral)((AST.ArrayCreationExpression)e).levels.get(0)).value);
+
+        e = parser("new Object[20][30]").Expression();
+        assertTrue(e instanceof AST.ArrayCreationExpression);
+        assertEquals("Object", ((AST.ArrayCreationExpression)e).name);
+        assertEquals(2, ((AST.ArrayCreationExpression)e).levels.size());
+        assertEquals(20, ((AST.IntLiteral)((AST.ArrayCreationExpression)e).levels.get(0)).value);
+        assertEquals(30, ((AST.IntLiteral)((AST.ArrayCreationExpression)e).levels.get(1)).value);
+    }
+
+    @Test
     public void testStringWildcard() throws Exception {
         var e = parser(":String:").Expression();
         assertTrue(e instanceof AST.StringWildcard);
