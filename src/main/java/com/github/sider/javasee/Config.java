@@ -9,12 +9,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Config {
-    public final Set<Rule> rules;
+    public final List<Rule> rules;
     public final List<Matcher> matchers;
     public final File rootDirectory;
     public final Map<List<Matcher>, Set<Rule>> rulesCache;
 
-    public Config(Set<Rule> rules, List<Matcher> matchers, File rootDirectory) {
+    public Config(List<Rule> rules, List<Matcher> matchers, File rootDirectory) {
         this.rules = rules;
         this.matchers = matchers;
         this.rootDirectory = rootDirectory;
@@ -55,7 +55,7 @@ public class Config {
         public final File rootDirectory;
 
         public Config config() {
-            var rules = Extentions.single(yaml.get("rules")).stream().map(map -> Rule.load((Map<String, Object>)map)).collect(Collectors.toSet());
+            var rules = Extentions.single(yaml.get("rules")).stream().map(map -> Rule.load((Map<String, Object>)map)).collect(Collectors.toList());
             var checks = Extentions.single(yaml.get("check")).stream().map(map -> Matcher.load((Map<String, Object>)map)).collect(Collectors.toList());
             return new Config(rules, checks, rootDirectory);
         }

@@ -12,8 +12,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TestCommand extends CLICommand {
     private Config config;
@@ -72,7 +72,7 @@ public class TestCommand extends CLICommand {
         return isFailed() ? false : true;
     }
 
-    private void validateRuleUniqueness(Set<Rule> rules) {
+    private void validateRuleUniqueness(List<Rule> rules) {
         var ids = new HashSet<String>();
 
         stdout.println("Checking rule id uniqueness...");
@@ -91,7 +91,7 @@ public class TestCommand extends CLICommand {
         if(duplications > 0) fail();
     }
 
-    private void validateRulePatterns(Set<Rule> rules) {
+    private void validateRulePatterns(List<Rule> rules) {
         stdout.println("Checkintg rule patterns...");
 
         var tests = 0;
