@@ -42,7 +42,7 @@ public class RuleTest {
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.Wildcard);
         assertEquals(new HashSet<>(), rule.tags);
         assertEquals(new ArrayList<>(), rule.examples);
@@ -68,7 +68,7 @@ public class RuleTest {
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.FieldSelection);
         var receiver = (AST.ID)((AST.FieldSelection)(rule.patterns.get(0))).receiver;
         var name = ((AST.FieldSelection)(rule.patterns.get(0))).name;
@@ -99,7 +99,7 @@ public class RuleTest {
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.IntLiteral);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
         assertEquals(Set.of("tag1", "tag2"), rule.tags);

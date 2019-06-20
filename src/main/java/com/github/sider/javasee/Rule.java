@@ -34,7 +34,7 @@ public class Rule {
     }
 
     public final String id;
-    public final List<String> messages;
+    public final String message;
     public final List<AST.Expression> patterns;
     public final List<?> sources;
     public final Set<String> tags;
@@ -44,10 +44,10 @@ public class Rule {
     public final List<Example> examples;
 
     public Rule(
-            String id, List<String> messages, List<AST.Expression> patterns, List<?> sources, Set<String> tags,
+            String id, String message, List<AST.Expression> patterns, List<?> sources, Set<String> tags,
             List<String> beforeExamples, List<String> afterExamples, List<String> justifications, List<Example> examples) {
         this.id = id;
-        this.messages = messages;
+        this.message = message;
         this.patterns = patterns;
         this.sources = sources;
         this.tags = tags;
@@ -121,9 +121,9 @@ public class Rule {
 
         }).collect(Collectors.toList());
 
-        List<String> messages = (List<String>)valuesOf(map, "message");
+        var message = (String)map.getOrDefault("message", null);
 
-        if(messages.isEmpty()) {
+        if(message == null) {
             throw new InvalidRuleMapException("message is missing");
         }
 
@@ -144,7 +144,7 @@ public class Rule {
 
         return new Rule(
                 id,
-                messages,
+                message,
                 patterns,
                 srcs,
                 tags,

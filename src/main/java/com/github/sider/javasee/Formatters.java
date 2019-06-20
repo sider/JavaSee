@@ -156,7 +156,7 @@ public class Formatters {
             var line = position.line;
             var column = position.column;
             var src = ConsoleColors.red(getLine(path, line));
-            var message = rule.messages.get(0).split("\n")[0];
+            var message = rule.message.split("\n")[0];
             System.out.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
         }
     }
@@ -380,7 +380,7 @@ public class Formatters {
                                     "script", javaFile.path.getPath(),
                                     "rule", Map.of(
                                             "id", rule.id,
-                                            "messages", rule.messages,
+                                            "message", rule.message,
                                             "justifications", rule.justifications,
                                             "examples", rule.examples.stream().map(
                                                     (example) -> Map.of("before", example.before, "after", example.after)
@@ -441,7 +441,7 @@ public class Formatters {
                                     "script", javaFile.path.getPath(),
                                     "rule", Map.of(
                                             "id", rule.id,
-                                            "messages", rule.messages,
+                                            "message", rule.message,
                                             "justifications", rule.justifications,
                                             "examples", rule.examples.stream().map(
                                                     (example) -> Map.of("before", example.before, "after", example.after)
