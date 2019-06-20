@@ -237,6 +237,12 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testAnyID() throws Exception {
+        var e = parser("@?").WholeExpression();
+        assertTrue(e instanceof AST.AnyID);
+    }
+
+    @Test
     public void testPrefixIncrementExpression() throws Exception {
         var e = parser("++x").WholeExpression();
         assertTrue(e instanceof AST.PrefixIncrementExpression);

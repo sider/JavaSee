@@ -1,26 +1,37 @@
 rules:
-  - id: example.println
+  - id: sample.bad_string_equality_check1
     pattern:
-      - _.println(...)
+      - "@String == _"
+      - _ == @String
     message: |
-      This is an example message.
-  - id: example.addition
+      String literal must not be an operand of ==
+
+      since it cause unexpected behavior
+  - id: sample.bad_string_equality_check2
     pattern:
-      - _ + _
+      - "@String != _"
+      - "_ != @String"
     message: |
-      Addition is seen.
-  - id: example.subtraction
+      String literal must not be an operand of !=
+
+      since it cause unexpected behavior
+  - id: sample.bad_int_equality_check1
+    pattern: "@int == _"
+    message: |
+      int literal should not be an left operand of ==
+
+      for readabiliy
+  - id: sample.bad_int_equality_check2
+    pattern: "@int != _"
+    message: |
+      int literal should not be an left operand of !=
+
+      for readabiliy
+  - id: sample.bad_boolean_equality_check1
     pattern:
-      - _ - _
+      - "@boolean == _"
+      - "_ == @boolean"
     message: |
-      Subtraction is seen.
-  - id: example.int_literal
-    pattern:
-      - ":int:"
-    message: |
-      int literal is found
-  - id: example.println_without_receiver
-    pattern:
-      - println(...)
-    message: |
-      println call wihout receiver
+      boolean literal should not be an operand of ==
+
+      since it is meaningless in general

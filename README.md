@@ -26,17 +26,18 @@ $ cat javasee.yml
 
 ```yaml
 rules:
-  - id: javasee.example
+  - id: ...
     pattern:
-      - _.println(_)
+      - _...
     message: |
-      Trap println() method.
+      ...
 ```
 
-Next you can run `JavaSee check -config=javasee.yml` command to **JavaSee** patterns against your code base.
+Next you can run `JavaSee check -config=javasee.yml example` command to 
+**JavaSee** patterns against example Java codes.
 
 ```
-$ java -jar build/libs/JavaSee-all.jar check -config javasee.yml
+$ java -jar build/libs/JavaSee-all.jar check -config javasee.yml example
 ```
 
 ## Documentation
