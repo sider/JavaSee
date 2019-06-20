@@ -1,8 +1,8 @@
-JavaSee
+JavaSee 
+- Copyright (c) 2019 Sider, Inc.
 
 MIT License
 
-Copyright (c) 2019 Sider, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@ SOFTWARE.
 
 --------------------------------------------------------------------------------
 JavaParser
+- Copyright (c) 2019 http://javaparser.org
 
-Copyright (c) http://javaparser.org
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -194,11 +194,13 @@ permanent authorization for you to choose that version for the
 Library.
 
 --------------------------------------------------------------------------------
+SnakeYAML
+- Copyright (c) 2019 Andrey Somov
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
-Copyright (c) 2019 Andrey Somov
 
    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
@@ -375,10 +377,9 @@ Copyright (c) 2019 Andrey Somov
 
 --------------------------------------------------------------------------------
 args4j
+- Copyright (c) 2013 Kohsuke Kawaguchi and other contributors
 
 MIT License
-
- Copyright (c) 2013 Kohsuke Kawaguchi and other contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
