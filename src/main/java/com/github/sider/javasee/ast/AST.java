@@ -84,6 +84,18 @@ public class AST {
     @AllArgsConstructor
     @Getter
     @ToString
+    public static class AnyID extends Expression {
+        public final Location location;
+
+        @Override
+        public boolean testNode(Node node) {
+            return node instanceof NameExpr;
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
     public static class ClassLiteral extends Expression {
         public final Location location;
         public final List<String> packageFragments;

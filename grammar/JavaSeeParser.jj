@@ -190,6 +190,7 @@ TOKEN : {
 | <PLUSPLUS:       "++"           >
 | <MINUSMINUS:     "--"           >
 | <ATMARK:         "@"            >
+| <ATMARKEUQSTION: "@?"           >
 | <AMP:            "&"            >
 | <COLON:          ":"            >
 | <SEMI:           ";"            >
@@ -476,6 +477,7 @@ AST.Expression Primary() :{
 |   e=ThisPattern()                                                         {return e;}
 |   e=ClassLiteral()                                                        {return e;}
 |   e=RepeatedParameter()                                                   {return e;}
+|  n="@?"                                                                   {return new AST.AnyID(p(n));}
 |  n=<ID> ["(" params=Parameters() ")"]                                     {return params != null ? new AST.FunctionCall(p(n), c(n), params) : new AST.ID(p(n), n.image); }
 | "(" e=Expression() ")"                                                    {return e;}
 |  e=NewExpression()                                                        {return e;}
