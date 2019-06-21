@@ -44,7 +44,6 @@ public class RuleTest {
         assertEquals("foo.bar.baz", rule.id);
         assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.Wildcard);
-        assertEquals(new HashSet<>(), rule.tags);
         assertEquals(new ArrayList<>(), rule.examples);
         assertEquals(new ArrayList<>(), rule.justifications);
 
@@ -57,7 +56,6 @@ public class RuleTest {
                         kv("id", "foo.bar.baz"),
                         kv("pattern", List.of("foo.bar", "_")),
                         kv("message", "message1"),
-                        kv("tags", List.of("tag1", "tag2")),
                         kv("examples", List.of(
                                 mapOf(kv("before", "foo"), kv("after", "bar")),
                                 mapOf(kv("before", "foo")),
@@ -75,7 +73,6 @@ public class RuleTest {
         assertEquals("foo", receiver.name);
         assertEquals("bar", name);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
-        assertEquals(Set.of("tag1", "tag2"), rule.tags);
         assertEquals(
                 List.of(
                         new Rule.Example("foo", "bar"),
@@ -92,7 +89,6 @@ public class RuleTest {
                         kv("id", "foo.bar.baz"),
                         kv("pattern", List.of("100", "_")),
                         kv("message", "message1"),
-                        kv("tags", List.of("tag1", "tag2")),
                         kv("examples", mapOf(kv("before", "foo"), kv("after", "bar"))),
                         kv("justification", List.of("some", "message"))
                 )
@@ -102,7 +98,6 @@ public class RuleTest {
         assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.IntLiteral);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
-        assertEquals(Set.of("tag1", "tag2"), rule.tags);
         assertEquals(List.of(new Rule.Example("foo", "bar")), rule.examples);
         assertEquals(List.of("some", "message"), rule.justifications);
     }

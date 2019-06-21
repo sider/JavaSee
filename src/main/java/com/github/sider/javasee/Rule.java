@@ -37,40 +37,22 @@ public class Rule {
     public final String message;
     public final List<AST.Expression> patterns;
     public final List<?> sources;
-    public final Set<String> tags;
     public final List<String> beforeExamples;
     public final List<String> afterExamples;
     public final List<String> justifications;
     public final List<Example> examples;
 
     public Rule(
-            String id, String message, List<AST.Expression> patterns, List<?> sources, Set<String> tags,
+            String id, String message, List<AST.Expression> patterns, List<?> sources,
             List<String> beforeExamples, List<String> afterExamples, List<String> justifications, List<Example> examples) {
         this.id = id;
         this.message = message;
         this.patterns = patterns;
         this.sources = sources;
-        this.tags = tags;
         this.beforeExamples = beforeExamples;
         this.afterExamples = afterExamples;
         this.justifications = justifications;
         this.examples = examples;
-    }
-
-    public boolean matches(String identifier, Set<String> tags) {
-        if(identifier != null) {
-            if((!id.equals(identifier)) && (!id.startsWith(identifier + "."))) {
-                return false;
-            }
-        }
-
-        if(tags != null) {
-            if(!this.tags.containsAll(tags)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public static class InvalidRuleMapException extends RuntimeException {
@@ -127,9 +109,6 @@ public class Rule {
             throw new InvalidRuleMapException("message is missing");
         }
 
-        var tags = new HashSet<String>();
-        tags.addAll((List<String>)valuesOf(map, "tags"));
-
         var examples = valuesOf(map, "examples").stream().map((ex) -> {
             Map<String, Object> example = (Map<String, Object>)ex;
             if((!example.containsKey("before")) && (!example.containsKey("after"))) {
@@ -147,7 +126,6 @@ public class Rule {
                 message,
                 patterns,
                 srcs,
-                tags,
                 beforeExamples,
                 afterExamples,
                 justifications,
