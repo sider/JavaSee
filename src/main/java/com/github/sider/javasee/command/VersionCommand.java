@@ -5,15 +5,9 @@ import com.github.sider.javasee.Version;
 
 import java.io.PrintStream;
 
-public class VersionCommand extends CLICommand {
-    public final PrintStream out;
-    public final PrintStream err;
-
-    public VersionCommand(Main.Options options, PrintStream out, PrintStream err) {
-        super(options);
-        this.out = out;
-        this.err = err;
-    }
+public class VersionCommand implements CLICommand {
+    private final PrintStream out = System.out;
+    private final PrintStream err = System.out;
 
     @Override
     public boolean start() {
