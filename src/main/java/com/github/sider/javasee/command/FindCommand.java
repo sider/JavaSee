@@ -9,36 +9,41 @@ import com.github.sider.javasee.lib.Libs;
 import com.github.sider.javasee.parser.JavaSeeParser;
 import com.github.sider.javasee.parser.ParseException;
 import lombok.ToString;
+import org.kohsuke.args4j.Argument;
 
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Files;
+import java.util.stream.Collectors;
 
 import static com.github.sider.javasee.lib.ConsoleColors.*;
 
 @ToString
-public class FindCommand extends CLICommand implements StacktraceFormatting {
-    public final String patternString;
+public class FindCommand implements CLICommand, StacktraceFormatting {
+    @Argument(required = true, usage = "Find for the pattern in given paths")
+    public String optionPattern = null;
+
+    @Argument
+    public List<String> optionPaths = new ArrayList<>();
+
     public final AST.Expression pattern;
     public final List<File> paths;
+
     private Analyzer analyzer;
 
-    public FindCommand(Main.Options options, String patternString, List<File> paths) {
-        super(options);
-        this.patternString = patternString;
+    public FindCommand() {
         try {
-            this.pattern = new JavaSeeParser(new StringReader(patternString)).WholeExpression();
+            this.pattern = new JavaSeeParser(new StringReader(optionPattern)).WholeExpression();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        this.paths = paths;
+        this.paths = optionPaths.stream().map((path) -> new File(path)).collect(Collectors.toList());
     }
 
     @Override
     public boolean start() {
-        var count = 0;
         getAnalyzer().find(pattern, (script, pair) -> {
             var path = script.path;
             var range = pair.node.getRange().get();

@@ -6,6 +6,8 @@ import com.github.sider.javasee.lib.ConsoleColors;
 import com.github.sider.javasee.lib.Libs;
 import com.github.sider.javasee.lib.Ref;
 import lombok.Getter;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -15,22 +17,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class TestCommand extends CLICommand {
-    private Config config;
+public class TestCommand implements CLICommand {
 
-    @Getter
-    public final PrintStream stdout;
+    @Option(name="-config", help = true)
+    public String optionConfig = "javasee.yml";
 
-    @Getter
-    public final PrintStream stderr;
+    private final PrintStream stdout = System.out;
+    private final PrintStream stderr = System.err;
 
     private boolean success;
-
-    public TestCommand(Main.Options options, PrintStream stdout, PrintStream stderr) {
-        super(options);
-        this.stdout = stdout;
-        this.stderr = stderr;
-    }
 
     public void fail() {
         success = false;
@@ -42,23 +37,24 @@ public class TestCommand extends CLICommand {
 
     @Override
     public boolean start() {
-        options.config = "javasee.yml";
+        Config config;
         try {
-            if(!options.configPath().isFile()) {
-                System.out.println("There is nothing to test at " + options.configPath() + " ...");
-                System.out.println("Make a configuration and run test again!");
+            var configPath = new File(optionConfig);
+            if(!configPath.isFile()) {
+                stdout.println("There is nothing to test at " + configPath + " ...");
+                stderr.println("Make a configuration and run test again!");
                 return false;
             }
             File rootPath;
-            if(options.root != null) {
-                rootPath = new File(options.root);
+            if(configPath != null) {
+                rootPath = configPath.getParentFile();
             } else {
-                rootPath = options.configPath().getParentFile();
+                rootPath = new File("");
             }
             Map<String, Object> yaml;
             try {
-                yaml = new Yaml().load(new FileInputStream(options.configPath()));
-                config = Config.load(yaml, options.configPath(), rootPath);
+                yaml = new Yaml().load(new FileInputStream(configPath));
+                config = Config.load(yaml, configPath, new File("."));
             } catch (Exception e) {
                 throw e;
             }

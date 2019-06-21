@@ -1,26 +1,24 @@
 package com.github.sider.javasee.command;
 
-import com.github.sider.javasee.Main;
+import lombok.Getter;
+import org.kohsuke.args4j.Option;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class InitCommand extends CLICommand {
-    public final String templateResourceName;
-    public final Path destinationPath;
+public class InitCommand implements CLICommand {
+    public final String TEMPLATE_RESOURCE_NAME = "template.yml";
+    public final String DESTINATION_CONFIG_PATH = "javasee.yml";
 
-    public InitCommand(Main.Options options, String templateResourceName, Path destinationPath) {
-        super(options);
-        this.templateResourceName = templateResourceName;
-        this.destinationPath = destinationPath;
-    }
+    private Path destinationPath;
 
     @Override
     public boolean start () {
         try {
-            var template = ClassLoader.getSystemResourceAsStream(templateResourceName);
-            Files.copy(template, destinationPath);
+            var template = ClassLoader.getSystemResourceAsStream(TEMPLATE_RESOURCE_NAME);
+            Files.copy(template, Paths.get(DESTINATION_CONFIG_PATH));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
