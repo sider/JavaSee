@@ -102,7 +102,7 @@ public class TestCommand extends CLICommand {
         for(var rule:rules) {
             {
                 int exampleIndex = 1;
-                for (var exampleString : rule.beforeExamples) {
+                for (var exampleString : rule.matchExamples) {
                     tests++;
 
                     try {
@@ -120,7 +120,7 @@ public class TestCommand extends CLICommand {
 
             {
                 int exampleIndex = 1;
-                for(var exampleString:rule.afterExamples) { tests += 1;
+                for(var exampleString:rule.unmatchExamples) { tests += 1;
                     try {
                         if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, exampleString, false))) {
                             stdout.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *after* example matched with some of patterns");

@@ -13,19 +13,19 @@ public class Rule {
     public final String message;
     public final List<AST.Expression> patterns;
     public final List<?> sources;
-    public final List<String> beforeExamples;
-    public final List<String> afterExamples;
+    public final List<String> matchExamples;
+    public final List<String> unmatchExamples;
     public final List<String> justifications;
 
     public Rule(
             String id, String message, List<AST.Expression> patterns, List<?> sources,
-            List<String> beforeExamples, List<String> afterExamples, List<String> justifications) {
+            List<String> matchExamples, List<String> unmatchExamples, List<String> justifications) {
         this.id = id;
         this.message = message;
         this.patterns = patterns;
         this.sources = sources;
-        this.beforeExamples = beforeExamples;
-        this.afterExamples = afterExamples;
+        this.matchExamples = matchExamples;
+        this.unmatchExamples = unmatchExamples;
         this.justifications = justifications;
     }
 
@@ -83,8 +83,8 @@ public class Rule {
             throw new InvalidRuleMapException("message is missing");
         }
 
-        List<String> beforeExamples = (List<String>)valuesOf(map, "before");
-        List<String> afterExamples = (List<String>)valuesOf(map, "after");
+        List<String> beforeExamples = (List<String>)valuesOf(map, "match");
+        List<String> afterExamples = (List<String>)valuesOf(map, "unmatch");
         List<String> justifications = (List<String>)valuesOf(map, "justification");
 
         return new Rule(
