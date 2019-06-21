@@ -55,7 +55,10 @@ public class RuleTest {
                         kv("id", "foo.bar.baz"),
                         kv("pattern", List.of("foo.bar", "_")),
                         kv("message", "message1"),
-                        kv("justification", List.of("some", "message"))
+                        kv("justification", List.of("some", "message")),
+                        kv("tests",
+                                mapOf(kv("match", List.of("1", "2", "1+2")),
+                                        kv("unmatch", "foo()")))
                 )
         );
 
@@ -68,6 +71,8 @@ public class RuleTest {
         assertEquals("bar", name);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
         assertEquals(List.of("some", "message"), rule.justifications);
+        assertEquals(List.of("1", "2", "1+2"), rule.matchExamples);
+        assertEquals(List.of("foo()"), rule.unmatchExamples);
     }
 
     @Test

@@ -83,8 +83,14 @@ public class Rule {
             throw new InvalidRuleMapException("message is missing");
         }
 
-        List<String> beforeExamples = (List<String>)valuesOf(map, "match");
-        List<String> afterExamples = (List<String>)valuesOf(map, "unmatch");
+        List<String> matchExamples = new ArrayList<>();
+        List<String> unmatchExamples = new ArrayList<>();
+        var tests = (Map<String, Object>)map.get("tests");
+        if (tests != null) {
+            matchExamples.addAll((List<String>)valuesOf(tests, "match"));
+            unmatchExamples.addAll((List<String>)valuesOf(tests, "unmatch"));
+        }
+
         List<String> justifications = (List<String>)valuesOf(map, "justification");
 
         return new Rule(
@@ -92,8 +98,8 @@ public class Rule {
                 message,
                 patterns,
                 srcs,
-                beforeExamples,
-                afterExamples,
+                matchExamples,
+                unmatchExamples,
                 justifications
         );
     }
