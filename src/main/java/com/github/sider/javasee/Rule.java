@@ -9,30 +9,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Rule {
-    public static class Example {
-        public final String before;
-        public final String after;
-
-        public Example(String before, String after) {
-            this.before = before;
-            this.after = after;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Example example = (Example) o;
-            return Objects.equals(before, example.before) &&
-                    Objects.equals(after, example.after);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(before, after);
-        }
-    }
-
     public final String id;
     public final String message;
     public final List<AST.Expression> patterns;
@@ -40,11 +16,10 @@ public class Rule {
     public final List<String> beforeExamples;
     public final List<String> afterExamples;
     public final List<String> justifications;
-    public final List<Example> examples;
 
     public Rule(
             String id, String message, List<AST.Expression> patterns, List<?> sources,
-            List<String> beforeExamples, List<String> afterExamples, List<String> justifications, List<Example> examples) {
+            List<String> beforeExamples, List<String> afterExamples, List<String> justifications) {
         this.id = id;
         this.message = message;
         this.patterns = patterns;
@@ -52,7 +27,6 @@ public class Rule {
         this.beforeExamples = beforeExamples;
         this.afterExamples = afterExamples;
         this.justifications = justifications;
-        this.examples = examples;
     }
 
     public static class InvalidRuleMapException extends RuntimeException {
@@ -109,14 +83,6 @@ public class Rule {
             throw new InvalidRuleMapException("message is missing");
         }
 
-        var examples = valuesOf(map, "examples").stream().map((ex) -> {
-            Map<String, Object> example = (Map<String, Object>)ex;
-            if((!example.containsKey("before")) && (!example.containsKey("after"))) {
-                throw new InvalidRuleMapException("Example should have at least before or after: " + example);
-            }
-            return new Example((String)example.get("before"), (String)example.get("after"));
-        }).collect(Collectors.toList());
-
         List<String> beforeExamples = (List<String>)valuesOf(map, "before");
         List<String> afterExamples = (List<String>)valuesOf(map, "after");
         List<String> justifications = (List<String>)valuesOf(map, "justification");
@@ -128,8 +94,7 @@ public class Rule {
                 srcs,
                 beforeExamples,
                 afterExamples,
-                justifications,
-                examples
+                justifications
         );
     }
 

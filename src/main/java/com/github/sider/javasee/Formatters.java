@@ -381,10 +381,7 @@ public class Formatters {
                                     "rule", Map.of(
                                             "id", rule.id,
                                             "message", rule.message,
-                                            "justifications", rule.justifications,
-                                            "examples", rule.examples.stream().map(
-                                                    (example) -> Map.of("before", example.before, "after", example.after)
-                                            ).collect(Collectors.toList())
+                                            "justifications", rule.justifications
                                     ),
                                     "location", Map.of(
                                             "start", List.of(pair.node.getRange().get().begin.line, pair.node.getRange().get().begin.column),
@@ -442,10 +439,7 @@ public class Formatters {
                                     "rule", Map.of(
                                             "id", rule.id,
                                             "message", rule.message,
-                                            "justifications", rule.justifications,
-                                            "examples", rule.examples.stream().map(
-                                                    (example) -> Map.of("before", example.before, "after", example.after)
-                                            ).collect(Collectors.toList())
+                                            "justifications", rule.justifications
                                     ),
                                     "location", Map.of(
                                             "start", List.of(pair.node.getRange().get().begin.line, pair.node.getRange().get().begin.column),
