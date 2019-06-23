@@ -18,10 +18,9 @@ public class Analyzer {
     public final List<JavaFile> javaFiles;
 
     public void run(Consumer<Tuple3<JavaFile, Rule, NodePair>> consumer) {
-        for(JavaFile javaFile :this.javaFiles) {
-            Set<Rule> rules = config.rulesForPath(javaFile.path);
+        for(JavaFile javaFile: this.javaFiles) {
             javaFile.rootPair().eachSubPair((nodePair) -> {
-                for(Rule rule:rules) {
+                for (var rule: config.rules) {
                     if(rule.patterns.stream().anyMatch((pattern) -> testPair(nodePair, pattern))) {
                         consumer.accept(new Tuple3<>(javaFile, rule, nodePair));
                     }

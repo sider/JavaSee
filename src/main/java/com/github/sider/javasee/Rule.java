@@ -9,68 +9,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Rule {
-    public static class Example {
-        public final String before;
-        public final String after;
-
-        public Example(String before, String after) {
-            this.before = before;
-            this.after = after;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Example example = (Example) o;
-            return Objects.equals(before, example.before) &&
-                    Objects.equals(after, example.after);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(before, after);
-        }
-    }
-
     public final String id;
-    public final List<String> messages;
+    public final String message;
     public final List<AST.Expression> patterns;
     public final List<?> sources;
-    public final Set<String> tags;
-    public final List<String> beforeExamples;
-    public final List<String> afterExamples;
+    public final List<String> matchExamples;
+    public final List<String> unmatchExamples;
     public final List<String> justifications;
-    public final List<Example> examples;
 
     public Rule(
-            String id, List<String> messages, List<AST.Expression> patterns, List<?> sources, Set<String> tags,
-            List<String> beforeExamples, List<String> afterExamples, List<String> justifications, List<Example> examples) {
+            String id, String message, List<AST.Expression> patterns, List<?> sources,
+            List<String> matchExamples, List<String> unmatchExamples, List<String> justifications) {
         this.id = id;
-        this.messages = messages;
+        this.message = message;
         this.patterns = patterns;
         this.sources = sources;
-        this.tags = tags;
-        this.beforeExamples = beforeExamples;
-        this.afterExamples = afterExamples;
+        this.matchExamples = matchExamples;
+        this.unmatchExamples = unmatchExamples;
         this.justifications = justifications;
-        this.examples = examples;
-    }
-
-    public boolean matches(String identifier, Set<String> tags) {
-        if(identifier != null) {
-            if((!id.equals(identifier)) && (!id.startsWith(identifier + "."))) {
-                return false;
-            }
-        }
-
-        if(tags != null) {
-            if(!this.tags.containsAll(tags)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public static class InvalidRuleMapException extends RuntimeException {
@@ -121,37 +77,30 @@ public class Rule {
 
         }).collect(Collectors.toList());
 
-        List<String> messages = (List<String>)valuesOf(map, "message");
+        var message = (String)map.getOrDefault("message", null);
 
-        if(messages.isEmpty()) {
+        if(message == null) {
             throw new InvalidRuleMapException("message is missing");
         }
 
-        var tags = new HashSet<String>();
-        tags.addAll((List<String>)valuesOf(map, "tags"));
+        List<String> matchExamples = new ArrayList<>();
+        List<String> unmatchExamples = new ArrayList<>();
+        var tests = (Map<String, Object>)map.get("tests");
+        if (tests != null) {
+            matchExamples.addAll((List<String>)valuesOf(tests, "match"));
+            unmatchExamples.addAll((List<String>)valuesOf(tests, "unmatch"));
+        }
 
-        var examples = valuesOf(map, "examples").stream().map((ex) -> {
-            Map<String, Object> example = (Map<String, Object>)ex;
-            if((!example.containsKey("before")) && (!example.containsKey("after"))) {
-                throw new InvalidRuleMapException("Example should have at least before or after: " + example);
-            }
-            return new Example((String)example.get("before"), (String)example.get("after"));
-        }).collect(Collectors.toList());
-
-        List<String> beforeExamples = (List<String>)valuesOf(map, "before");
-        List<String> afterExamples = (List<String>)valuesOf(map, "after");
         List<String> justifications = (List<String>)valuesOf(map, "justification");
 
         return new Rule(
                 id,
-                messages,
+                message,
                 patterns,
                 srcs,
-                tags,
-                beforeExamples,
-                afterExamples,
-                justifications,
-                examples
+                matchExamples,
+                unmatchExamples,
+                justifications
         );
     }
 

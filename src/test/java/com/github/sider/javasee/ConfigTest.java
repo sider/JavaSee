@@ -41,7 +41,7 @@ public class ConfigTest {
         assertNotNull(rule);
 
         assertEquals("greeting", rule.id);
-        assertEquals(Arrays.asList("Hello world\n\nLorem ipsum.\n"), rule.messages);
+        assertEquals("Hello world\n\nLorem ipsum.\n", rule.message);
 
         for (var pattern: rule.patterns) {
             assertTrue(pattern instanceof AST.MethodCall);

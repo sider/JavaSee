@@ -42,10 +42,8 @@ public class RuleTest {
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.Wildcard);
-        assertEquals(new HashSet<>(), rule.tags);
-        assertEquals(new ArrayList<>(), rule.examples);
         assertEquals(new ArrayList<>(), rule.justifications);
 
     }
@@ -57,32 +55,24 @@ public class RuleTest {
                         kv("id", "foo.bar.baz"),
                         kv("pattern", List.of("foo.bar", "_")),
                         kv("message", "message1"),
-                        kv("tags", List.of("tag1", "tag2")),
-                        kv("examples", List.of(
-                                mapOf(kv("before", "foo"), kv("after", "bar")),
-                                mapOf(kv("before", "foo")),
-                                mapOf(kv("after", "bar"))
-                        )),
-                        kv("justification", List.of("some", "message"))
+                        kv("justification", List.of("some", "message")),
+                        kv("tests",
+                                mapOf(kv("match", List.of("1", "2", "1+2")),
+                                        kv("unmatch", "foo()")))
                 )
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.FieldSelection);
         var receiver = (AST.ID)((AST.FieldSelection)(rule.patterns.get(0))).receiver;
         var name = ((AST.FieldSelection)(rule.patterns.get(0))).name;
         assertEquals("foo", receiver.name);
         assertEquals("bar", name);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
-        assertEquals(Set.of("tag1", "tag2"), rule.tags);
-        assertEquals(
-                List.of(
-                        new Rule.Example("foo", "bar"),
-                        new Rule.Example("foo", null),
-                        new Rule.Example(null, "bar")
-                ), rule.examples);
         assertEquals(List.of("some", "message"), rule.justifications);
+        assertEquals(List.of("1", "2", "1+2"), rule.matchExamples);
+        assertEquals(List.of("foo()"), rule.unmatchExamples);
     }
 
     @Test
@@ -92,18 +82,14 @@ public class RuleTest {
                         kv("id", "foo.bar.baz"),
                         kv("pattern", List.of("100", "_")),
                         kv("message", "message1"),
-                        kv("tags", List.of("tag1", "tag2")),
-                        kv("examples", mapOf(kv("before", "foo"), kv("after", "bar"))),
                         kv("justification", List.of("some", "message"))
                 )
         );
 
         assertEquals("foo.bar.baz", rule.id);
-        assertEquals(List.of("message1"), rule.messages);
+        assertEquals("message1", rule.message);
         assertTrue(rule.patterns.get(0) instanceof AST.IntLiteral);
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
-        assertEquals(Set.of("tag1", "tag2"), rule.tags);
-        assertEquals(List.of(new Rule.Example("foo", "bar")), rule.examples);
         assertEquals(List.of("some", "message"), rule.justifications);
     }
 }

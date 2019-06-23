@@ -98,7 +98,7 @@ public class TestCommand implements CLICommand {
         for(var rule:rules) {
             {
                 int exampleIndex = 1;
-                for (var exampleString : rule.beforeExamples) {
+                for (var exampleString : rule.matchExamples) {
                     tests++;
 
                     try {
@@ -116,7 +116,7 @@ public class TestCommand implements CLICommand {
 
             {
                 int exampleIndex = 1;
-                for(var exampleString:rule.afterExamples) { tests += 1;
+                for(var exampleString:rule.unmatchExamples) { tests += 1;
                     try {
                         if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, exampleString, false))) {
                             stdout.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *after* example matched with some of patterns");
@@ -129,37 +129,6 @@ public class TestCommand implements CLICommand {
                     exampleIndex++;
                 }
             }
-
-            {
-                int exampleIndex = 1;
-                for (var example:rule.examples) {
-                    if(example.before != null) {
-                        tests++;
-                        try {
-                            if (!rule.patterns.stream().anyMatch((pattern) -> testPattern(pattern, example.before, true))) {
-                                stdout.println(ConsoleColors.red("  " + rule.id) + ":\tbefore of " + Libs.ordinalize(exampleIndex) + " example didn't match with any pattern");
-                                falseNegatives += 1;
-                            }
-                        } catch (Exception e) {
-                            errors += 1;
-                            stdout.println("  " + ConsoleColors.red(rule.id) + ":\tParsing failed on before of " + Libs.ordinalize(exampleIndex) + " example");
-                        }
-
-                        try {
-                            if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, example.after, false))) {
-                                stdout.println(ConsoleColors.red("  " + rule.id) + ":\tafter of " + Libs.ordinalize(exampleIndex) + " example matched with some of patterns");
-                                falsePositives += 1;
-                            }
-                        } catch (Exception e) {
-                            errors += 1;
-                            stdout.println("  " + ConsoleColors.red(rule.id) + ":\tParsing on after of " + Libs.ordinalize(exampleIndex) + " example");
-                        }
-                    }
-
-                    exampleIndex++;
-                }
-            }
-
         }
 
         stdout.println("Tested " + rules.size() + " rules with " + tests + " tests");
