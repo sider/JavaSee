@@ -5,3 +5,5 @@ out/*
 build/*
 *.iml
 javasee.yml
+/release
+.DS_Store
