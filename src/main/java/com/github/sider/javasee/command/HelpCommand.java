@@ -9,10 +9,6 @@ public class HelpCommand implements CLICommand {
     /*
      * Hacks to show better message
      */
-
-    @Getter
-    @Setter
-    private Main givenMain;
     @Getter
     @Setter
     private String givenErrorMessage;
@@ -29,27 +25,24 @@ public class HelpCommand implements CLICommand {
 
     @Override
     public boolean start() {
-        if(givenMain != null) {
-            if(givenErrorMessage != null) {
-                println(givenErrorMessage);
-            }
-            println("Usage: java -jar JavaSee-all.jar <command> [<args>]");
-            println();
-            println("These are JavaSee commands:");
-            println();
-            println("  version       Show current version of JavaSee");
-            println();
-            println("  help          Show help message");
-            println();
-            println("  init          Generate the default config file under current directory");
-            println();
-            println("  check         Find source files matching with given patterns using specified config file");
-            println();
-            println("  find          Find source files matching with a given pattern using command line args");
-            println();
-            println("  test          Find source files matching and not-matching with given pattern using specified config file");
-            return false;
+        if(givenErrorMessage != null) {
+            println(givenErrorMessage);
         }
+        println("Usage: java -jar JavaSee-all.jar <command> [<args>]");
+        println();
+        println("These are JavaSee commands:");
+        println();
+        println("  version       Show current version of JavaSee");
+        println();
+        println("  help          Show help message");
+        println();
+        println("  init          Generate the default config file under current directory");
+        println();
+        println("  check         Find source files matching with given patterns using specified config file");
+        println();
+        println("  find          Find source files matching with a given pattern using command line args");
+        println();
+        println("  test          Find source files matching and not-matching with given pattern using specified config file");
         return true;
     }
 }

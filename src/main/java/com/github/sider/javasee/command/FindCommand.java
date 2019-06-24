@@ -22,28 +22,28 @@ import static com.github.sider.javasee.lib.ConsoleColors.*;
 
 @ToString
 public class FindCommand implements CLICommand, StacktraceFormatting {
-    @Argument(required = true, usage = "Find for the pattern in given paths")
+    @Argument(required = true, index = 0, metaVar = "<pattern>", usage = "Find for the <pattern> in given paths")
     public String optionPattern = null;
 
-    @Argument
+    @Argument(index = 1)
     public List<String> optionPaths = new ArrayList<>();
 
-    public final AST.Expression pattern;
-    public final List<File> paths;
+    public AST.Expression pattern;
+    public List<File> paths;
 
     private Analyzer analyzer;
 
-    public FindCommand() {
+    @Override
+    public boolean start() {
         try {
             this.pattern = new JavaSeeParser(new StringReader(optionPattern)).WholeExpression();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+        if(this.optionPaths.size() == 0) {
+            this.optionPaths.add(".");
+        }
         this.paths = optionPaths.stream().map((path) -> new File(path)).collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean start() {
         getAnalyzer().find(pattern, (script, pair) -> {
             var path = script.path;
             var range = pair.node.getRange().get();
