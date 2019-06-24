@@ -8,8 +8,11 @@ import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.lib.Libs;
 import com.github.sider.javasee.parser.JavaSeeParser;
 import com.github.sider.javasee.parser.ParseException;
+import lombok.Getter;
 import lombok.ToString;
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
 import java.io.File;
 import java.io.StringReader;
@@ -22,6 +25,10 @@ import static com.github.sider.javasee.lib.ConsoleColors.*;
 
 @ToString
 public class FindCommand implements CLICommand, StacktraceFormatting {
+    @Option(name = "-help", aliases = "--help", handler = BooleanOptionHandler.class)
+    @Getter
+    private boolean helpRequired;
+
     @Argument(required = true, index = 0, metaVar = "<pattern>", usage = "ast pattern in <path> ...")
     public String optionPattern = null;
 
