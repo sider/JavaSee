@@ -5,5 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public interface CLICommand {
+    boolean isHelpRequired();
     boolean start();
 }

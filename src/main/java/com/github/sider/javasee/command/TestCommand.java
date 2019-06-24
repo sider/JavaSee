@@ -8,6 +8,7 @@ import com.github.sider.javasee.lib.Ref;
 import lombok.Getter;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -18,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 public class TestCommand implements CLICommand {
+    @Option(name = "-help", aliases = "--help", handler = BooleanOptionHandler.class)
+    @Getter
+    private boolean helpRequired;
 
     @Option(name="-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
