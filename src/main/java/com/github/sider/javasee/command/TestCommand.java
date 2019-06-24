@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class TestCommand implements CLICommand {
 
-    @Option(name="-config", help = true)
+    @Option(name="-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
     private final PrintStream stdout = System.out;
