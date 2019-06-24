@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Assumes the following directory structure.
+#   javasee/     => The top dir
+#     lib/       => .jar file
+#     bin/       => executable files
+
+TOPDIR="$( cd "$(dirname "$0")/.." ; pwd -P )"
+
+if [[ -z "$JAR_PATH" ]]; then
+  JAR_PATH=$TOPDIR/lib/JavaSee-all.jar
+fi
+
+java -jar $JAR_PATH $@
