@@ -46,31 +46,27 @@ public class Main {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
+            if(command.start()) {
+                System.exit(0);
+            } else {
+                System.exit(-1);
+            }
         } catch (CmdLineException e) {
-            var arguments = e.getParser().getArguments();
-
-            System.out.println(arguments.stream().map(a -> a.getClass()).collect(Collectors.toList()));
-
             var help = new HelpCommand();
+
             // Note that it is workaround to show appropriate error message.
             // it is based on implementation detail of args4j
-            //
-            // arguments contains SubCommandHandler ==> no arguments are given
-            // arguments contains OptionHandler ==> parsing failure of sub-command
-            //
-            if(arguments.stream().anyMatch(arg -> arg instanceof SubCommandHandler)) {
-                help.setGivenErrorMessage(e.getMessage());
-            } else if(arguments.stream().anyMatch(arg -> arg instanceof OptionHandler)) {
-                help.setGivenErrorMessage(e.getMessage());
-            }
 
-            help.start();
-            System.exit(-1);
-        }
-        if(command.start()) {
-            System.exit(0);
-        } else {
-            System.exit(-1);
+            // any sub-command is not given
+            if(parser == e.getParser()) {
+                help.start();
+                System.exit(-1);
+            } // parsing failure of sub-command
+            else {
+                help.setCmdLineException(e);
+                help.start();
+                System.exit(-1);
+            }
         }
     }
 

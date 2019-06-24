@@ -6,6 +6,7 @@ import com.github.sider.javasee.Formatters;
 import com.github.sider.javasee.JavaFileEnumerator;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.SubCommand;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -20,13 +21,13 @@ public class CheckCommand implements CLICommand {
     private PrintStream sysout = System.out;
     private PrintStream syserr = System.err;
 
-    @Option(name = "-config")
+    @Option(name = "-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
-    @Option(name = "-root")
+    @Option(name = "-root", aliases = "--root", metaVar = "<root>", usage= "root directory", help = true)
     public String optionRoot;
 
-    @Option(name = "-optionFormat")
+    @Option(name = "-format", aliases = "--format", metaVar = "<format>", usage = "output format", help = true)
     public String optionFormat = "text";
 
     @Argument

@@ -22,10 +22,10 @@ import static com.github.sider.javasee.lib.ConsoleColors.*;
 
 @ToString
 public class FindCommand implements CLICommand, StacktraceFormatting {
-    @Argument(required = true, index = 0, metaVar = "<pattern>", usage = "Find for the <pattern> in given paths")
+    @Argument(required = true, index = 0, metaVar = "<pattern>", usage = "ast pattern in <path> ...")
     public String optionPattern = null;
 
-    @Argument(index = 1)
+    @Argument(index = 1, metaVar = "<path>", usage = "paths")
     public List<String> optionPaths = new ArrayList<>();
 
     public AST.Expression pattern;
