@@ -31,7 +31,7 @@ public class Main {
             TestCommand.class,
             HelpCommand.class
     );
-    @Argument(handler = SubCommandHandler.class, required = true)
+    @Argument(handler = SubCommandHandler.class, required = true, metaVar = "<command>")
     @SubCommands({
             @SubCommand(name = "version", impl = VersionCommand.class),
             @SubCommand(name = "check", impl = CheckCommand.class),
@@ -47,9 +47,23 @@ public class Main {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
+            var arguments = e.getParser().getArguments();
+
+            System.out.println(arguments.stream().map(a -> a.getClass()).collect(Collectors.toList()));
+
             var help = new HelpCommand();
-            help.setGivenMain(this);
-            help.setGivenErrorMessage(e.getMessage());
+            // Note that it is workaround to show appropriate error message.
+            // it is based on implementation detail of args4j
+            //
+            // arguments contains SubCommandHandler ==> no arguments are given
+            // arguments contains OptionHandler ==> parsing failure of sub-command
+            //
+            if(arguments.stream().anyMatch(arg -> arg instanceof SubCommandHandler)) {
+                help.setGivenErrorMessage(e.getMessage());
+            } else if(arguments.stream().anyMatch(arg -> arg instanceof OptionHandler)) {
+                help.setGivenErrorMessage(e.getMessage());
+            }
+
             help.start();
             System.exit(-1);
         }
