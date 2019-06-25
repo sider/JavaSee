@@ -50,7 +50,7 @@ public class CheckCommand implements CLICommand {
                 formatter = new Formatters.JSONFormatter();
                 break;
             default:
-                throw new RuntimeException("cannot reach here");
+                throw new RuntimeException(String.format("Unknown format specified: `%s`", optionFormat));
         }
         formatter.onStart();
 
