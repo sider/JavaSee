@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.kohsuke.args4j.Argument;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class FindCommand implements CLICommand, StacktraceFormatting {
     private Analyzer analyzer;
 
     @Override
-    public boolean start() {
+    public boolean start(PrintStream out, PrintStream err) {
         try {
             this.pattern = new JavaSeeParser(new StringReader(optionPattern)).WholeExpression();
         } catch (ParseException e) {
@@ -53,7 +54,7 @@ public class FindCommand implements CLICommand, StacktraceFormatting {
             var src = getLine(path, lineNumber);
             src = blue(src.substring(0, startColumn - 1)) + brightBlue(src.substring(startColumn - 1, endColumn)) + blue(src.substring(endColumn, src.length()));
 
-            System.out.println("  " + path+ ":" + lineNumber + ":" + startColumn + "\t" + src);
+            out.println("  " + path+ ":" + lineNumber + ":" + startColumn + "\t" + src);
         });
         return true;
     }

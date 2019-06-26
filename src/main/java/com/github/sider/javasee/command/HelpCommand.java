@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.kohsuke.args4j.CmdLineException;
 
+import java.io.PrintStream;
+
 
 public class HelpCommand implements CLICommand {
     /*
@@ -13,42 +15,32 @@ public class HelpCommand implements CLICommand {
     @Setter
     private CmdLineException cmdLineException;
 
-    private void println(String message) {
-        System.out.println(message);
-    }
-    private void println() {
-        System.out.println();
-    }
-    private void print(String message) {
-        System.out.print(message);
-    }
-
     @Override
-    public boolean start() {
+    public boolean start(PrintStream out, PrintStream err) {
         if(cmdLineException!= null) {
-            println(cmdLineException.getMessage());
-            println("Usage: ");
-            println();
+            out.println(cmdLineException.getMessage());
+            out.println("Usage: ");
+            out.println();
             cmdLineException.getParser().printSingleLineUsage(System.out);
-            println();
+            out.println();
             cmdLineException.getParser().printUsage(System.out);
-            println();
+            out.println();
         } else {
-            println("Usage: java -jar JavaSee-all.jar <command> [<args>]");
-            println();
-            println("These are JavaSee commands:");
-            println();
-            println("  version       Show current version of JavaSee");
-            println();
-            println("  help          Show help message");
-            println();
-            println("  init          Generate the default config file under current directory");
-            println();
-            println("  check         Find source files matching with given patterns using specified config file");
-            println();
-            println("  find          Find source files matching with a given pattern using command line args");
-            println();
-            println("  test          Find source files matching and not-matching with given pattern using specified config file");
+            out.println("Usage: java -jar JavaSee-all.jar <command> [<args>]");
+            out.println();
+            out.println("These are JavaSee commands:");
+            out.println();
+            out.println("  version       Show current version of JavaSee");
+            out.println();
+            out.println("  help          Show help message");
+            out.println();
+            out.println("  init          Generate the default config file under current directory");
+            out.println();
+            out.println("  check         Find source files matching with given patterns using specified config file");
+            out.println();
+            out.println("  find          Find source files matching with a given pattern using command line args");
+            out.println();
+            out.println("  test          Find source files matching and not-matching with given pattern using specified config file");
         }
         return true;
     }

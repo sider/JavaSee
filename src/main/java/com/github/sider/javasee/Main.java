@@ -5,21 +5,12 @@ import lombok.Getter;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.SubCommand;
 import org.kohsuke.args4j.spi.SubCommandHandler;
 import org.kohsuke.args4j.spi.SubCommands;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Main {
     @Getter
@@ -42,11 +33,19 @@ public class Main {
     })
     private CLICommand command;
 
+    private PrintStream out;
+    private PrintStream err;
+
+    public Main(PrintStream out, PrintStream err) {
+        this.out = out;
+        this.err = err;
+    }
+
     public void run(String[] args) throws CmdLineException {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
-            if(command.start()) {
+            if(command.start(this.out, this.err)) {
                 System.exit(0);
             } else {
                 System.exit(-1);
@@ -59,18 +58,18 @@ public class Main {
 
             // any sub-command is not given
             if(parser == e.getParser()) {
-                help.start();
+                help.start(this.out, this.err);
                 System.exit(-1);
             } // parsing failure of sub-command
             else {
                 help.setCmdLineException(e);
-                help.start();
+                help.start(this.out, this.err);
                 System.exit(-1);
             }
         }
     }
 
     public static void main(String[] args) throws CmdLineException {
-        new Main().run(args);
+        new Main(System.out, System.err).run(args);
     }
 }

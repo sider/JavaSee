@@ -17,9 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CheckCommand implements CLICommand {
-    private PrintStream sysout = System.out;
-    private PrintStream syserr = System.err;
-
     @Option(name = "-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
@@ -33,7 +30,7 @@ public class CheckCommand implements CLICommand {
     private List<String> paths = List.of();
 
     @Override
-    public boolean start() {
+    public boolean start(PrintStream out, PrintStream err) {
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {
             case "text":
@@ -49,8 +46,8 @@ public class CheckCommand implements CLICommand {
 
         try {
             if(!configPath().isFile()) {
-                sysout.println("Configuration file " + configPath() + " does not look a file.");
-                sysout.println("Specify configuration file by -config option");
+                out.println("Configuration file " + configPath() + " does not look a file.");
+                out.println("Specify configuration file by -config option");
                 return false;
             }
             File rootPath;

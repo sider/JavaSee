@@ -1,5 +1,7 @@
 package com.github.sider.javasee.command;
 
+import java.io.PrintStream;
+
 public interface CLICommand {
-    boolean start();
+    boolean start(PrintStream out, PrintStream err);
 }
