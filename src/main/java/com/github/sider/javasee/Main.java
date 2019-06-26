@@ -13,15 +13,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 public class Main {
-    @Getter
-    private final List<Class> commandClasses= List.of(
-            VersionCommand.class,
-            CheckCommand.class,
-            FindCommand.class,
-            InitCommand.class,
-            TestCommand.class,
-            HelpCommand.class
-    );
     @Argument(handler = SubCommandHandler.class, required = true, metaVar = "<command>")
     @SubCommands({
             @SubCommand(name = "version", impl = VersionCommand.class),
