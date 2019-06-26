@@ -27,7 +27,7 @@ public class CheckCommand implements CLICommand {
     public String optionFormat = "text";
 
     @Argument
-    private List<String> paths = List.of();
+    public List<String> paths = new ArrayList();
 
     @Override
     public boolean start(PrintStream out, PrintStream err) {

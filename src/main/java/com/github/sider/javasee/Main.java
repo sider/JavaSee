@@ -32,7 +32,7 @@ public class Main {
         this.err = err;
     }
 
-    public void run(String[] args) throws CmdLineException {
+    public CLICommand parse(String[] args) throws CmdLineException {
         List<String> keys = new ArrayList<>();
 
         Map<String, CLICommand> map = Map.of(
@@ -46,10 +46,10 @@ public class Main {
 
         keys.addAll(map.keySet());
 
-        String name = args[0];
-        String[] rest = Arrays.copyOfRange(args, 1, args.length);
+        String name = args.length > 0 ? args[0] : null;
+        String[] rest = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {};
 
-        var command = map.get(name);
+        var command = name != null ? map.get(name) : null;
         if (command == null) {
             command = new HelpCommand(keys);
         }
@@ -58,26 +58,28 @@ public class Main {
 
         try {
             parser.parseArgument(rest);
-
-            if(command.start(this.out, this.err)) {
-                System.exit(0);
-            } else {
-                System.exit(-1);
-            }
+            return command;
         } catch (CmdLineException e) {
-            printCommandUsage(parser, command);
-            System.exit(-1);
+            printCommandUsage(parser, name, command);
+            throw e;
         }
     }
 
-    private void printCommandUsage(CmdLineParser parser, CLICommand command) {
-        out.print("Usage: ");
+    private void printCommandUsage(CmdLineParser parser, String commandName, CLICommand command) {
+        out.print(String.format("Usage: %s", commandName));
         parser.printSingleLineUsage(out);
         out.println();
         parser.printUsage(out);
     }
 
-    public static void main(String[] args) throws CmdLineException {
-        new Main(System.out, System.err).run(args);
+    public static void main(String[] args) {
+        try {
+            var command = new Main(System.out, System.err).parse(args);
+            if (!command.start(System.out, System.err)) {
+                System.exit(-1);
+            }
+        } catch (CmdLineException e) {
+            System.exit(-1);
+        }
     }
 }
