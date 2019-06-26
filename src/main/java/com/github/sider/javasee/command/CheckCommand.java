@@ -4,11 +4,8 @@ import com.github.sider.javasee.Analyzer;
 import com.github.sider.javasee.Config;
 import com.github.sider.javasee.Formatters;
 import com.github.sider.javasee.JavaFileEnumerator;
-import lombok.Getter;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
-import org.kohsuke.args4j.spi.SubCommand;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -20,10 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CheckCommand implements CLICommand {
-    @Option(name = "-help", aliases = "--help", handler = BooleanOptionHandler.class)
-    @Getter
-    private boolean helpRequired;
-
     private PrintStream sysout = System.out;
     private PrintStream syserr = System.err;
 

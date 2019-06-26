@@ -1,17 +1,11 @@
 package com.github.sider.javasee.command;
 
-import com.github.sider.javasee.Main;
 import lombok.Getter;
 import lombok.Setter;
 import org.kohsuke.args4j.CmdLineException;
 
 
 public class HelpCommand implements CLICommand {
-    @Override
-    public boolean isHelpRequired() {
-        return true;
-    }
-
     /*
      * Hacks to show better message
      */
