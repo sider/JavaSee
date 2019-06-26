@@ -10,7 +10,7 @@ import org.kohsuke.args4j.spi.SubCommandHandler;
 import org.kohsuke.args4j.spi.SubCommands;
 
 import java.io.PrintStream;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     @Argument(handler = SubCommandHandler.class, required = true, metaVar = "<command>")
@@ -33,31 +33,48 @@ public class Main {
     }
 
     public void run(String[] args) throws CmdLineException {
-        CmdLineParser parser = new CmdLineParser(this);
+        List<String> keys = new ArrayList<>();
+
+        Map<String, CLICommand> map = Map.of(
+                "init", new InitCommand(),
+                "check", new CheckCommand(),
+                "find", new FindCommand(),
+                "test", new TestCommand(),
+                "version", new VersionCommand(),
+                "help", new HelpCommand(keys)
+        );
+
+        keys.addAll(map.keySet());
+
+        String name = args[0];
+        String[] rest = Arrays.copyOfRange(args, 1, args.length);
+
+        var command = map.get(name);
+        if (command == null) {
+            command = new HelpCommand(keys);
+        }
+
+        CmdLineParser parser = new CmdLineParser(command);
+
         try {
-            parser.parseArgument(args);
+            parser.parseArgument(rest);
+
             if(command.start(this.out, this.err)) {
                 System.exit(0);
             } else {
                 System.exit(-1);
             }
         } catch (CmdLineException e) {
-            var help = new HelpCommand();
-
-            // Note that it is workaround to show appropriate error message.
-            // it is based on implementation detail of args4j
-
-            // any sub-command is not given
-            if(parser == e.getParser()) {
-                help.start(this.out, this.err);
-                System.exit(-1);
-            } // parsing failure of sub-command
-            else {
-                help.setCmdLineException(e);
-                help.start(this.out, this.err);
-                System.exit(-1);
-            }
+            printCommandUsage(parser, command);
+            System.exit(-1);
         }
+    }
+
+    private void printCommandUsage(CmdLineParser parser, CLICommand command) {
+        out.print("Usage: ");
+        parser.printSingleLineUsage(out);
+        out.println();
+        parser.printUsage(out);
     }
 
     public static void main(String[] args) throws CmdLineException {
