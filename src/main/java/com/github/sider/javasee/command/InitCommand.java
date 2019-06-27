@@ -13,7 +13,7 @@ public class InitCommand implements CLICommand {
     public final String TEMPLATE_RESOURCE_NAME = "template.yml";
     public final String DESTINATION_CONFIG_PATH = "javasee.yml";
 
-    @Option(name = "-c", aliases = "--config", metaVar = "<path>", usage = "Configuration path", help = true)
+    @Option(name = "-config", aliases = "--config", metaVar = "<path>", usage = "Configuration path", help = true)
     public Path configPath = Paths.get(DESTINATION_CONFIG_PATH);
 
     @Override

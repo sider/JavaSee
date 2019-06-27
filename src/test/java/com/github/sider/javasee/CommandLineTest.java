@@ -97,8 +97,8 @@ public class CommandLineTest {
         assertNull(main.parse(new String[] { "init", "--help" }));
 
         assertEquals(
-                "Usage: javasee init [-c (--config) <path>]\n" +
-                " -c (--config) <path> : Configuration path (default: javasee.yml)\n",
+                "Usage: javasee init [-config (--config) <path>]\n" +
+                " -config (--config) <path> : Configuration path (default: javasee.yml)\n",
                 stdout.getString()
         );
     }
