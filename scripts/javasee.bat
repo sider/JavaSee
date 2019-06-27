@@ -6,4 +6,4 @@
 @rem     bin/       => executable files
 
 set TOPDIR=%~dp0..
-java -jar "%TOPDIR%\lib\JavaSee-all.jar" %*
+java -Djavasee.name=javasee.bat -jar "%TOPDIR%\lib\JavaSee-all.jar" %*
