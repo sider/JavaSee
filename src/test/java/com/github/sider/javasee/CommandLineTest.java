@@ -2,34 +2,11 @@ package com.github.sider.javasee;
 
 import com.github.sider.javasee.command.*;
 import org.junit.jupiter.api.Test;
-import org.kohsuke.args4j.CmdLineException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-class StringPrintStream {
-    private ByteArrayOutputStream arrayStream;
-    private PrintStream stream;
-
-    public StringPrintStream() {
-        arrayStream = new ByteArrayOutputStream();
-        this.stream = new PrintStream(arrayStream, true, StandardCharsets.UTF_8);
-    }
-
-    public PrintStream getStream() {
-        return stream;
-    }
-
-    public String getString() {
-        this.stream.flush();
-        return new String(arrayStream.toByteArray(), StandardCharsets.UTF_8);
-    }
-}
 
 public class CommandLineTest {
     @Test
