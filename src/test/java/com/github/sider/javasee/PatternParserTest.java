@@ -394,4 +394,29 @@ public class PatternParserTest {
         assertTrue(et.parameters.get(1) instanceof AST.Wildcard);
     }
 
+    @Test
+    public void testSingleLineComment() throws Exception {
+        var e = parser("1 + 2 // line comment").WholeExpression();
+        assertTrue(e instanceof AST.Addition);
+        var et = (AST.Addition)e;
+
+        assertTrue(et.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)et.lhs).value);
+        assertTrue(et.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)et.rhs).value);
+    }
+
+    @Test
+    public void testMultiLineComment() throws Exception {
+        var e = parser("/* comment1 */ 1 + 2 /* comment2 */").WholeExpression();
+        assertTrue(e instanceof AST.Addition);
+        var et = (AST.Addition)e;
+
+        assertTrue(et.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)et.lhs).value);
+        assertTrue(et.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)et.rhs).value);
+    }
+
+
 }
