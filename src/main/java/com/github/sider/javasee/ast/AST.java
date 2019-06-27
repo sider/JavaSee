@@ -6,6 +6,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.type.Type;
 import com.github.sider.javasee.NodePair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -733,7 +734,7 @@ public class AST {
     public static class InstanceofExpression extends Expression {
         public final Location location;
         public final Expression target;
-        public final String type;
+        public final TypeNode type;
 
 
         @Override
@@ -741,7 +742,11 @@ public class AST {
             if(node instanceof InstanceOfExpr) {
                 var instanceofExpr = (InstanceOfExpr)node;
                 if(target.testNode(instanceofExpr.getExpression())) return false;
-                if(!instanceofExpr.getType().asClassOrInterfaceType().getNameAsString().equals(type)) return false;
+                if (type instanceof AST.PlaceholderTypeNode) {
+                    return true;
+                } else {
+                    if(!type.testType(instanceofExpr.getType())) return false;
+                }
                 return true;
             } else {
                 return false;
@@ -1060,6 +1065,52 @@ public class AST {
                 return value == ((DoubleLiteralExpr)node).asDouble();
             }
             return false;
+        }
+    }
+
+    public static abstract class TypeNode extends PatternNode {
+        public abstract String getName();
+
+        public abstract boolean testType(Type operand);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class PrimitiveTypeNode extends TypeNode {
+        public final Location location;
+        public final String name;
+
+        public boolean testType(Type operand) {
+            return operand.isPrimitiveType() && operand.asPrimitiveType().getType().asString().equals(name);
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class ObjectTypeNode extends TypeNode {
+        public final Location location;
+        public final String name;
+
+        public boolean testType(Type operand) {
+            return operand.isClassOrInterfaceType() && operand.asClassOrInterfaceType().getNameAsString().equals(name);
+        }
+    }
+
+    @Getter
+    @ToString
+    public static class PlaceholderTypeNode extends TypeNode {
+        public final Location location;
+        public final String name;
+        public PlaceholderTypeNode(Location location) {
+            this.location = location;
+            this.name = "_";
+        }
+
+        @Override
+        public boolean testType(Type operand) {
+            return true;
         }
     }
 

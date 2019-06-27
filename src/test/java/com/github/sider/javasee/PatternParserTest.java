@@ -337,6 +337,24 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testInstanceof() throws Exception {
+        AST.Expression e;
+        AST.InstanceofExpression et;
+
+        e = parser("_ instanceof String").WholeExpression();
+        assertTrue(e instanceof AST.InstanceofExpression);
+        et = (AST.InstanceofExpression)e;
+        assertTrue(et.target instanceof AST.Wildcard);
+        assertEquals("String", et.type.getName());
+
+        e = parser("_ instanceof _").WholeExpression();
+        assertTrue(e instanceof AST.InstanceofExpression);
+        et = (AST.InstanceofExpression)e;
+        assertTrue(et.target instanceof AST.Wildcard);
+        assertTrue(et.type instanceof AST.PlaceholderTypeNode);
+    }
+
+    @Test
     public void testIntLiteral() throws Exception {
         var e = parser("2").WholeExpression();
         assertTrue(e instanceof AST.IntLiteral);

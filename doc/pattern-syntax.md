@@ -97,8 +97,15 @@ _ + _
 ```
 
 - Find `instanceof Integer` :
-  - `obj1 instanceof Integer`, `obj2 instanceof Integer`, etc.
+  - `a instanceof Integer`, `b instanceof Integer`, etc.
   
 ```
 _ instanceof Integer
+```
+
+- Find all occurence of `instanceof`
+  - `_ instanceof _`
+
+```
+_ instanceof _
 ```
