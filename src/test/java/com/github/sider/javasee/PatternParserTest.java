@@ -229,6 +229,14 @@ public class PatternParserTest {
     }
 
     @Test
+    public void testCharacterLiteral() throws Exception {
+        var e = parser("'H'").WholeExpression();
+        assertTrue(e instanceof AST.CharacterLiteral);
+        var et =(AST.CharacterLiteral)e;
+        assertEquals("H", et.value);
+    }
+
+    @Test
     public void testStringLiteral() throws Exception {
         var e = parser("\"Hello\"").WholeExpression();
         assertTrue(e instanceof AST.StringLiteral);

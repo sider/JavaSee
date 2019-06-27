@@ -1115,6 +1115,22 @@ public class AST {
         }
     }
 
+    @AllArgsConstructor
+    @Getter
+    @ToString
+    public static class CharacterLiteral extends Expression {
+        public final Location location;
+        public final String value;
+
+        @Override
+        public boolean testNode(Node node) {
+            if(node instanceof CharLiteralExpr) {
+                return value.equals(((CharLiteralExpr)node).getValue());
+            }
+            return false;
+        }
+    }
+
 
     @AllArgsConstructor
     @Getter
