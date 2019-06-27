@@ -125,6 +125,18 @@ SPECIAL_TOKEN :
 | <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])*>
 }
 
+/*
+ * PLACEHOLDER
+ */
+TOKEN:
+{
+  <P_INT:          "@int"         >
+| <P_DOUBLE:       "@double"      >
+| <P_BOOLEAN:      "@boolean"     >
+| <P_STRING:       "@String"      >
+
+}
+
 
 /*
  * KEYWORDS
@@ -137,7 +149,6 @@ TOKEN:
 | <K_BYTE:         "byte"         >
 | <K_CASE:         "case"         >
 | <K_CHAR:         "char"         >
-| <K_STRING:       "String"       >
 | <K_CLASS:        "class"        >
 | <K_CONTINUE:     "continue"     >
 | <K_DOUBLE:       "double"       >
@@ -570,8 +581,8 @@ AST.Expression Equal() :{ Token t; AST.Expression a, b; }{
   )* {return a;}
 }
 
-AST.Expression Instanceof(): {Token n, t; AST.Expression a;} {
-  a=Comparative() [ t="instanceof" n=<IDENTIFIER> {a = new AST.InstanceofExpression(p(n), a, c(n));} ] { return a;}
+AST.Expression Instanceof(): {Token n, t; AST.Expression instance; AST.TypeNode type;} {
+  instance=Comparative() [ t="instanceof" type=Type() {instance = new AST.InstanceofExpression(p(t), instance, type);} ] { return instance;}
 }
 
 AST.Expression Comparative() : { Token t; AST.Expression a, b; Token n; }{
@@ -702,6 +713,16 @@ AST.ID Identifier() :{Token t;} {
     t=<IDENTIFIER> {return new AST.ID(p(t), t.image);}
 }
 
+AST.TypeNode Type(): {Token t; AST.TypeNode node;} {
+(
+    t=<K_INT>      {return new AST.PrimitiveTypeNode(p(t), t.image); }
+|   t=<K_DOUBLE>   {return new AST.PrimitiveTypeNode(p(t), t.image); }
+|   t=<K_BOOLEAN>  {return new AST.PrimitiveTypeNode(p(t), t.image); }
+|   t="_"          {return new AST.PlaceholderTypeNode(p(t)); }
+|   t=<IDENTIFIER> {return new AST.ObjectTypeNode(p(t), t.image); }
+)
+}
+
 AST.Expression Wildcard() :{Token t;}{
     t="_"                         {return new AST.Wildcard(p(t));}
 }
@@ -723,12 +744,10 @@ AST.Expression NullPattern() :{Token t;}{
 }
 
 AST.Expression PlaceholderPattern(): {Token t; AST.Expression e;} {
-  t="@" (
-    "int"                    {return new AST.IntWildcard(p(t));}
-  | "double"                 {return new AST.DoubleWildcard(p(t));}
-  | "boolean"                {return new AST.BooleanWildcard(p(t));}
-  | "String"                 {return new AST.StringWildcard(p(t));}
-  )
+    t=<P_INT>                {return new AST.IntWildcard(p(t));}
+  | t=<P_DOUBLE>             {return new AST.DoubleWildcard(p(t));}
+  | t=<P_BOOLEAN>            {return new AST.BooleanWildcard(p(t));}
+  | t=<P_STRING>             {return new AST.StringWildcard(p(t));}
 }
 
 AST.Expression DoublePattern() :{Token t;}{
