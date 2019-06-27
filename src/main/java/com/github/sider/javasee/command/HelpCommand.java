@@ -18,8 +18,8 @@ public class HelpCommand implements CLICommand {
 
     @Override
     public boolean start(PrintStream out, PrintStream err) {
-        out.println("Usage: javasee <subcommand>");
-        out.println("  subcommand ::=");
+        out.println("Usage: javasee <command>");
+        out.println("  Where command is one of:");
         for (var command : commands) {
             out.println(String.format("    %s", command.getName()));
         }

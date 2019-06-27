@@ -226,8 +226,8 @@ public class CommandLineTest {
 
         assertTrue(command.start(stdout.getStream(), stderr.getStream()));
 
-        assertEquals("Usage: javasee <subcommand>\n" +
-                "  subcommand ::=\n" +
+        assertEquals("Usage: javasee <command>\n" +
+                "  Where command is one of:\n" +
                 "    init\n" +
                 "    check\n" +
                 "    find\n" +
