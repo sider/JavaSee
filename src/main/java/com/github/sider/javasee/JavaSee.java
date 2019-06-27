@@ -29,4 +29,20 @@ public class JavaSee {
     public static String getCommandLineName() {
         return System.getProperty("javasee.name", "java -jar JavaSee-all.jar");
     }
+
+    public enum ExitStatus {
+        OK(0),
+        FAILURE(2),
+        ERROR(1);
+
+        private final int id;
+
+        private ExitStatus(final int id) {
+            this.id = id;
+        }
+
+        public int getInt() {
+            return this.id;
+        }
+    }
 }

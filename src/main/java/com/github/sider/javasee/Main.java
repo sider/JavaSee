@@ -34,7 +34,7 @@ public class Main {
         this.commandName = commandName;
     }
 
-    public CLICommand parse(String[] args) throws CmdLineException {
+    public CLICommand parse(String[] args) {
         ArrayList<CLICommand> commands = new ArrayList<>();
 
         HelpCommand help = new HelpCommand(commands, commandName);
@@ -61,7 +61,7 @@ public class Main {
             return command;
         } catch (CmdLineException e) {
             printCommandUsage(e.getParser(), command);
-            throw e;
+            return null;
         }
     }
 
@@ -75,10 +75,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             var command = new Main(System.out, System.err, JavaSee.getCommandLineName()).parse(args);
-            if (!command.start(System.out, System.err)) {
-                System.exit(-1);
+            if (command != null) {
+                var status = command.start(System.out, System.err);
+                System.exit(status.getInt());
+            } else {
+                System.exit(JavaSee.ExitStatus.ERROR.getInt());
             }
-        } catch (CmdLineException e) {
+        } catch (Throwable e) {
+            e.printStackTrace();
             System.exit(-1);
         }
     }
