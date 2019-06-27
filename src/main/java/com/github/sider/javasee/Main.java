@@ -1,29 +1,14 @@
 package com.github.sider.javasee;
 
 import com.github.sider.javasee.command.*;
-import lombok.Getter;
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.spi.SubCommand;
-import org.kohsuke.args4j.spi.SubCommandHandler;
-import org.kohsuke.args4j.spi.SubCommands;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
-    @Argument(handler = SubCommandHandler.class, required = true, metaVar = "<command>")
-    @SubCommands({
-            @SubCommand(name = "version", impl = VersionCommand.class),
-            @SubCommand(name = "check", impl = CheckCommand.class),
-            @SubCommand(name = "find", impl = FindCommand.class),
-            @SubCommand(name = "init", impl = InitCommand.class),
-            @SubCommand(name = "test", impl = TestCommand.class),
-            @SubCommand(name = "help", impl = HelpCommand.class)
-    })
-    private CLICommand command;
-
     private PrintStream out;
     private PrintStream err;
     private String commandName;
