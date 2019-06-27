@@ -1,7 +1,5 @@
 package com.github.sider.javasee;
 
-import com.github.sider.javasee.command.CLICommand;
-import com.github.sider.javasee.command.HelpCommand;
 import com.github.sider.javasee.command.TestCommand;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
@@ -87,10 +85,10 @@ public class TestCommandTest {
 
         TestCommand test = new TestCommand();
 
-        test.validateRulePatterns(stdout.getStream(), config.rules);
+        test.validateRulePatterns(stdout.getStream(), stderr.getStream(), config.rules);
 
         assertFalse(test.isFailed());
-        assertEquals("Checkintg rule patterns...\n" +
+        assertEquals("Checking rule patterns...\n" +
                 "Tested 1 rules with 0 tests\n" +
                 "\u001B[32m  All tests green!\u001B[0m\n", stdout.getString());
     }
@@ -103,20 +101,20 @@ public class TestCommandTest {
                 "    pattern: _.println(...)\n" +
                 "    tests:\n" +
                 "      match:\n" +
-                "        - System.out.println(123)\n" +
-                "        - System.err.println(true)\n" +
+                "        - System.out.println(123);\n" +
+                "        - System.err.println(true);\n" +
                 "      unmatch:\n" +
-                "        - System.out.print(123)\n" +
-                "        - System.err.print(false)\n";
+                "        - System.out.print(123);\n" +
+                "        - System.err.print(false);\n";
 
         var config = config(yaml);
 
         TestCommand test = new TestCommand();
 
-        test.validateRulePatterns(stdout.getStream(), config.rules);
+        test.validateRulePatterns(stdout.getStream(), stderr.getStream(), config.rules);
 
         assertFalse(test.isFailed());
-        assertEquals("Checkintg rule patterns...\n" +
+        assertEquals("Checking rule patterns...\n" +
                 "Tested 1 rules with 4 tests\n" +
                 "\u001B[32m  All tests green!\u001B[0m\n", stdout.getString());
     }
@@ -130,25 +128,53 @@ public class TestCommandTest {
                 "    tests:\n" +
                 "      unmatch:\n" +
                 "        - System.out.println(123)\n" +
-                "        - System.err.println(true)\n" +
+                "        - System.err.println(true);\n" +
                 "      match:\n" +
                 "        - System.out.print(123)\n" +
-                "        - System.err.print(false)\n";
+                "        - System.err.print(false);\n";
 
         var config = config(yaml);
 
         TestCommand test = new TestCommand();
 
-        test.validateRulePatterns(stdout.getStream(), config.rules);
+        test.validateRulePatterns(stdout.getStream(), stderr.getStream(), config.rules);
 
         assertTrue(test.isFailed());
-        assertEquals("Checkintg rule patterns...\n" +
+        assertEquals("Checking rule patterns...\n" +
                 "\u001B[31m  greeting\u001B[0m:\t1st match example didn't match with any pattern\n" +
                 "\u001B[31m  greeting\u001B[0m:\t2nd match example didn't match with any pattern\n" +
                 "\u001B[31m  greeting\u001B[0m:\t1st unmatch example matched with some of patterns\n" +
                 "\u001B[31m  greeting\u001B[0m:\t2nd unmatch example matched with some of patterns\n" +
                 "Tested 1 rules with 4 tests\n" +
                 "  2 examples found which should not match, but matched\n" +
-                "  2 examples found which should match, but didn't\n", stdout.getString());
+                "  2 examples found which should match, but didn't\n" +
+                "  0 errors reported\n", stdout.getString());
+    }
+
+    @Test
+    public void testTestPatternParseFailure() throws Exception {
+        var yaml = "rules:\n" +
+                "  - id: greeting\n" +
+                "    message: Hello world\n" +
+                "    pattern: _.println(...)\n" +
+                "    tests:\n" +
+                "      unmatch:\n" +
+                "        - if System.out.println(123)\n";
+
+        var config = config(yaml);
+
+        TestCommand test = new TestCommand();
+
+        test.validateRulePatterns(stdout.getStream(), stderr.getStream(), config.rules);
+
+        assertTrue(test.isFailed());
+        assertEquals("Checking rule patterns...\n" +
+                "Tested 1 rules with 0 tests\n" +
+                "  0 examples found which should not match, but matched\n" +
+                "  0 examples found which should match, but didn't\n" +
+                "  1 errors reported\n", stdout.getString());
+        assertEquals("Failed to parse an example in `greeting`\n" +
+                "  Examples should be one of Java expression, statement, or compilation unit.\n" +
+                "    if System.out.println(123)\n", stderr.getString());
     }
 }
