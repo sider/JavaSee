@@ -30,6 +30,11 @@ public class CheckCommand implements CLICommand {
     public List<String> paths = new ArrayList();
 
     @Override
+    public String getName() {
+        return "check";
+    }
+
+    @Override
     public boolean start(PrintStream out, PrintStream err) {
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {

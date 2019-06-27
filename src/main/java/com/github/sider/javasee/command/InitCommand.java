@@ -16,6 +16,11 @@ public class InitCommand implements CLICommand {
     public Path configPath = Paths.get(DESTINATION_CONFIG_PATH);
 
     @Override
+    public String getName() {
+        return "init";
+    }
+
+    @Override
     public boolean start(PrintStream out, PrintStream err) {
         try {
             var template = ClassLoader.getSystemResourceAsStream(TEMPLATE_RESOURCE_NAME);

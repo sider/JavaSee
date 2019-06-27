@@ -30,6 +30,11 @@ public class TestCommand implements CLICommand {
     }
 
     @Override
+    public String getName() {
+        return "test";
+    }
+
+    @Override
     public boolean start(PrintStream out, PrintStream err) {
         Config config;
         try {

@@ -228,11 +228,11 @@ public class CommandLineTest {
 
         assertEquals("Usage: javasee <subcommand>\n" +
                 "  subcommand ::=\n" +
+                "    init\n" +
                 "    check\n" +
-                "    test\n" +
                 "    find\n" +
+                "    test\n" +
                 "    version\n" +
-                "    help\n" +
-                "    init\n", stdout.getString());
+                "    help\n", stdout.getString());
     }
 }

@@ -10,6 +10,11 @@ import java.io.PrintStream;
 
 public class VersionCommand implements CLICommand {
     @Override
+    public String getName() {
+        return "version";
+    }
+
+    @Override
     public boolean start(PrintStream out, PrintStream err) {
         out.println("JavaSee " + Version.VERSION);
         return true;

@@ -33,40 +33,38 @@ public class Main {
     }
 
     public CLICommand parse(String[] args) throws CmdLineException {
-        List<String> keys = new ArrayList<>();
+        ArrayList<CLICommand> commands = new ArrayList<>();
 
-        Map<String, CLICommand> map = Map.of(
-                "init", new InitCommand(),
-                "check", new CheckCommand(),
-                "find", new FindCommand(),
-                "test", new TestCommand(),
-                "version", new VersionCommand(),
-                "help", new HelpCommand(keys)
-        );
-
-        keys.addAll(map.keySet());
+        HelpCommand help = new HelpCommand(commands);
+        commands.add(new InitCommand());
+        commands.add(new CheckCommand());
+        commands.add(new FindCommand());
+        commands.add(new TestCommand());
+        commands.add(new VersionCommand());
+        commands.add(help);
 
         String name = args.length > 0 ? args[0] : null;
         String[] rest = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {};
 
-        var command = name != null ? map.get(name) : null;
-        if (command == null) {
-            command = new HelpCommand(keys);
+        CLICommand command;
+        if (name != null) {
+            command = commands.stream().filter(c -> c.getName().equals(name)).findAny().orElse(help);
+        } else {
+            command = help;
         }
 
-        CmdLineParser parser = new CmdLineParser(command);
-
         try {
+            CmdLineParser parser = new CmdLineParser(command);
             parser.parseArgument(rest);
             return command;
         } catch (CmdLineException e) {
-            printCommandUsage(parser, name, command);
+            printCommandUsage(e.getParser(), command);
             throw e;
         }
     }
 
-    private void printCommandUsage(CmdLineParser parser, String commandName, CLICommand command) {
-        out.print(String.format("Usage: %s", commandName));
+    private void printCommandUsage(CmdLineParser parser, CLICommand command) {
+        out.print(String.format("Usage: %s", command.getName()));
         parser.printSingleLineUsage(out);
         out.println();
         parser.printUsage(out);

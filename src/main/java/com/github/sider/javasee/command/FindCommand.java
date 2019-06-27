@@ -35,6 +35,11 @@ public class FindCommand implements CLICommand, StacktraceFormatting {
     private Analyzer analyzer;
 
     @Override
+    public String getName() {
+        return "find";
+    }
+
+    @Override
     public boolean start(PrintStream out, PrintStream err) {
         try {
             this.pattern = new JavaSeeParser(new StringReader(optionPattern)).WholeExpression();
