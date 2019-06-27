@@ -4,6 +4,7 @@ import com.github.sider.javasee.lib.ConsoleColors;
 import com.github.sider.javasee.lib.Libs;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,14 @@ import java.util.stream.Collectors;
 
 public class Formatters {
     public static abstract class AbstractFormatter implements StacktraceFormatting {
+        protected PrintStream stdout;
+        protected PrintStream stderr;
+
+        public AbstractFormatter(PrintStream stdout, PrintStream stderr) {
+            this.stdout = stdout;
+            this.stderr = stderr;
+        }
+
         /**
          * Called when analyzer started
          */
@@ -63,13 +72,17 @@ public class Formatters {
          * @param error
          */
         public void onFatalError(Exception error) {
-            System.err.println("Fatal error: " + error);
-            System.err.println("Backtrace:");
-            System.err.println(formatStacktrace(error.getStackTrace(), 2));
+            stderr.println("Fatal error: " + error);
+            stderr.println("Backtrace:");
+            stderr.println(formatStacktrace(error.getStackTrace(), 2));
         }
     }
 
     public static class TextFormatter extends AbstractFormatter {
+        public TextFormatter(PrintStream stdout, PrintStream stderr) {
+            super(stdout, stderr);
+        }
+
         /**
          * Called when analyzer started
          */
@@ -105,9 +118,9 @@ public class Formatters {
          */
         @Override
         public void onConfigError(String path, Exception error) {
-            System.err.println("Failed to load configuration: " + path);
-            System.err.println(error);
-            System.err.println("Backtrace:");
+            stderr.println("Failed to load configuration: " + path);
+            stderr.println(error);
+            stderr.println("Backtrace:");
             //TODO print backtrace
         }
 
@@ -130,8 +143,8 @@ public class Formatters {
          */
         @Override
         public void onScriptError(String path, Exception error) {
-            System.err.println("Failed to load script: " + path);
-            System.err.println(error);
+            stderr.println("Failed to load script: " + path);
+            stderr.println(error);
         }
 
         /**
@@ -157,11 +170,15 @@ public class Formatters {
             var column = position.column;
             var src = ConsoleColors.red(getLine(path, line));
             var message = rule.message.split("\n")[0];
-            System.out.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
+            stdout.println(path + ":" + line + ":" + column + "\t" + src + "\t" + message + "(" + rule.id + ")");
         }
     }
 
     public static class JSONFormatter extends AbstractFormatter {
+        public JSONFormatter(PrintStream stdout, PrintStream stderr) {
+            super(stdout, stderr);
+        }
+
         public final List<Object> issues = new ArrayList<>();
         public final List<Object> scriptErrors = new ArrayList<>();
         public final List<Object> configErrors = new ArrayList<>();
@@ -180,7 +197,7 @@ public class Formatters {
          */
         @Override
         public void onFinish() {
-            System.out.print(toJSONString(toJSON(), 0));
+            stdout.print(toJSONString(toJSON(), 0));
         }
 
         /**
@@ -236,7 +253,6 @@ public class Formatters {
         @Override
         public void onScriptError(String path, Exception error) {
             scriptErrors.add(List.of(path, error));
-
         }
 
         /**

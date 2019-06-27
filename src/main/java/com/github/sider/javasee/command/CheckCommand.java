@@ -39,10 +39,10 @@ public class CheckCommand implements CLICommand {
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {
             case "text":
-                formatter = new Formatters.TextFormatter();
+                formatter = new Formatters.TextFormatter(out, err);
                 break;
             case "json":
-                formatter = new Formatters.JSONFormatter();
+                formatter = new Formatters.JSONFormatter(out, err);
                 break;
             default:
                 throw new RuntimeException(String.format("Unknown format specified: `%s`", optionFormat));
