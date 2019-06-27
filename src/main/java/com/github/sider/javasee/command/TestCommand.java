@@ -35,36 +35,26 @@ public class TestCommand implements CLICommand {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         Config config;
         try {
             var configPath = new File(optionConfig);
             if(!configPath.isFile()) {
                 out.println("There is nothing to test at " + configPath + " ...");
                 err.println("Make a configuration and run test again!");
-                return false;
+                return JavaSee.ExitStatus.ERROR;
             }
-            File rootPath;
-            if(configPath != null) {
-                rootPath = configPath.getParentFile();
-            } else {
-                rootPath = new File("");
-            }
-            Map<String, Object> yaml;
-            try {
-                yaml = new Yaml().load(new FileInputStream(configPath));
-                config = Config.load(yaml, configPath, new File("."));
-            } catch (Exception e) {
-                throw e;
-            }
+
+            Map<String, Object> yaml = new Yaml().load(new FileInputStream(configPath));
+            config = Config.load(yaml, configPath, new File("."));
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(e);
         }
+
         validateRuleUniqueness(out, config.rules);
         validateRulePatterns(out, config.rules);
 
-        return isFailed() ? false : true;
+        return isFailed() ? JavaSee.ExitStatus.FAILURE : JavaSee.ExitStatus.OK;
     }
 
     private void validateRuleUniqueness(PrintStream out, List<Rule> rules) {

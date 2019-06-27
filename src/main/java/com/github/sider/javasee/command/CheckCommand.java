@@ -1,9 +1,6 @@
 package com.github.sider.javasee.command;
 
-import com.github.sider.javasee.Analyzer;
-import com.github.sider.javasee.Config;
-import com.github.sider.javasee.Formatters;
-import com.github.sider.javasee.JavaFileEnumerator;
+import com.github.sider.javasee.*;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 import org.yaml.snakeyaml.Yaml;
@@ -35,7 +32,7 @@ public class CheckCommand implements CLICommand {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {
             case "text":
@@ -53,7 +50,7 @@ public class CheckCommand implements CLICommand {
             if(!configPath().isFile()) {
                 out.println("Configuration file " + configPath() + " does not look a file.");
                 out.println("Specify configuration file by -config option");
-                return false;
+                return JavaSee.ExitStatus.ERROR;
             }
             File rootPath;
             if(optionRoot != null) {
@@ -72,6 +69,9 @@ public class CheckCommand implements CLICommand {
             }
 
             var analyzer = new Analyzer(config, optionRoot, new ArrayList<>());
+            var result = new Object() {
+                JavaSee.ExitStatus value = JavaSee.ExitStatus.OK;
+            };
 
             new JavaFileEnumerator(paths.isEmpty() ? List.of(new File(".")) : paths.stream().map(p -> new File(p)).collect(Collectors.toList()),  config).forEach((path , script) -> {
                 analyzer.javaFiles.add(script);
@@ -83,14 +83,16 @@ public class CheckCommand implements CLICommand {
                 var rule = t._2;
                 var pair = t._3;
                 formatter.onIssueFound(script, rule, pair);
+                result.value = JavaSee.ExitStatus.FAILURE;
             });
+
+            return result.value;
         } catch (Exception e) {
-            e.printStackTrace();
             formatter.onFatalError(e);
+            return JavaSee.ExitStatus.ERROR;
         } finally {
             formatter.onFinish();
         }
-        return false;
     }
 
     private File configPath() {

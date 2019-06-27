@@ -1,8 +1,10 @@
 package com.github.sider.javasee.command;
 
+import com.github.sider.javasee.JavaSee;
+
 import java.io.PrintStream;
 
 public interface CLICommand {
-    boolean start(PrintStream out, PrintStream err);
+    JavaSee.ExitStatus start(PrintStream out, PrintStream err);
     String getName();
 }

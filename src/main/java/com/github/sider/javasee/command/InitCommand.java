@@ -1,5 +1,6 @@
 package com.github.sider.javasee.command;
 
+import com.github.sider.javasee.JavaSee;
 import org.kohsuke.args4j.Option;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ public class InitCommand implements CLICommand {
     public final String TEMPLATE_RESOURCE_NAME = "template.yml";
     public final String DESTINATION_CONFIG_PATH = "javasee.yml";
 
-    @Option(name = "-c", aliases = "--config", metaVar = "<path>", usage = "Configuration path", help = true)
+    @Option(name = "-config", aliases = "--config", metaVar = "<path>", usage = "Configuration path", help = true)
     public Path configPath = Paths.get(DESTINATION_CONFIG_PATH);
 
     @Override
@@ -21,15 +22,14 @@ public class InitCommand implements CLICommand {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
+        var template = ClassLoader.getSystemResourceAsStream(TEMPLATE_RESOURCE_NAME);
+        Path path = configPath != null ? configPath : Paths.get(DESTINATION_CONFIG_PATH);
         try {
-            var template = ClassLoader.getSystemResourceAsStream(TEMPLATE_RESOURCE_NAME);
-            Path path = configPath != null ? configPath : Paths.get(DESTINATION_CONFIG_PATH);
             Files.copy(template, path);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        } catch (IOException exn) {
+            throw new RuntimeException(exn);
         }
-        return true;
+        return JavaSee.ExitStatus.OK;
     }
 }

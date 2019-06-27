@@ -1,5 +1,7 @@
 package com.github.sider.javasee.command;
 
+import com.github.sider.javasee.JavaSee;
+
 import java.io.PrintStream;
 import java.util.List;
 
@@ -19,12 +21,12 @@ public class HelpCommand implements CLICommand {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         out.println(String.format("Usage: %s <command>", commandName));
         out.println("  Where command is one of:");
         for (var command : commands) {
             out.println(String.format("    %s", command.getName()));
         }
-        return true;
+        return JavaSee.ExitStatus.OK;
     }
 }

@@ -2,6 +2,7 @@ package com.github.sider.javasee.command;
 
 import com.github.sider.javasee.Analyzer;
 import com.github.sider.javasee.JavaFileEnumerator;
+import com.github.sider.javasee.JavaSee;
 import com.github.sider.javasee.StacktraceFormatting;
 import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.lib.Libs;
@@ -40,7 +41,7 @@ public class FindCommand implements CLICommand, StacktraceFormatting {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         try {
             this.pattern = new JavaSeeParser(new StringReader(optionPattern)).WholeExpression();
         } catch (ParseException e) {
@@ -61,7 +62,8 @@ public class FindCommand implements CLICommand, StacktraceFormatting {
 
             out.println("  " + path+ ":" + lineNumber + ":" + startColumn + "\t" + src);
         });
-        return true;
+
+        return JavaSee.ExitStatus.OK;
     }
 
     /**

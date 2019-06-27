@@ -1,5 +1,6 @@
 package com.github.sider.javasee.command;
 
+import com.github.sider.javasee.JavaSee;
 import com.github.sider.javasee.Main;
 import com.github.sider.javasee.Version;
 import lombok.Getter;
@@ -15,8 +16,8 @@ public class VersionCommand implements CLICommand {
     }
 
     @Override
-    public boolean start(PrintStream out, PrintStream err) {
+    public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         out.println("JavaSee " + Version.VERSION);
-        return true;
+        return JavaSee.ExitStatus.OK;
     }
 }
