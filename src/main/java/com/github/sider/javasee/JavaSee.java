@@ -25,4 +25,8 @@ public class JavaSee {
             requiredRules.addAll(rules);
         }
     }
+
+    public static String getCommandLineName() {
+        return System.getProperty("javasee.name", "java -jar JavaSee-all.jar");
+    }
 }

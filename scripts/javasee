@@ -11,4 +11,4 @@ if [[ -z "$JAR_PATH" ]]; then
   JAR_PATH=$TOPDIR/lib/JavaSee-all.jar
 fi
 
-java -jar $JAR_PATH $@
+java -Djavasee.name=javasee -jar $JAR_PATH $@

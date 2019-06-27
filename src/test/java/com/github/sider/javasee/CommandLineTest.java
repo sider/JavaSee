@@ -37,7 +37,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         CLICommand command = main.parse(new String[] {});
 
         assertTrue(command instanceof HelpCommand);
@@ -49,7 +49,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         CLICommand command = main.parse(new String[] { "version" });
 
         assertTrue(command instanceof VersionCommand);
@@ -60,12 +60,12 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         assertThrows(CmdLineException.class, () -> {
             main.parse(new String[] { "version", "--help" });
         });
 
-        assertEquals("Usage: version\n", stdout.getString());
+        assertEquals("Usage: javasee version\n", stdout.getString());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         InitCommand command = (InitCommand)main.parse(new String[] { "init" });
 
         assertEquals(Paths.get("javasee.yml"), command.configPath);
@@ -84,7 +84,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         InitCommand command = (InitCommand)main.parse(new String[] { "init", "--config=foo.yml" });
 
         assertEquals(Paths.get("foo.yml"), command.configPath);
@@ -95,13 +95,13 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         assertThrows(CmdLineException.class, () -> {
             main.parse(new String[] { "init", "--help" });
         });
 
         assertEquals(
-                "Usage: init [-c (--config) <path>]\n" +
+                "Usage: javasee init [-c (--config) <path>]\n" +
                 " -c (--config) <path> : Configuration path (default: javasee.yml)\n",
                 stdout.getString()
         );
@@ -112,7 +112,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         FindCommand command = (FindCommand)main.parse(new String[] { "find", "Array", "src" });
 
         assertEquals("Array", command.optionPattern);
@@ -124,12 +124,12 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         assertThrows(CmdLineException.class, () -> {
             main.parse(new String[] { "find", "-help" });
         });
 
-        assertEquals("Usage: find <pattern> [<path> ...]\n" +
+        assertEquals("Usage: javasee find <pattern> [<path> ...]\n" +
                 " <pattern> : ast pattern in <path> ...\n" +
                 " <path>    : paths\n", stdout.getString());
     }
@@ -139,7 +139,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         TestCommand command = (TestCommand)main.parse(new String[] { "test" });
 
         assertEquals("javasee.yml", command.optionConfig);
@@ -150,7 +150,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         TestCommand command = (TestCommand)main.parse(new String[] { "test", "-config", "foo.yml" });
 
         assertEquals("foo.yml", command.optionConfig);
@@ -161,12 +161,12 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         assertThrows(CmdLineException.class, () -> {
             main.parse(new String[] { "test", "-help" });
         });
 
-        assertEquals("Usage: test [-config (--config) <config>]\n" +
+        assertEquals("Usage: javasee test [-config (--config) <config>]\n" +
                 " -config (--config) <config> : config YAML file (default: javasee.yml)\n", stdout.getString());
     }
 
@@ -175,7 +175,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         CheckCommand command = (CheckCommand)main.parse(new String[] { "check" });
 
         assertEquals("javasee.yml", command.optionConfig);
@@ -189,7 +189,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         CheckCommand command = (CheckCommand)main.parse(new String[] { "check", "-config", "foo.yml", "-format", "json", "-root", "src", "src" });
 
         assertEquals("foo.yml", command.optionConfig);
@@ -203,12 +203,12 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         assertThrows(CmdLineException.class, () -> {
             main.parse(new String[] { "check", "-help" });
         });
 
-        assertEquals("Usage: check [VAL ...] [-config (--config) <config>] [-format (--format) <format>] [-root (--root) <root>]\n" +
+        assertEquals("Usage: javasee check [VAL ...] [-config (--config) <config>] [-format (--format) <format>] [-root (--root) <root>]\n" +
                 " -config (--config) <config> : config YAML file (default: javasee.yml)\n" +
                 " -format (--format) <format> : output format (default: text)\n" +
                 " -root (--root) <root>       : root directory\n", stdout.getString());
@@ -219,7 +219,7 @@ public class CommandLineTest {
         var stdout = new StringPrintStream();
         var stderr = new StringPrintStream();
 
-        var main = new Main(stdout.getStream(), stderr.getStream());
+        var main = new Main(stdout.getStream(), stderr.getStream(), "javasee");
         HelpCommand command = (HelpCommand)main.parse(new String[] { "help" });
 
         assertEquals("", stdout.getString());

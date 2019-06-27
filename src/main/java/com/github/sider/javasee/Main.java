@@ -26,16 +26,18 @@ public class Main {
 
     private PrintStream out;
     private PrintStream err;
+    private String commandName;
 
-    public Main(PrintStream out, PrintStream err) {
+    public Main(PrintStream out, PrintStream err, String commandName) {
         this.out = out;
         this.err = err;
+        this.commandName = commandName;
     }
 
     public CLICommand parse(String[] args) throws CmdLineException {
         ArrayList<CLICommand> commands = new ArrayList<>();
 
-        HelpCommand help = new HelpCommand(commands);
+        HelpCommand help = new HelpCommand(commands, commandName);
         commands.add(new InitCommand());
         commands.add(new CheckCommand());
         commands.add(new FindCommand());
@@ -64,7 +66,7 @@ public class Main {
     }
 
     private void printCommandUsage(CmdLineParser parser, CLICommand command) {
-        out.print(String.format("Usage: %s", command.getName()));
+        out.print(String.format("Usage: %s %s", commandName, command.getName()));
         parser.printSingleLineUsage(out);
         out.println();
         parser.printUsage(out);
@@ -72,7 +74,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            var command = new Main(System.out, System.err).parse(args);
+            var command = new Main(System.out, System.err, JavaSee.getCommandLineName()).parse(args);
             if (!command.start(System.out, System.err)) {
                 System.exit(-1);
             }
