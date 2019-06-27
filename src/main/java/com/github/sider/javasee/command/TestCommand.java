@@ -5,6 +5,7 @@ import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.lib.ConsoleColors;
 import com.github.sider.javasee.lib.Libs;
 import com.github.sider.javasee.lib.Ref;
+import com.github.sider.javasee.parser.ParseException;
 import org.kohsuke.args4j.Option;
 import org.yaml.snakeyaml.Yaml;
 
@@ -19,7 +20,7 @@ public class TestCommand implements CLICommand {
     @Option(name="-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
-    private boolean success;
+    private boolean success = true;
 
     public void fail() {
         success = false;
@@ -57,7 +58,7 @@ public class TestCommand implements CLICommand {
         return isFailed() ? JavaSee.ExitStatus.FAILURE : JavaSee.ExitStatus.OK;
     }
 
-    private void validateRuleUniqueness(PrintStream out, List<Rule> rules) {
+    public void validateRuleUniqueness(PrintStream out, List<Rule> rules) {
         var ids = new HashSet<String>();
 
         out.println("Checking rule id uniqueness...");
@@ -66,7 +67,7 @@ public class TestCommand implements CLICommand {
 
         for(Rule rule:rules) {
             if(ids.contains(rule.id)) {
-                out.println(ConsoleColors.red("  Rule id " + rule.id + "duplicated!"));
+                out.println(ConsoleColors.red(String.format("  Rule id `%s` duplicated!", rule.id)));
                 duplications += 1;
             } else {
                 ids.add(rule.id);
@@ -76,13 +77,12 @@ public class TestCommand implements CLICommand {
         if(duplications > 0) fail();
     }
 
-    private void validateRulePatterns(PrintStream out, List<Rule> rules) {
+    public void validateRulePatterns(PrintStream out, List<Rule> rules) {
         out.println("Checkintg rule patterns...");
 
         var tests = 0;
         var falsePositives = 0;
         var falseNegatives = 0;
-        var errors = 0;
 
         for(var rule:rules) {
             {
@@ -90,41 +90,34 @@ public class TestCommand implements CLICommand {
                 for (var exampleString : rule.matchExamples) {
                     tests++;
 
-                    try {
-                        if (!rule.patterns.stream().anyMatch((pattern) -> testPattern(pattern, exampleString, true))) {
-                            out.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *before* example didn't match with any pattern");
-                            falseNegatives += 1;
-                        }
-                    } catch (Exception e) {
-                        errors += 1;
-                        out.println("  " + ConsoleColors.red(rule.id) + ":\tParsing failed for " + Libs.ordinalize(exampleIndex) + " *before* example");
+                    if (!rule.patterns.stream().anyMatch((pattern) -> testPattern(pattern, exampleString, true))) {
+                        out.println(ConsoleColors.red(String.format("  %s", rule.id)) + String.format(":\t%s match example didn't match with any pattern", Libs.ordinalize(exampleIndex)));
+                        falseNegatives += 1;
                     }
+
                     exampleIndex++;
                 }
             }
 
             {
                 int exampleIndex = 1;
-                for(var exampleString:rule.unmatchExamples) { tests += 1;
-                    try {
-                        if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, exampleString, false))) {
-                            out.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *after* example matched with some of patterns");
-                            falsePositives += 1;
-                        }
-                    } catch (Exception e) {
-                        errors += 1;
-                        out.println("  " + ConsoleColors.red(rule.id) + ":\tParsing failed for " + Libs.ordinalize(exampleIndex) + " *after* example");
+                for(var exampleString:rule.unmatchExamples) {
+                    tests += 1;
+
+                    if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, exampleString, false))) {
+                        out.println(ConsoleColors.red(String.format("  %s", rule.id)) + String.format(":\t%s unmatch example matched with some of patterns", Libs.ordinalize(exampleIndex)));
+                        falsePositives += 1;
                     }
+
                     exampleIndex++;
                 }
             }
         }
 
-        out.println("Tested " + rules.size() + " rules with " + tests + " tests");
-        if(falsePositives > 0 || falseNegatives >0 || errors > 0) {
+        out.println(String.format("Tested %d rules with %d tests", rules.size(), tests));
+        if(falsePositives > 0 || falseNegatives >0) {
             out.println("  " + falsePositives + " examples found which should not match, but matched");
             out.println("  " + falseNegatives + " examples found which should match, but didn't");
-            out.println("  " + errors + " examples have erros");
             fail();
         } else {
             out.println(ConsoleColors.green("  All tests green!"));
