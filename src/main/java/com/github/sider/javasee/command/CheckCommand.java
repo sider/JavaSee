@@ -4,11 +4,8 @@ import com.github.sider.javasee.Analyzer;
 import com.github.sider.javasee.Config;
 import com.github.sider.javasee.Formatters;
 import com.github.sider.javasee.JavaFileEnumerator;
-import lombok.Getter;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
-import org.kohsuke.args4j.spi.SubCommand;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -20,13 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CheckCommand implements CLICommand {
-    @Option(name = "-help", aliases = "--help", handler = BooleanOptionHandler.class)
-    @Getter
-    private boolean helpRequired;
-
-    private PrintStream sysout = System.out;
-    private PrintStream syserr = System.err;
-
     @Option(name = "-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
@@ -37,10 +27,15 @@ public class CheckCommand implements CLICommand {
     public String optionFormat = "text";
 
     @Argument
-    private List<String> paths = List.of();
+    public List<String> paths = new ArrayList();
 
     @Override
-    public boolean start() {
+    public String getName() {
+        return "check";
+    }
+
+    @Override
+    public boolean start(PrintStream out, PrintStream err) {
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {
             case "text":
@@ -50,14 +45,14 @@ public class CheckCommand implements CLICommand {
                 formatter = new Formatters.JSONFormatter();
                 break;
             default:
-                throw new RuntimeException("cannot reach here");
+                throw new RuntimeException(String.format("Unknown format specified: `%s`", optionFormat));
         }
         formatter.onStart();
 
         try {
             if(!configPath().isFile()) {
-                sysout.println("Configuration file " + configPath() + " does not look a file.");
-                sysout.println("Specify configuration file by -config option");
+                out.println("Configuration file " + configPath() + " does not look a file.");
+                out.println("Specify configuration file by -config option");
                 return false;
             }
             File rootPath;

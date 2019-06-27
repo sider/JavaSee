@@ -5,32 +5,14 @@ import lombok.Getter;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.SubCommand;
 import org.kohsuke.args4j.spi.SubCommandHandler;
 import org.kohsuke.args4j.spi.SubCommands;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.PrintStream;
+import java.util.*;
 
 public class Main {
-    @Getter
-    private final List<Class> commandClasses= List.of(
-            VersionCommand.class,
-            CheckCommand.class,
-            FindCommand.class,
-            InitCommand.class,
-            TestCommand.class,
-            HelpCommand.class
-    );
     @Argument(handler = SubCommandHandler.class, required = true, metaVar = "<command>")
     @SubCommands({
             @SubCommand(name = "version", impl = VersionCommand.class),
@@ -42,35 +24,60 @@ public class Main {
     })
     private CLICommand command;
 
-    public void run(String[] args) throws CmdLineException {
-        CmdLineParser parser = new CmdLineParser(this);
+    private PrintStream out;
+    private PrintStream err;
+
+    public Main(PrintStream out, PrintStream err) {
+        this.out = out;
+        this.err = err;
+    }
+
+    public CLICommand parse(String[] args) throws CmdLineException {
+        ArrayList<CLICommand> commands = new ArrayList<>();
+
+        HelpCommand help = new HelpCommand(commands);
+        commands.add(new InitCommand());
+        commands.add(new CheckCommand());
+        commands.add(new FindCommand());
+        commands.add(new TestCommand());
+        commands.add(new VersionCommand());
+        commands.add(help);
+
+        String name = args.length > 0 ? args[0] : null;
+        String[] rest = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {};
+
+        CLICommand command;
+        if (name != null) {
+            command = commands.stream().filter(c -> c.getName().equals(name)).findAny().orElse(help);
+        } else {
+            command = help;
+        }
+
         try {
-            parser.parseArgument(args);
-            if(command.start()) {
-                System.exit(0);
-            } else {
-                System.exit(-1);
-            }
+            CmdLineParser parser = new CmdLineParser(command);
+            parser.parseArgument(rest);
+            return command;
         } catch (CmdLineException e) {
-            var help = new HelpCommand();
-
-            // Note that it is workaround to show appropriate error message.
-            // it is based on implementation detail of args4j
-
-            // any sub-command is not given
-            if(parser == e.getParser()) {
-                help.start();
-                System.exit(-1);
-            } // parsing failure of sub-command
-            else {
-                help.setCmdLineException(e);
-                help.start();
-                System.exit(-1);
-            }
+            printCommandUsage(e.getParser(), command);
+            throw e;
         }
     }
 
-    public static void main(String[] args) throws CmdLineException {
-        new Main().run(args);
+    private void printCommandUsage(CmdLineParser parser, CLICommand command) {
+        out.print(String.format("Usage: %s", command.getName()));
+        parser.printSingleLineUsage(out);
+        out.println();
+        parser.printUsage(out);
+    }
+
+    public static void main(String[] args) {
+        try {
+            var command = new Main(System.out, System.err).parse(args);
+            if (!command.start(System.out, System.err)) {
+                System.exit(-1);
+            }
+        } catch (CmdLineException e) {
+            System.exit(-1);
+        }
     }
 }
