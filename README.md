@@ -44,3 +44,4 @@ $ java -jar build/libs/JavaSee-all.jar check -config javasee.yml example
 
 - [Pattern syntax](doc/pattern-syntax.md)
 - [Command line options](doc/command-line-options.md)
+
