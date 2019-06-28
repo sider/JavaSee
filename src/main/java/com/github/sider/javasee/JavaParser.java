@@ -21,6 +21,8 @@ public class JavaParser {
         return StaticJavaParser.parseStatement(statement);
     }
 
+    public Statement parseStatements(String statements) { return StaticJavaParser.parseStatement("{" + statements + "}"); }
+
     public static void main(String[] args) {
         var x = new JavaParser().parse("public class A{}");
         System.out.println(x.getType(0).getName());

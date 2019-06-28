@@ -167,7 +167,11 @@ public class TestCommand implements CLICommand {
             try {
                 return new JavaParser().parseStatement(example);
             } catch (ParseProblemException e2) {
-                return new JavaParser().parse(example);
+                try {
+                    return new JavaParser().parseStatements(example);
+                } catch (ParseProblemException e3) {
+                    return new JavaParser().parse(example);
+                }
             }
         }
     }

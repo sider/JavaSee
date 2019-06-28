@@ -1,5 +1,6 @@
 package com.github.sider.javasee;
 
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
@@ -59,4 +60,13 @@ public class JavaParserTest {
         });
     }
 
+    @Test
+    public void testJavaParserStatements() {
+        assertThrows(ParseProblemException.class, () -> {
+            parser().parseStatement("System.out.println(); System.out.println();");
+        });
+        assertDoesNotThrow(() -> {
+            parser().parseStatements("System.out.println(); System.out.println();");
+        });
+    }
 }
