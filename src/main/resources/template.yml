@@ -1,37 +1,52 @@
+# This is an annotated configuration example of JavaSee.
+# The rules included in this file is for demonstration.
+# Some of the rules are opinionated and controversial, and you provably customize for your team.
+
 rules:
-  - id: sample.bad_string_equality_check1
+  # Each rule should have at least `id`, `pattern`, and `message` attributes.
+
+  - id: sample.java.close              # An identifier of the rule, arbitrary string.
+    pattern:                           # A sequence of patterns to detect Java code pieces.
+      - _.close()                      # `_` matches with any expression.
+    message: |                         # A message to show when a piece of code matches one of the patterns.
+      Use try-with-resource statement instead of explicitly calling `close()`
+
+  - id: sample.java.date
     pattern:
-      - "@String == _"
-      - _ == @String
+      - new Date(...)                  # `...` matches _any number of arguments_.
+      - Calendar.getInstance(...)
+    # We recommend formatting messages like Git commit message.
+    # The summary of the message in first line, put empty line, and the detail after that.
     message: |
-      String literal must not be an operand of ==
+      Use `Date and Time API` instead of Date or Calendar
 
-      since it cause unexpected behavior
-  - id: sample.bad_string_equality_check2
+      Java8 introduced `java.time` package, which provides new classes like:
+
+      - `LocalDateTime`
+      - `ZonedDateTime`
+
+      They are immutable and we recommend using them.
+    justification:         # You can tell the reasons to ignore the rule in `justification` attribute.
+      - When the code supports Java7 or older.
+    tests:                 # You can put unit-tests. Use `javasee test` to run the tests.
+      match:               # `match` contains Java code which matches with one of the patterns.
+        - Date date = new Date();
+        - Calendar calendar = Calendar.getInstance();
+      unmatch:             # `unmatch` contains Java code which doesn't match with any of the patterns.
+        - LocalDateTime now = LocalDateTime.now();
+        - ZonedDateTime now = ZonedDateTime.now();
+
+  - id: sample.pattern.catalog
     pattern:
-      - "@String != _"
-      - "_ != @String"
+      - new Object()                            # You can detect instantiation of objects with `new` pattern.
+      - "@String == _"                          # `@String` means any string literal.
+      - MessageDigest.getInstance("MD2", ...)   # A pattern can be a specific string literal.
+      - _.forEach(->)                           # `->` means any lambda expression.
+      - Arrays.asList(_, ...).stream()          # You can nest the patterns in receivers and arguments.
+      - _.indexOf(...) > 0                      # Comparison operator allowed.
+      - System.out                              # You can detect field accesses.
+      - _ instanceof Object                     # You can detect `instanceof` operator.
     message: |
-      String literal must not be an operand of !=
+      Nothing wrong. This is a demo rule to explain the pattern syntax.
 
-      since it cause unexpected behavior
-  - id: sample.bad_int_equality_check1
-    pattern: "@int == _"
-    message: |
-      int literal should not be an left operand of ==
-
-      for readabiliy
-  - id: sample.bad_int_equality_check2
-    pattern: "@int != _"
-    message: |
-      int literal should not be an left operand of !=
-
-      for readabiliy
-  - id: sample.bad_boolean_equality_check1
-    pattern:
-      - "@boolean == _"
-      - "_ == @boolean"
-    message: |
-      boolean literal should not be an operand of ==
-
-      since it is meaningless in general
+      You can find the full list of pattern syntax in `doc/pattern-syntax.md`.
