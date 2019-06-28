@@ -3,6 +3,7 @@ package com.github.sider.javasee;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.stmt.Statement;
 
 public class JavaParser {
     public JavaParser() {
@@ -14,6 +15,10 @@ public class JavaParser {
 
     public Expression parseExpression(String expression) {
         return StaticJavaParser.parseExpression(expression);
+    }
+
+    public Statement parseStatement(String statement) {
+        return StaticJavaParser.parseStatement(statement);
     }
 
     public static void main(String[] args) {

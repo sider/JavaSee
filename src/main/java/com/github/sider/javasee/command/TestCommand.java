@@ -1,5 +1,7 @@
 package com.github.sider.javasee.command;
 
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ast.Node;
 import com.github.sider.javasee.*;
 import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.lib.ConsoleColors;
@@ -15,11 +17,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+class JavaParserError extends RuntimeException {
+    public String source;
+
+    JavaParserError(String source, Throwable cause) {
+        super();
+        this.initCause(cause);
+        this.source = source;
+    }
+}
+
 public class TestCommand implements CLICommand {
     @Option(name="-config", aliases = "--config", metaVar = "<config>", usage = "config YAML file", help = true)
     public String optionConfig = "javasee.yml";
 
-    private boolean success;
+    private boolean success = true;
 
     public void fail() {
         success = false;
@@ -52,12 +64,12 @@ public class TestCommand implements CLICommand {
         }
 
         validateRuleUniqueness(out, config.rules);
-        validateRulePatterns(out, config.rules);
+        validateRulePatterns(out, err, config.rules);
 
         return isFailed() ? JavaSee.ExitStatus.FAILURE : JavaSee.ExitStatus.OK;
     }
 
-    private void validateRuleUniqueness(PrintStream out, List<Rule> rules) {
+    public void validateRuleUniqueness(PrintStream out, List<Rule> rules) {
         var ids = new HashSet<String>();
 
         out.println("Checking rule id uniqueness...");
@@ -66,7 +78,7 @@ public class TestCommand implements CLICommand {
 
         for(Rule rule:rules) {
             if(ids.contains(rule.id)) {
-                out.println(ConsoleColors.red("  Rule id " + rule.id + "duplicated!"));
+                out.println(ConsoleColors.red(String.format("  Rule id `%s` duplicated!", rule.id)));
                 duplications += 1;
             } else {
                 ids.add(rule.id);
@@ -76,8 +88,8 @@ public class TestCommand implements CLICommand {
         if(duplications > 0) fail();
     }
 
-    private void validateRulePatterns(PrintStream out, List<Rule> rules) {
-        out.println("Checkintg rule patterns...");
+    public void validateRulePatterns(PrintStream out, PrintStream err, List<Rule> rules) {
+        out.println("Checking rule patterns...");
 
         var tests = 0;
         var falsePositives = 0;
@@ -85,63 +97,78 @@ public class TestCommand implements CLICommand {
         var errors = 0;
 
         for(var rule:rules) {
-            {
-                int exampleIndex = 1;
-                for (var exampleString : rule.matchExamples) {
-                    tests++;
-
-                    try {
+            try {
+                {
+                    int exampleIndex = 1;
+                    for (var exampleString : rule.matchExamples) {
                         if (!rule.patterns.stream().anyMatch((pattern) -> testPattern(pattern, exampleString, true))) {
-                            out.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *before* example didn't match with any pattern");
+                            out.println(ConsoleColors.red(String.format("  %s", rule.id)) + String.format(":\t%s match example didn't match with any pattern", Libs.ordinalize(exampleIndex)));
                             falseNegatives += 1;
                         }
-                    } catch (Exception e) {
-                        errors += 1;
-                        out.println("  " + ConsoleColors.red(rule.id) + ":\tParsing failed for " + Libs.ordinalize(exampleIndex) + " *before* example");
-                    }
-                    exampleIndex++;
-                }
-            }
 
-            {
-                int exampleIndex = 1;
-                for(var exampleString:rule.unmatchExamples) { tests += 1;
-                    try {
+                        tests++;
+                        exampleIndex++;
+                    }
+                }
+
+                {
+                    int exampleIndex = 1;
+                    for(var exampleString:rule.unmatchExamples) {
                         if (!rule.patterns.stream().allMatch((pattern) -> testPattern(pattern, exampleString, false))) {
-                            out.println(ConsoleColors.red("  " + rule.id) + ":\t" + Libs.ordinalize(exampleIndex) + " *after* example matched with some of patterns");
+                            out.println(ConsoleColors.red(String.format("  %s", rule.id)) + String.format(":\t%s unmatch example matched with some of patterns", Libs.ordinalize(exampleIndex)));
                             falsePositives += 1;
                         }
-                    } catch (Exception e) {
-                        errors += 1;
-                        out.println("  " + ConsoleColors.red(rule.id) + ":\tParsing failed for " + Libs.ordinalize(exampleIndex) + " *after* example");
+
+                        tests += 1;
+                        exampleIndex++;
                     }
-                    exampleIndex++;
                 }
+            } catch (JavaParserError error) {
+                err.println(String.format("Failed to parse an example in `%s`", rule.id));
+                err.println("  Examples should be one of Java expression, statement, or compilation unit.");
+                err.println(String.format("    %s", error.source.split("\n")[0]));
+                errors++;
             }
         }
 
-        out.println("Tested " + rules.size() + " rules with " + tests + " tests");
-        if(falsePositives > 0 || falseNegatives >0 || errors > 0) {
+        out.println(String.format("Tested %d rules with %d tests", rules.size(), tests));
+        if(falsePositives > 0 || falseNegatives >0 | errors > 0) {
             out.println("  " + falsePositives + " examples found which should not match, but matched");
             out.println("  " + falseNegatives + " examples found which should match, but didn't");
-            out.println("  " + errors + " examples have erros");
+            out.println(String.format("  %d errors reported", errors));
             fail();
         } else {
             out.println(ConsoleColors.green("  All tests green!"));
         }
     }
 
-    private boolean testPattern(AST.Expression pattern, String exampleString, boolean expected) {
+    private boolean testPattern(AST.Expression pattern, String exampleString, boolean expected) throws JavaParserError {
         var analyzer = new Analyzer(null, null, null);
         var found = Ref.of(false);
 
-        var node = new JavaParser().parseExpression(exampleString);
-        new NodePair(node, null).eachSubPair((pair) -> {
-            if(analyzer.testPair(pair, pattern)) {
-                found.set(true);
-            }
-        });
+        try {
+            var node = parse(exampleString);
+            new NodePair(node, null).eachSubPair((pair) -> {
+                if(analyzer.testPair(pair, pattern)) {
+                    found.set(true);
+                }
+            });
 
-        return found.get() == expected;
+            return found.get() == expected;
+        } catch (ParseProblemException e) {
+            throw new JavaParserError(exampleString, e);
+        }
+    }
+
+    private Node parse(String example) {
+        try {
+            return new JavaParser().parseExpression(example);
+        } catch (ParseProblemException e1) {
+            try {
+                return new JavaParser().parseStatement(example);
+            } catch (ParseProblemException e2) {
+                return new JavaParser().parse(example);
+            }
+        }
     }
 }
