@@ -43,8 +43,8 @@ public class Rule {
     }
 
     public static Rule load(Map<String, Object> map) {
-        String id = (String)map.get("id");
-        if(id == null) {
+        var id = Optional.ofNullable((String)map.get("id"));
+        if(!id.isPresent()){
             throw new InvalidRuleMapException("id is missing");
         }
 
@@ -56,19 +56,23 @@ public class Rule {
 
         int index = 0;
         var patterns = srcs.stream().map((src) -> {
-            String subject = null;
-            Map<String, String> where = null;
+            Optional<String> subject = Optional.empty();
+            Optional<Map<String, String>> where = Optional.empty();
             if(src instanceof String) {
-                subject = (String)src;
-                where = new HashMap<>();
+                subject = Optional.ofNullable((String)src);
+                where = Optional.of(new HashMap<>());
             } else if(src instanceof Map<?, ?>) {
-                subject = (String)((Map<?, ?>)src).get("subject");
-                where = (Map<String, String>)((Map<?, ?>) src).get("where");
+                subject = Optional.ofNullable((String)((Map<?, ?>)src).get("subject"));
+                where = Optional.ofNullable((Map<String, String>)((Map<?, ?>) src).get("where"));
             } else {
                 assert false;
             }
             try {
-                return new JavaSeeParser(new StringReader(subject)).WholeExpression();
+                if(subject.isPresent()) {
+                    return new JavaSeeParser(new StringReader(subject.get())).WholeExpression();
+                } else {
+                    throw new RuntimeException("FIXME: Should show error message if subject is missing");
+                }
             } catch (ParseException e) {
                 throw new PatternSyntaxException(
                         "Pattern syntax error: rule=" + map.get("id") + ", index=" + index + ", pattern=" + subject + ", where=" + where, e
@@ -77,24 +81,20 @@ public class Rule {
 
         }).collect(Collectors.toList());
 
-        var message = (String)map.getOrDefault("message", null);
-
-        if(message == null) {
-            throw new InvalidRuleMapException("message is missing");
-        }
+        var message =
+                Optional.ofNullable((String)map.get("message")).orElseThrow(() -> new InvalidRuleMapException("message is missing"));
 
         List<String> matchExamples = new ArrayList<>();
         List<String> unmatchExamples = new ArrayList<>();
-        var tests = (Map<String, Object>)map.get("tests");
-        if (tests != null) {
+        Optional.ofNullable((Map<String, Object>)map.get("tests")).ifPresent((tests) -> {
             matchExamples.addAll((List<String>)valuesOf(tests, "match"));
             unmatchExamples.addAll((List<String>)valuesOf(tests, "unmatch"));
-        }
+        });
 
         List<String> justifications = (List<String>)valuesOf(map, "justification");
 
         return new Rule(
-                id,
+                id.get(),
                 message,
                 patterns,
                 srcs,
