@@ -328,12 +328,46 @@ public class PatternParserTest {
 
     @Test
     public void testConditionalExpression() throws Exception {
-        var e = parser("_ ? 1 : true").WholeExpression();
+        AST.Expression e;
+        AST.ConditionalExpression et;
+
+        e = parser("_ ? 1 : true").WholeExpression();
         assertTrue(e instanceof AST.ConditionalExpression);
-        var et = (AST.ConditionalExpression)e;
+        et = (AST.ConditionalExpression)e;
         assertTrue(et.condition instanceof AST.Wildcard);
         assertTrue(et.thenPart instanceof AST.IntLiteral);
         assertTrue(et.elsepart instanceof AST.BooleanLiteral);
+
+
+        AST.RelationalExpression er;
+        e = parser("2 < 3 ? \"Foo\" : \"Bar\"").WholeExpression();
+        assertTrue(e instanceof AST.ConditionalExpression);
+        et = (AST.ConditionalExpression)e;
+        assertTrue(et.condition instanceof AST.RelationalExpression);
+        er = (AST.RelationalExpression) et.condition;
+        assertEquals("<", er.symbol);
+        assertTrue(er.lhs instanceof AST.IntLiteral);
+        assertTrue(er.rhs instanceof AST.IntLiteral);
+        assertTrue(et.thenPart instanceof AST.StringLiteral);
+        assertTrue(et.elsepart instanceof AST.StringLiteral);
+    }
+
+    @Test
+    public void testMoreComplexConditionalExpression() throws Exception {
+        AST.Expression e;
+        AST.ConditionalExpression et;
+        AST.RelationalExpression er;
+
+        e = parser("2 < 3 ? \"Foo\" : \"Bar\"").WholeExpression();
+        assertTrue(e instanceof AST.ConditionalExpression);
+        et = (AST.ConditionalExpression)e;
+        assertTrue(et.condition instanceof AST.RelationalExpression);
+        er = (AST.RelationalExpression) et.condition;
+        assertEquals("<", er.symbol);
+        assertTrue(er.lhs instanceof AST.IntLiteral);
+        assertTrue(er.rhs instanceof AST.IntLiteral);
+        assertTrue(et.thenPart instanceof AST.StringLiteral);
+        assertTrue(et.elsepart instanceof AST.StringLiteral);
     }
 
     @Test
