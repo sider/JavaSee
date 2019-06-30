@@ -37,7 +37,7 @@ public class JavaSee {
 
         private final int id;
 
-        private ExitStatus(final int id) {
+        ExitStatus(final int id) {
             this.id = id;
         }
 
