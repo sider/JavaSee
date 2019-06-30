@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CheckCommand implements CLICommand {
@@ -52,12 +53,7 @@ public class CheckCommand implements CLICommand {
                 out.println("Specify configuration file by -config option");
                 return JavaSee.ExitStatus.ERROR;
             }
-            File rootPath;
-            if(optionRoot != null) {
-                rootPath = new File(optionRoot);
-            } else {
-                rootPath = configPath().getParentFile();
-            }
+            var rootPath = Optional.ofNullable(optionRoot).map((root) -> new File(root)).orElse(configPath().getParentFile());
             Map<String, Object> yaml;
             Config config = null;
             try {
