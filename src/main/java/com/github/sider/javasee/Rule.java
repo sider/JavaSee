@@ -105,15 +105,10 @@ public class Rule {
     }
 
     private static List<?> valuesOf(Map<String, Object> map, String key) {
-        Object value = (Object)map.get(key);
-        if(value == null) {
-            return new ArrayList<Object>();
-        } else if(value instanceof List<?>) {
-            return (List<Object>)value;
-        } else {
-            List<Object> values = new ArrayList<>();
-            values.add(value);
-            return values;
-        }
+        Optional<Object> valueOpt;
+        valueOpt = Optional.ofNullable(map.get(key));
+
+        return valueOpt.map((value) -> value instanceof List<?> ? (List<Object>)value : List.of(value))
+                       .orElse(new ArrayList<>());
     }
 }
