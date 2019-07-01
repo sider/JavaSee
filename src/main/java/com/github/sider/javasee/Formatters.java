@@ -346,6 +346,16 @@ public class Formatters {
                         case '\r':
                             builder.append("\\");
                             builder.append("r");
+                            break;
+                        //U+2028 and U+2029 are treated as line ending
+                        case '\u2028':
+                            builder.append("\\");
+                            builder.append("u2028");
+                            break;
+                        case '\u2029':
+                            builder.append("\\");
+                            builder.append("u2029");
+                            break;
                         default:
                             builder.append(ch);
                     }
