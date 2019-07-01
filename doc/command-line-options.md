@@ -1,70 +1,43 @@
 # Command line options
 
-JavaSee has subcommands: `init`, `check`, `find`, `test`, `help`, and `version`.
+JavaSee has the following subcommands: `init`, `check`, `find`, `test`, `help`, and `version`.
 
-## `init`
+## `javasee init`
 
-`init` subcommand generate default `javasee.yml` config file.  It is used when creating new config file.
-
-```
-# Generate javasee.yml under current directory
-java -jar JavaSee-all.jar init
-```
-
-## `check`
-
-`check` subcommand analayzes all Java codes under specified directories and print the matching lines.
-
+`javasee init` generates a `javasee.yml` configuration file.
+Edit the config file to define your rules.
 
 ```
-# Analyze all Java codes using `javasee.yml` under the current directory.
-java -jar JavaSee-all.jar check -config javasee.yml
+$ javasee init
 ```
 
-```
-# Analyze all Java codes using `javasee.yml` under `src`, which is specified by -root option
-java -jar JavaSee-all.jar check -config javasee.yml -root src
-```
+## `javasee check`
+
+`javasee check` checks Java source files specified in the command line arguments.
 
 ```
-# Analyze all Java coces under `src` and print the result in JSON mode (-format json)
-java -jar JavaSee-all.jar check -config javasee.yml -root src -format json
+$ javasee check
+
+# Specify the directory to check
+$ javasee check src
+
+# Specify the config file and output format
+$ javasee check -config config.yml -format json src
 ```
 
-## `find`
+## `javasee find`
 
-`find` subcommand analyzes all Java codes under specified directories using pattern provied by command-line argument and print the matching line.
-
-```
-# Analyze all Java codes under current directory and print lines matching with println(), provided by command-line argument.
-java -jar JavaSee-all.jar find "println(_)" .
-```
-
-## `test`
-
-`test` subcommand analyzes all Java codes under specified directories and print the matching or not-matching lines.
+`javasee find` detects the source code which matches the given pattern. You can use this command to find some pattern of Java code included in your project, and to debug the result.
 
 ```
-# Analyze all Java codes using `javasee.yml` under `src`, which is specified by -root option
-# and print the result in text mode
-java -jar JavaSee-all.jar check -config javasee.yml -root src
+$ javasee find "_.println(...)"
 ```
 
-## `help`
+## `javasee test`
 
-`help` subcommand shows usage of JavaSee.
-
-```
-# Show usage of JavaSee
-java -jar JavaSee-all.jar` help
-```
-
-## `version`
-
-`version` subcommand shows the version of running JavaSee.
+`javasee test` runs unit-tests included in the configuration. Your rules can include `tests` attribute to define unit-tests, and `test` command to execute them.
 
 ```
-# Show usage of JavaSee
-java -jar JavaSee-all.jar` version
+$ javasee test
 ```
 
