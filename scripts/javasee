@@ -5,9 +5,10 @@
 #     lib/       => .jar file
 #     bin/       => executable files
 
-TOPDIR="$( cd "$(dirname "$0")/.." ; pwd -P )"
+SCRIPT=`realpath $0`
+TOPDIR="$( cd "$(dirname "$SCRIPT")/.."; pwd -P )"
 
-if [[ -z "$JAR_PATH" ]]; then
+if [ -z "$JAR_PATH" ]; then
   JAR_PATH=$TOPDIR/lib/JavaSee-all.jar
 fi
 
