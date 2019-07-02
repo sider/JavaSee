@@ -22,15 +22,36 @@ public class ExpressionPrecedenceTest {
     public void testAdditionAndSubtraction() throws Exception {
         AST.Expression e1;
         AST.BinaryExpression e2;
+
+        // 1 + 2 - 3 == (1 + 2) - 3
         e1 = parser("1 + 2 - 3").WholeExpression();
         assertTrue(e1 instanceof AST.Subtraction);
         e2 = (AST.BinaryExpression) e1;
         assertTrue(e2.lhs instanceof AST.Addition);
         assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(3, ((AST.IntLiteral)e2.rhs).value);
 
+        //e2.lhs must be (1 + 2);
         e2 = (AST.BinaryExpression) e2.lhs;
         assertTrue(e2.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)e2.lhs).value);
         assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)e2.rhs).value);
+
+        // 1 - 2 + 3 == (1 - 2) + 3
+        e1 = parser("1 - 2 + 3").WholeExpression();
+        assertTrue(e1 instanceof AST.Addition);
+        e2 = (AST.BinaryExpression) e1;
+        assertTrue(e2.lhs instanceof AST.Subtraction);
+        assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(3, ((AST.IntLiteral)e2.rhs).value);
+
+        //e2.lhs must be (1 - 2);
+        e2 = (AST.BinaryExpression) e2.lhs;
+        assertTrue(e2.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)e2.lhs).value);
+        assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)e2.rhs).value);
     }
 
     @Test
@@ -38,15 +59,35 @@ public class ExpressionPrecedenceTest {
     public void testMultiplicationAndDivision() throws Exception {
         AST.Expression e1;
         AST.BinaryExpression e2;
+
+        // 1 * 2 / 3 == (1 * 2) / 3
         e1 = parser("1 * 2 / 3").WholeExpression();
         assertTrue(e1 instanceof AST.Division);
         e2 = (AST.BinaryExpression) e1;
         assertTrue(e2.lhs instanceof AST.Multiplication);
         assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(3, ((AST.IntLiteral)e2.rhs).value);
 
+        //e2.lhs must be (1 * 2);
         e2 = (AST.BinaryExpression) e2.lhs;
         assertTrue(e2.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)e2.lhs).value);
         assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)e2.rhs).value);
+
+        // 1 / 2 * 3 == (1 / 2) * 3
+        e1 = parser("1 / 2 * 3").WholeExpression();
+        assertTrue(e1 instanceof AST.Multiplication);
+        e2 = (AST.BinaryExpression) e1;
+        assertTrue(e2.lhs instanceof AST.Division);
+        assertTrue(e2.rhs instanceof AST.IntLiteral);
+
+        //e2.lhs must be (1 / 2);
+        e2 = (AST.BinaryExpression) e2.lhs;
+        assertTrue(e2.lhs instanceof AST.IntLiteral);
+        assertEquals(1, ((AST.IntLiteral)e2.lhs).value);
+        assertTrue(e2.rhs instanceof AST.IntLiteral);
+        assertEquals(2, ((AST.IntLiteral)e2.rhs).value);
     }
 
     @Test
