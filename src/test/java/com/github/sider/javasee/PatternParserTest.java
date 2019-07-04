@@ -17,12 +17,12 @@ public class PatternParserTest {
     @Test
     public void testBooleanLiteral() throws Exception {
         var e = parser("true").WholeExpression();
-        assertTrue(e instanceof AST.BooleanLiteral);
+        assertSame(e.getClass(), AST.BooleanLiteral.class);
         var et =(AST.BooleanLiteral)e;
         assertTrue(et.value);
 
         e = parser("false").WholeExpression();
-        assertTrue(e instanceof AST.BooleanLiteral);
+        assertSame(e.getClass(), AST.BooleanLiteral.class);
         et = (AST.BooleanLiteral)e;
         assertFalse(et.value);
 
@@ -31,207 +31,207 @@ public class PatternParserTest {
     @Test
     public void testConditionalAndExpression() throws Exception {
         var e = parser("_ && _").WholeExpression();
-        assertTrue(e instanceof AST.ConditionalAndExpression);
+        assertSame(e.getClass(), AST.ConditionalAndExpression.class);
         var et = (AST.ConditionalAndExpression)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testConditionalOrExpression() throws Exception {
         var e = parser("_ || _").WholeExpression();
-        assertTrue(e instanceof AST.ConditionalOrExpression);
+        assertSame(e.getClass(), AST.ConditionalOrExpression.class);
         var et = (AST.ConditionalOrExpression)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBitwiseAndExpression() throws Exception {
         var e = parser("_ & _").WholeExpression();
-        assertTrue(e instanceof AST.BitwiseAndExpression);
+        assertSame(e.getClass(), AST.BitwiseAndExpression.class);
         var et = (AST.BitwiseAndExpression)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBitwiseOrExpression() throws Exception {
         var e = parser("_ | _").WholeExpression();
-        assertTrue(e instanceof AST.BitwiseOrExpression);
+        assertSame(e.getClass(), AST.BitwiseOrExpression.class);
         var et = (AST.BitwiseOrExpression)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testAdd() throws Exception {
         var e = parser("_ + _").WholeExpression();
-        assertTrue(e instanceof AST.Addition);
+        assertSame(e.getClass(), AST.Addition.class);
         var et = (AST.Addition)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testSubtract() throws Exception {
         var e = parser("_ - _").WholeExpression();
-        assertTrue(e instanceof AST.Subtraction);
+        assertSame(e.getClass(), AST.Subtraction.class);
         var et = (AST.Subtraction)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testMultiply() throws Exception {
         var e = parser("_ * _").WholeExpression();
-        assertTrue(e instanceof AST.Multiplication);
+        assertSame(e.getClass(), AST.Multiplication.class);
         var et = (AST.Multiplication)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testDivide() throws Exception {
         var e = parser("_ / _").WholeExpression();
-        assertTrue(e instanceof AST.Division);
+        assertSame(e.getClass(), AST.Division.class);
         var et = (AST.Division)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testRemainder() throws Exception {
         var e = parser("_ %  _").WholeExpression();
-        assertTrue(e instanceof AST.Remainder);
+        assertSame(e.getClass(), AST.Remainder.class);
         var et = (AST.Remainder)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testSimpleAssignment() throws Exception {
         var e = parser("_ =  _").WholeExpression();
-        assertTrue(e instanceof AST.SimpleAssignment);
+        assertSame(e.getClass(), AST.SimpleAssignment.class);
         var et = (AST.SimpleAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testAdditionAssignment() throws Exception {
         var e = parser("_ +=  _").WholeExpression();
-        assertTrue(e instanceof AST.AdditionAssignment);
+        assertSame(e.getClass(), AST.AdditionAssignment.class);
         var et = (AST.AdditionAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testSubtractionAssignment() throws Exception {
         var e = parser("_ -=  _").WholeExpression();
-        assertTrue(e instanceof AST.SubtractionAssignment);
+        assertSame(e.getClass(), AST.SubtractionAssignment.class);
         var et = (AST.SubtractionAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testMultiplicationAssignment() throws Exception {
         var e = parser("_ *=  _").WholeExpression();
-        assertTrue(e instanceof AST.MultiplicationAssignment);
+        assertSame(e.getClass(), AST.MultiplicationAssignment.class);
         var et = (AST.MultiplicationAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testDivisionAssignment() throws Exception {
         var e = parser("_ /=  _").WholeExpression();
-        assertTrue(e instanceof AST.DivisionAssignment);
+        assertSame(e.getClass(), AST.DivisionAssignment.class);
         var et = (AST.DivisionAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testRemainderAssignment() throws Exception {
         var e = parser("_ %=  _").WholeExpression();
-        assertTrue(e instanceof AST.RemainderAssignment);
+        assertSame(e.getClass(), AST.RemainderAssignment.class);
         var et = (AST.RemainderAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBitwiseAndAssignment() throws Exception {
         var e = parser("_ &=  _").WholeExpression();
-        assertTrue(e instanceof AST.BitwiseAndAssignment);
+        assertSame(e.getClass(), AST.BitwiseAndAssignment.class);
         var et = (AST.BitwiseAndAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBitwiseOrAssignment() throws Exception {
         var e = parser("_ |=  _").WholeExpression();
-        assertTrue(e instanceof AST.BitwiseOrAssignment);
+        assertSame(e.getClass(), AST.BitwiseOrAssignment.class);
         var et = (AST.BitwiseOrAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testXorAssignment() throws Exception {
         var e = parser("_ ^=  _").WholeExpression();
-        assertTrue(e instanceof AST.XorAssignment);
+        assertSame(e.getClass(), AST.XorAssignment.class);
         var et = (AST.XorAssignment)e;
-        assertTrue(et.lhs instanceof AST.Wildcard);
-        assertTrue(et.rhs instanceof AST.Wildcard);
+        assertSame(et.lhs.getClass(), AST.Wildcard.class);
+        assertSame(et.rhs.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testPositive() throws Exception {
         var e = parser("+ _").WholeExpression();
-        assertTrue(e instanceof AST.UnaryPlusExpression);
+        assertSame(e.getClass(), AST.UnaryPlusExpression.class);
         var et = (AST.UnaryPlusExpression)e;
-        assertTrue(et.expression instanceof AST.Wildcard);
+        assertSame(et.expression.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testNegative() throws Exception {
         var e = parser("-_").WholeExpression();
-        assertTrue(e instanceof AST.UnaryMinusExpression);
+        assertSame(e.getClass(), AST.UnaryMinusExpression.class);
         var et = (AST.UnaryMinusExpression)e;
-        assertTrue(et.expression instanceof AST.Wildcard);
+        assertSame(et.expression.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testLogicalComplement() throws Exception {
         var e = parser("!_").WholeExpression();
-        assertTrue(e instanceof AST.LogicalComplementExpression);
+        assertSame(e.getClass(), AST.LogicalComplementExpression.class);
         var et = (AST.LogicalComplementExpression)e;
-        assertTrue(et.expression instanceof AST.Wildcard);
+        assertSame(et.expression.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBitwiseComplement() throws Exception {
         var e = parser("~_").WholeExpression();
-        assertTrue(e instanceof AST.BitwiseComplementExpression);
+        assertSame(e.getClass(), AST.BitwiseComplementExpression.class);
         var et = (AST.BitwiseComplementExpression)e;
-        assertTrue(et.expression instanceof AST.Wildcard);
+        assertSame(et.expression.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testBooleanWildcard() throws Exception {
         var e = parser("@boolean").WholeExpression();
-        assertTrue(e instanceof AST.BooleanWildcard);
+        assertSame(e.getClass(), AST.BooleanWildcard.class);
     }
 
     @Test
     public void testCharacterLiteral() throws Exception {
         var e = parser("'H'").WholeExpression();
-        assertTrue(e instanceof AST.CharacterLiteral);
+        assertSame(e.getClass(), AST.CharacterLiteral.class);
         var et =(AST.CharacterLiteral)e;
         assertEquals("H", et.value);
     }
@@ -239,7 +239,7 @@ public class PatternParserTest {
     @Test
     public void testStringLiteral() throws Exception {
         var e = parser("\"Hello\"").WholeExpression();
-        assertTrue(e instanceof AST.StringLiteral);
+        assertSame(e.getClass(), AST.StringLiteral.class);
         var et =(AST.StringLiteral)e;
         assertEquals("Hello", et.value);
     }
@@ -247,59 +247,59 @@ public class PatternParserTest {
     @Test
     public void testAnyID() throws Exception {
         var e = parser("@?").WholeExpression();
-        assertTrue(e instanceof AST.AnyID);
+        assertSame(e.getClass(), AST.AnyID.class);
     }
 
     @Test
     public void testPrefixIncrementExpression() throws Exception {
         var e = parser("++x").WholeExpression();
-        assertTrue(e instanceof AST.PrefixIncrementExpression);
+        assertSame(e.getClass(), AST.PrefixIncrementExpression.class);
     }
 
     @Test
     public void testPrefixDecrementExpression() throws Exception {
         var e = parser("--x").WholeExpression();
-        assertTrue(e instanceof AST.PrefixDecrementExpression);
+        assertSame(e.getClass(), AST.PrefixDecrementExpression.class);
     }
 
     @Test
     public void testPostfixIncrementExpression() throws Exception {
         var e = parser("x++").WholeExpression();
-        assertTrue(e instanceof AST.PostIncrement);
+        assertSame(e.getClass(), AST.PostIncrement.class);
     }
 
     @Test
     public void testPostfixDecrementExpression() throws Exception {
         var e = parser("x--").WholeExpression();
-        assertTrue(e instanceof AST.PostDecrement);
+        assertSame(e.getClass(), AST.PostDecrement.class);
     }
 
     @Test
     public void testInstanceCreation() throws Exception {
         AST.Expression e;
         e = parser("new Object()").WholeExpression();
-        assertTrue(e instanceof AST.InstanceCreationExpression);
+        assertSame(e.getClass(), AST.InstanceCreationExpression.class);
         assertEquals("Object", ((AST.InstanceCreationExpression)e).name);
         assertEquals(0, ((AST.InstanceCreationExpression)e).parameters.size());
 
         e = parser("new Object(1)").WholeExpression();
-        assertTrue(e instanceof AST.InstanceCreationExpression);
+        assertSame(e.getClass(), AST.InstanceCreationExpression.class);
         assertEquals("Object", ((AST.InstanceCreationExpression)e).name);
         assertEquals(1, ((AST.InstanceCreationExpression)e).parameters.size());
-        assertTrue(((AST.InstanceCreationExpression)e).parameters.get(0) instanceof AST.IntLiteral);
+        assertSame(((AST.InstanceCreationExpression)e).parameters.get(0).getClass(), AST.IntLiteral.class);
     }
 
     @Test
     public void testArrayCreation() throws Exception {
         AST.Expression e;
         e = parser("new Object#[10]").WholeExpression();
-        assertTrue(e instanceof AST.ArrayCreationExpression);
+        assertSame(e.getClass(), AST.ArrayCreationExpression.class);
         assertEquals("Object", ((AST.ArrayCreationExpression)e).name);
         assertEquals(1, ((AST.ArrayCreationExpression)e).levels.size());
         assertEquals(10, ((AST.IntLiteral)((AST.ArrayCreationExpression)e).levels.get(0)).value);
 
         e = parser("new Object#[20]#[30]").WholeExpression();
-        assertTrue(e instanceof AST.ArrayCreationExpression);
+        assertSame(e.getClass(), AST.ArrayCreationExpression.class);
         assertEquals("Object", ((AST.ArrayCreationExpression)e).name);
         assertEquals(2, ((AST.ArrayCreationExpression)e).levels.size());
         assertEquals(20, ((AST.IntLiteral)((AST.ArrayCreationExpression)e).levels.get(0)).value);
@@ -309,13 +309,13 @@ public class PatternParserTest {
     @Test
     public void testStringWildcard() throws Exception {
         var e = parser("@String").WholeExpression();
-        assertTrue(e instanceof AST.StringWildcard);
+        assertSame(e.getClass(), AST.StringWildcard.class);
     }
 
     @Test
     public void testDoubleLiteral() throws Exception {
         var e = parser("1.5").WholeExpression();
-        assertTrue(e instanceof AST.DoubleLiteral);
+        assertSame(e.getClass(), AST.DoubleLiteral.class);
         var et =(AST.DoubleLiteral)e;
         assertEquals(1.5, et.value);
     }
@@ -323,7 +323,7 @@ public class PatternParserTest {
     @Test
     public void testDoubleWildcard() throws Exception {
         var e = parser("@double").WholeExpression();
-        assertTrue(e instanceof AST.DoubleWildcard);
+        assertSame(e.getClass(), AST.DoubleWildcard.class);
     }
 
     @Test
@@ -332,24 +332,24 @@ public class PatternParserTest {
         AST.ConditionalExpression et;
 
         e = parser("_ ? 1 : true").WholeExpression();
-        assertTrue(e instanceof AST.ConditionalExpression);
+        assertSame(e.getClass(), AST.ConditionalExpression.class);
         et = (AST.ConditionalExpression)e;
-        assertTrue(et.condition instanceof AST.Wildcard);
-        assertTrue(et.thenPart instanceof AST.IntLiteral);
-        assertTrue(et.elsepart instanceof AST.BooleanLiteral);
+        assertSame(et.condition.getClass(), AST.Wildcard.class);
+        assertSame(et.thenPart.getClass(), AST.IntLiteral.class);
+        assertSame(et.elsepart.getClass(), AST.BooleanLiteral.class);
 
 
         AST.RelationalExpression er;
         e = parser("2 < 3 ? \"Foo\" : \"Bar\"").WholeExpression();
-        assertTrue(e instanceof AST.ConditionalExpression);
+        assertSame(e.getClass(), AST.ConditionalExpression.class);
         et = (AST.ConditionalExpression)e;
-        assertTrue(et.condition instanceof AST.RelationalExpression);
+        assertSame(et.condition.getClass(), AST.LessThan.class);
         er = (AST.RelationalExpression) et.condition;
         assertEquals("<", er.symbol);
-        assertTrue(er.lhs instanceof AST.IntLiteral);
-        assertTrue(er.rhs instanceof AST.IntLiteral);
-        assertTrue(et.thenPart instanceof AST.StringLiteral);
-        assertTrue(et.elsepart instanceof AST.StringLiteral);
+        assertSame(er.lhs.getClass(), AST.IntLiteral.class);
+        assertSame(er.rhs.getClass(), AST.IntLiteral.class);
+        assertSame(et.thenPart.getClass(), AST.StringLiteral.class);
+        assertSame(et.elsepart.getClass(), AST.StringLiteral.class);
     }
 
     @Test
@@ -359,15 +359,15 @@ public class PatternParserTest {
         AST.RelationalExpression er;
 
         e = parser("2 < 3 ? \"Foo\" : \"Bar\"").WholeExpression();
-        assertTrue(e instanceof AST.ConditionalExpression);
+        assertSame(e.getClass(), AST.ConditionalExpression.class);
         et = (AST.ConditionalExpression)e;
-        assertTrue(et.condition instanceof AST.RelationalExpression);
+        assertSame(et.condition.getClass(), AST.LessThan.class);
         er = (AST.RelationalExpression) et.condition;
         assertEquals("<", er.symbol);
-        assertTrue(er.lhs instanceof AST.IntLiteral);
-        assertTrue(er.rhs instanceof AST.IntLiteral);
-        assertTrue(et.thenPart instanceof AST.StringLiteral);
-        assertTrue(et.elsepart instanceof AST.StringLiteral);
+        assertSame(er.lhs.getClass(), AST.IntLiteral.class);
+        assertSame(er.rhs.getClass(), AST.IntLiteral.class);
+        assertSame(et.thenPart.getClass(), AST.StringLiteral.class);
+        assertSame(et.elsepart.getClass(), AST.StringLiteral.class);
     }
 
     @Test
@@ -376,22 +376,22 @@ public class PatternParserTest {
         AST.InstanceofExpression et;
 
         e = parser("_ instanceof String").WholeExpression();
-        assertTrue(e instanceof AST.InstanceofExpression);
+        assertSame(e.getClass(), AST.InstanceofExpression.class);
         et = (AST.InstanceofExpression)e;
-        assertTrue(et.target instanceof AST.Wildcard);
+        assertSame(et.target.getClass(), AST.Wildcard.class);
         assertEquals("String", et.type.getName());
 
         e = parser("_ instanceof _").WholeExpression();
-        assertTrue(e instanceof AST.InstanceofExpression);
+        assertSame(e.getClass(), AST.InstanceofExpression.class);
         et = (AST.InstanceofExpression)e;
-        assertTrue(et.target instanceof AST.Wildcard);
-        assertTrue(et.type instanceof AST.PlaceholderTypeNode);
+        assertSame(et.target.getClass(), AST.Wildcard.class);
+        assertSame(et.type.getClass(), AST.PlaceholderTypeNode.class);
     }
 
     @Test
     public void testIntLiteral() throws Exception {
         var e = parser("2").WholeExpression();
-        assertTrue(e instanceof AST.IntLiteral);
+        assertSame(e.getClass(), AST.IntLiteral.class);
         var et =(AST.IntLiteral)e;
         assertEquals(2, et.value);
     }
@@ -399,7 +399,7 @@ public class PatternParserTest {
     @Test
     public void testClassLiteral() throws Exception {
         var e = parser("class [java.lang.Object]").WholeExpression();
-        assertTrue(e instanceof AST.ClassLiteral);
+        assertSame(e.getClass(), AST.ClassLiteral.class);
         var et =(AST.ClassLiteral)e;
         assertEquals("Object", et.simpleName);
         assertEquals(List.of("java", "lang"), et.packageFragments);
@@ -408,73 +408,73 @@ public class PatternParserTest {
     @Test
     public void testIntWildcard() throws Exception {
         var e = parser("@int").WholeExpression();
-        assertTrue(e instanceof AST.IntWildcard);
+        assertSame(e.getClass(), AST.IntWildcard.class);
     }
 
     @Test
     public void testNullLiteral() throws Exception {
         var e = parser("null").WholeExpression();
-        assertTrue(e instanceof AST.NullLiteral);
+        assertSame(e.getClass(), AST.NullLiteral.class);
     }
 
     @Test
     public void testThisLiteral() throws Exception {
         var e = parser("this").WholeExpression();
-        assertTrue(e instanceof AST.ThisLiteral);
+        assertSame(e.getClass(), AST.ThisLiteral.class);
     }
 
     @Test
     public void testWildcard() throws Exception {
         var e = parser("_").WholeExpression();
-        assertTrue(e instanceof AST.Wildcard);
+        assertSame(e.getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testThisMethodCall() throws Exception {
         var e = parser("this.apply(_)").WholeExpression();
-        assertTrue(e instanceof AST.MethodCall);
+        assertSame(e.getClass(), AST.MethodCall.class);
         var et = (AST.MethodCall)e;
 
-        assertTrue(et.receiver instanceof AST.ThisLiteral);
+        assertSame(et.receiver.getClass(), AST.ThisLiteral.class);
         assertEquals("apply", et.name);
         assertEquals(1, et.parameters.size());
-        assertTrue(et.parameters.get(0) instanceof AST.Wildcard);
+        assertSame(et.parameters.get(0).getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testWildcardMethodCall() throws Exception {
         var e = parser("_.apply(this, _)").WholeExpression();
-        assertTrue(e instanceof AST.MethodCall);
+        assertSame(e.getClass(), AST.MethodCall.class);
         var et = (AST.MethodCall)e;
 
-        assertTrue(et.receiver instanceof AST.Wildcard);
+        assertSame(et.receiver.getClass(), AST.Wildcard.class);
         assertEquals("apply", et.name);
         assertEquals(2, et.parameters.size());
-        assertTrue(et.parameters.get(0) instanceof AST.ThisLiteral);
-        assertTrue(et.parameters.get(1) instanceof AST.Wildcard);
+        assertSame(et.parameters.get(0).getClass(), AST.ThisLiteral.class);
+        assertSame(et.parameters.get(1).getClass(), AST.Wildcard.class);
     }
 
     @Test
     public void testSingleLineComment() throws Exception {
         var e = parser("1 + 2 // line comment").WholeExpression();
-        assertTrue(e instanceof AST.Addition);
+        assertSame(e.getClass(), AST.Addition.class);
         var et = (AST.Addition)e;
 
-        assertTrue(et.lhs instanceof AST.IntLiteral);
+        assertSame(et.lhs.getClass(), AST.IntLiteral.class);
         assertEquals(1, ((AST.IntLiteral)et.lhs).value);
-        assertTrue(et.rhs instanceof AST.IntLiteral);
+        assertSame(et.rhs.getClass(), AST.IntLiteral.class);
         assertEquals(2, ((AST.IntLiteral)et.rhs).value);
     }
 
     @Test
     public void testMultiLineComment() throws Exception {
         var e = parser("/* comment1 */ 1 + 2 /* comment2 */").WholeExpression();
-        assertTrue(e instanceof AST.Addition);
+        assertSame(e.getClass(), AST.Addition.class);
         var et = (AST.Addition)e;
 
-        assertTrue(et.lhs instanceof AST.IntLiteral);
+        assertSame(et.lhs.getClass(), AST.IntLiteral.class);
         assertEquals(1, ((AST.IntLiteral)et.lhs).value);
-        assertTrue(et.rhs instanceof AST.IntLiteral);
+        assertSame(et.rhs.getClass(), AST.IntLiteral.class);
         assertEquals(2, ((AST.IntLiteral)et.rhs).value);
     }
 
