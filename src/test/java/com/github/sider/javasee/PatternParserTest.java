@@ -478,5 +478,13 @@ public class PatternParserTest {
         assertEquals(2, ((AST.IntLiteral)et.rhs).value);
     }
 
-
+    @Test
+    public void testLambda() throws Exception {
+        var parsed = parser("_.map(->)").WholeExpression();
+        assertSame(parsed.getClass(), AST.MethodCall.class);
+        var methodCall = (AST.MethodCall)parsed;
+        assertSame(methodCall.receiver.getClass(), AST.Wildcard.class);
+        assertEquals(1, methodCall.parameters.size());
+        assertSame(methodCall.parameters.get(0).getClass(), AST.LambdaPattern.class);
+    }
 }
