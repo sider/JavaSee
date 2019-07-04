@@ -36,6 +36,20 @@ $ ./gradlew shadowjar
 $ java -jar build/libs/JavaSee-all.jar
 ```
 
+### Docker images
+
+We provide Docker images to help you trying JavaSee without installing Java 11.
+
+- https://hub.docker.com/r/sider/javasee
+
+```
+$ docker pull sider/javasee
+$ docker run -t --rm -v `pwd`:/work sider/javasee
+```
+
+The default `latest` tag points to the latest released version.
+You can pick a tag from version names from [tags list](https://hub.docker.com/r/sider/javasee/tags).
+
 ## Quick start
 
 ```
