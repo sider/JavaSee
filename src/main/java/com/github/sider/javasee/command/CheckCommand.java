@@ -49,8 +49,8 @@ public class CheckCommand implements CLICommand {
 
         try {
             if(!configPath().isFile()) {
-                out.println("Configuration file " + configPath() + " does not look a file.");
-                out.println("Specify configuration file by -config option");
+                err.println("Configuration file " + configPath() + " does not look a file.");
+                err.println("Specify configuration file by -config option.");
                 return JavaSee.ExitStatus.ERROR;
             }
             var rootPath = Optional.ofNullable(optionRoot).map((root) -> new File(root)).orElse(configPath().getParentFile());
