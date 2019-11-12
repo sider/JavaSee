@@ -66,8 +66,9 @@ $ javasee check         # Run the linter.
 
 ## Releasing
 
-1. Update [CHANGELOG.md](CHANGELOG.md) and [src/main/java/com/github/sider/javasee/Version.java](src/main/java/com/github/sider/javasee/Version.java).
+1. Update the [changelog](CHANGELOG.md) and the [version](src/main/java/com/github/sider/javasee/Version.java).
 2. Commit the updated files. E.g. `git commit -m 'Version 0.2.1'`
-3. Add and push a tag for the commit.
-4. Install `zip` and [`hub`](https://github.com/github/hub).
-5. Run [`scripts/release.sh`](scripts/release.sh).
+3. Create a tag for the commit. E.g. `git tag -a 0.2.1 -m 'Version 0.2.1'`
+4. Push the commit and tag. E.g. `git push --follow-tags`
+5. Install `zip` and [`hub`](https://github.com/github/hub).
+6. Run [`scripts/release.sh`](scripts/release.sh).
