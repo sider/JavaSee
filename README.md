@@ -63,3 +63,11 @@ $ javasee check         # Run the linter.
 - [Pattern syntax](doc/pattern-syntax.md)
 - [Command line options](doc/command-line-options.md)
 - [Config file format](doc/rule.md)
+
+## Releasing
+
+1. Update [CHANGELOG.md](CHANGELOG.md) and [src/main/java/com/github/sider/javasee/Version.java](src/main/java/com/github/sider/javasee/Version.java).
+2. Commit the updated files. E.g. `git commit -m 'Version 0.2.1'`
+3. Add and push a tag for the commit.
+4. Install `zip` and [`hub`](https://github.com/github/hub).
+5. Run [`scripts/release.sh`](scripts/release.sh).

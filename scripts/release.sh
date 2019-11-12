@@ -9,6 +9,8 @@ if [[ -z "$VERSION" ]]; then
   VERSION=${OUTPUT#* }
 fi
 
+set -euo pipefail
+
 stage="JavaSee-$VERSION"
 zip="JavaSee-bin-${VERSION}.zip"
 
