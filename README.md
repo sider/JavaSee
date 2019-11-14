@@ -3,7 +3,9 @@
 
 # JavaSee
 
-JavaSee is a fully customizable linter for Java code, where you can define your own rules specific to your project or your company.
+JavaSee is a fully customizable linter for Java code, where you can define your own rules specific to your project or your company in YAML.
+
+For example, you can write your `javasee.yml` file as follow:
 
 ```yaml
 rules:
