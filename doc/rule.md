@@ -1,6 +1,6 @@
 # The format of config file (`.yml`)
 
-## The format of config file in `check` subcommand`
+## The format of config file in `check` subcommand
 
 The format of YAML config file is explained in this section. See the following:
 
@@ -49,7 +49,7 @@ rules:
   - `pattern`: is single pattern string or pattern string sequence.  See [pattern-syntax.md](pattern-syntax.md)
   - `message`: is shown when `pattern` matches some Java expressions.
   
-## The format of config file in `test` subcommand`
+## The format of config file in `test` subcommand
 
 The format is very similar with the format of config file in `check`.  It is differ from the `check`s:
 
