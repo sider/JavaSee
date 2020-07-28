@@ -20,7 +20,6 @@ public class JavaFileEnumerator {
     public final Config config;
 
     private void loadScript(File path, BiConsumer<File, JavaFile> block) {
-        JavaParser parser = new JavaParser();
         var script = new JavaFile(path, () -> new JavaParser());
         block.accept(path, script);
     }
