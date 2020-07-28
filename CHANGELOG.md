@@ -2,6 +2,8 @@
 
 ## master
 
+* [#100](https://github.com/sider/JavaSee/pull/100) Fix OutOfMemoryError problem when many .java files are processed
+
 ## 0.1.3 (2019-11-12)
 
 * [#97](https://github.com/sider/JavaSee/pull/97) Output error messages to STDERR instead of STDOUT
