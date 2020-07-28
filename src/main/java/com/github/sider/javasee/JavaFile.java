@@ -1,20 +1,35 @@
 package com.github.sider.javasee;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.Node;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.ToString;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.function.Supplier;
 
-@AllArgsConstructor
-@Getter
 @ToString
 public class JavaFile {
+    private final Supplier<JavaParser> parserSupplier;
     public final File path;
-    public final Node node;
+
+    public JavaFile(File path, Supplier<JavaParser> parserSupplier) {
+        this.path = path;
+        this.parserSupplier = parserSupplier;
+    }
+
+    public synchronized Node parseFile() {
+        var parser = this.parserSupplier.get();
+        try {
+            var content = Files.readString(path.toPath());
+            return parser.parse(content).getResult().get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public NodePair rootPair() {
-        return new NodePair(node, null);
+        return new NodePair(parseFile(), null);
     }
 }
