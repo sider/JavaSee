@@ -20,14 +20,8 @@ public class JavaFileEnumerator {
     public final Config config;
 
     private void loadScript(File path, BiConsumer<File, JavaFile> block) {
-        try {
-            var content = Files.readString(Paths.get(path.toURI()));
-            JavaParser parser = new JavaParser();
-            var script = new JavaFile(path, parser.parse(content).getResult().get());
-            block.accept(path, script);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var script = new JavaFile(path, () -> new JavaParser());
+        block.accept(path, script);
     }
 
     private void enumerateFilesInDirectory(File path, Set<File> visit, BiConsumer<File, JavaFile> block) {
