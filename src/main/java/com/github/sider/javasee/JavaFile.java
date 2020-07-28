@@ -7,6 +7,7 @@ import lombok.ToString;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.function.Supplier;
 
 @ToString
@@ -22,7 +23,7 @@ public class JavaFile {
     public synchronized Node parseFile() {
         var parser = this.parserSupplier.get();
         try {
-            var content = Files.readString(path.toPath());
+            var content = Files.readString(Paths.get(path.toURI()));
             return parser.parse(content).getResult().get();
         } catch (IOException e) {
             throw new RuntimeException(e);
