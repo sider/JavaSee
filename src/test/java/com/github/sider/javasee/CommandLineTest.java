@@ -1,6 +1,12 @@
 package com.github.sider.javasee;
 
-import com.github.sider.javasee.command.*;
+import com.github.sider.javasee.command.CLICommand;
+import com.github.sider.javasee.command.CheckCommand;
+import com.github.sider.javasee.command.FindCommand;
+import com.github.sider.javasee.command.HelpCommand;
+import com.github.sider.javasee.command.InitCommand;
+import com.github.sider.javasee.command.TestCommand;
+import com.github.sider.javasee.command.VersionCommand;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -201,6 +207,14 @@ public class CommandLineTest {
                 "    find\n" +
                 "    test\n" +
                 "    version\n" +
-                "    help\n", stdout.getString());
+                "    help\n" +
+                "  Status code:\n" +
+                "    OK (0): The program has terminated successfully\n" +
+                "    ERROR (1): The program has encountered some errors\n" +
+                "    FAILURE (2): The program has detected some issues in your Java programs\n" +
+                "    CONFIG_FILE_NOT_FOUND (3): Config file (.yaml) is not found\n" +
+                "    CONFIG_FILE_SYNTAX_ERROR (4): Config file (.yaml) has syntax errors\n" +
+                "    CONFIG_FILE_SCHEMA_ERROR (5): Config file (.yaml) has schema errors\n" +
+                "    CONFIG_FILE_UNKNOWN_ERROR (6): Config file (.yaml) has unknown errors\n", stdout.getString());
     }
 }

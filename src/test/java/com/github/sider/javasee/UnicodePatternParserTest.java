@@ -5,7 +5,6 @@ import com.github.sider.javasee.parser.JavaSeeParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

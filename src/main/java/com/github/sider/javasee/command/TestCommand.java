@@ -9,9 +9,11 @@ import com.github.sider.javasee.lib.Libs;
 import com.github.sider.javasee.lib.Ref;
 import org.kohsuke.args4j.Option;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.List;
@@ -54,13 +56,23 @@ public class TestCommand implements CLICommand {
             if(!configPath.isFile()) {
                 out.println("There is nothing to test at " + configPath + " ...");
                 err.println("Make a configuration and run test again!");
-                return JavaSee.ExitStatus.ERROR;
+                return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
             }
-
             Map<String, Object> yaml = new Yaml().load(new FileInputStream(configPath));
+            if(yaml == null) {
+                System.out.println("YAML file has unknown error");
+                return JavaSee.ExitStatus.CONFIG_FILE_UNKNOWN_ERROR;
+            }
             config = Config.load(yaml, configPath, new File("."));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exceptions.YamlValidationException e) {
+            System.out.println("YAML file has schema error: " + e.getMessage());
+            return JavaSee.ExitStatus.CONFIG_FILE_SCHEMA_ERROR;
+        } catch (FileNotFoundException e) {
+            System.err.println("YAML file is not found: " + e.getMessage());
+            return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
+        } catch (YAMLException e) {
+            System.out.println("YAML file has syntax error: " + e.getMessage());
+            return JavaSee.ExitStatus.CONFIG_FILE_SYNTAX_ERROR;
         }
 
         validateRuleUniqueness(out, config.rules);

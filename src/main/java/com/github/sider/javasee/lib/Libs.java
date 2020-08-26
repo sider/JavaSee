@@ -1,9 +1,16 @@
 package com.github.sider.javasee.lib;
 
+import com.github.sider.javasee.Exceptions;
+
 public class Libs {
     public static interface SupplierWithException<T> {
         T get() throws Exception;
     }
+
+    public static interface SupplierWithPolymorphicException <T, U extends Exception> {
+        T get() throws U;
+    }
+
     public static <T> T wrapException(SupplierWithException<T> block) {
         try {
             return block.get();

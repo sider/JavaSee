@@ -62,7 +62,7 @@ public class Main {
             System.exit(status.getInt());
         } catch (Throwable e) {
             e.printStackTrace();
-            System.exit(-1);
+            System.exit(JavaSee.ExitStatus.ERROR.getInt());
         }
     }
 }

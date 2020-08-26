@@ -29,7 +29,11 @@ public class Config {
         public final File rootDirectory;
 
         public Config config() {
-            var rules = Extentions.single(yaml.get("rules")).stream().map(map -> Rule.load((Map<String, Object>)map)).collect(Collectors.toList());
+            Object object = yaml.get("rules");
+            if(object == null) {
+                throw new Exceptions.MissingKeyException("rules");
+            }
+            var rules = Extentions.single(object).stream().map(map -> Rule.load((Map<String, Object>)map)).collect(Collectors.toList());
             return new Config(rules, rootDirectory);
         }
     }

@@ -17,6 +17,8 @@ public class Rule {
     public final List<String> unmatchExamples;
     public final List<String> justifications;
 
+    private static final Set<String> KNOWN_KEYS = Set.of("id", "pattern", "message", "justification", "tests");
+
     public Rule(
             String id, String message, List<AST.Expression> patterns, List<?> sources,
             List<String> matchExamples, List<String> unmatchExamples, List<String> justifications) {
@@ -29,29 +31,36 @@ public class Rule {
         this.justifications = justifications;
     }
 
-    public static class InvalidRuleMapException extends RuntimeException {
-        public InvalidRuleMapException(String message) {
-            super(message);
-        }
-    }
-
-    public static class PatternSyntaxException extends RuntimeException {
-        public PatternSyntaxException(String message, Exception e) {
-            super(message, e);
+    public static Rule load(Map<String, Object> map) throws Exceptions.MissingKeyException, Exceptions.UnknownKeysException, Exceptions.PatternSyntaxException {
+        Set<String> actualKeys = map.keySet();
+        for(String acutalKey:actualKeys) {
+            if(!KNOWN_KEYS.contains(acutalKey)) {
+                throw new Exceptions.UnknownKeysException(actualKeys, KNOWN_KEYS);
+            }
         }
 
-    }
-
-    public static Rule load(Map<String, Object> map) {
+        // Confirm that value of `id` is present
         var id = Optional.ofNullable((String)map.get("id"));
         if(!id.isPresent()){
-            throw new InvalidRuleMapException("id is missing");
+            throw new Exceptions.MissingKeyException("id is missing");
         }
 
+        // Validate value of `pattern` is String or String[] or null
+        validate: {
+            Object value = map.get("pattern");
+            if(value == null) break validate;
+            if(value instanceof String) break validate;
+            if(value instanceof List<?>) {
+                List<?> values = (List<?>)value;
+                if(values.stream().allMatch(v -> (v instanceof String))) break validate;
+            }
+            throw new Exceptions.InvalidTypeException("pattern should be String or List<String>.  However, it's " + value);
+        }
         List<?> srcs = valuesOf(map, "pattern");
 
+        // Confirm that value of `pattern` is present
         if(srcs.isEmpty()) {
-            throw new InvalidRuleMapException("pattern is missing");
+            throw new Exceptions.MissingKeyException("pattern is missing");
         }
 
         int index = 0;
@@ -71,18 +80,20 @@ public class Rule {
                 if(subject.isPresent()) {
                     return new JavaSeeParser(new StringReader(subject.get())).WholeExpression();
                 } else {
-                    throw new RuntimeException("FIXME: Should show error message if subject is missing");
+                    // Confirm that value of `subject` is present
+                    throw new Exceptions.MissingKeyException("subject");
                 }
             } catch (ParseException e) {
-                throw new PatternSyntaxException(
+                // Illegal pattern
+                throw new Exceptions.PatternSyntaxException(
                         "Pattern syntax error: rule=" + map.get("id") + ", index=" + index + ", pattern=" + subject + ", where=" + where, e
                 );
             }
 
         }).collect(Collectors.toList());
 
-        var message =
-                Optional.ofNullable((String)map.get("message")).orElseThrow(() -> new InvalidRuleMapException("message is missing"));
+        // Confirm that value of `message` is present
+        var message = Optional.ofNullable((String)map.get("message")).orElseThrow(() -> new Exceptions.MissingKeyException("message"));
 
         List<String> matchExamples = new ArrayList<>();
         List<String> unmatchExamples = new ArrayList<>();
@@ -109,6 +120,6 @@ public class Rule {
         valueOpt = Optional.ofNullable(map.get(key));
 
         return valueOpt.map((value) -> value instanceof List<?> ? (List<Object>)value : List.of(value))
-                       .orElse(new ArrayList<>());
+                .orElse(new ArrayList<>());
     }
 }

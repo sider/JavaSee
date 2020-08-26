@@ -92,4 +92,66 @@ public class RuleTest {
         assertTrue(rule.patterns.get(1) instanceof AST.Wildcard);
         assertEquals(List.of("some", "message"), rule.justifications);
     }
+
+    @Test void testLoadInvalidRule1() {
+        assertThrows(Exceptions.UnknownKeysException.class, () -> {
+            Rule.load(
+                    mapOf(
+                            kv("id", "foo.bar.baz"),
+                            kv("pattern", List.of("foo.bar", "_")),
+                            kv("hoge", "foo")
+                    )
+            );
+        });
+    }
+
+    @Test void testLoadInvalidRule2() {
+        assertThrows(Exceptions.MissingKeyException.class, () -> {
+            Rule.load(
+                    mapOf(
+                            kv("pattern", List.of("foo.bar", "_")),
+                            kv("message", "hoge")
+                    )
+            );
+        });
+    }
+
+    @Test void testLoadInvalidRule3() {
+        assertThrows(Exceptions.MissingKeyException.class, () -> {
+            Rule.load(
+                    mapOf(
+                            kv("id", "foo.bar.baz"),
+                            kv("pattern", List.of("foo.bar", "_"))
+                    )
+            );
+        });
+    }
+
+    @Test void testLoadInvalidRule4() {
+        assertThrows(Exceptions.MissingKeyException.class, () -> {
+            Rule.load(
+                    mapOf(
+                            kv("id", "foo.bar.baz"),
+                            kv("message", "hoge")
+                    )
+            );
+        });
+    }
+
+    @Test
+    public void testLoadInvalidRule5() {
+        assertThrows(Exceptions.InvalidTypeException.class, () -> {
+            Rule.load(
+                    mapOf(
+                            kv("id", "foo.bar.baz"),
+                            kv("pattern", kv("bar", "baz")),
+                            kv("message", "message1"),
+                            kv("justification", List.of("some", "message")),
+                            kv("tests",
+                                    mapOf(kv("match", List.of("1", "2", "1+2")),
+                                            kv("unmatch", "foo()")))
+                    )
+            );
+        });
+    }
 }

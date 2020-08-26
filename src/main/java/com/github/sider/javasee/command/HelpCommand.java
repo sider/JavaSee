@@ -27,6 +27,14 @@ public class HelpCommand implements CLICommand {
         for (var command : commands) {
             out.println(String.format("    %s", command.getName()));
         }
+        out.println("  Status code:");
+        out.println("    " + "OK (" + JavaSee.ExitStatus.OK.getInt() + "): " +  "The program has terminated successfully");
+        out.println("    " + "ERROR (" + JavaSee.ExitStatus.ERROR.getInt() + "): " +  "The program has encountered some errors");
+        out.println("    " + "FAILURE (" + JavaSee.ExitStatus.FAILURE.getInt() + "): " + "The program has detected some issues in your Java programs");
+        out.println("    " + "CONFIG_FILE_NOT_FOUND (" + JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND.getInt() + "): " +  "Config file (.yaml) is not found");
+        out.println("    " + "CONFIG_FILE_SYNTAX_ERROR (" + JavaSee.ExitStatus.CONFIG_FILE_SYNTAX_ERROR.getInt() + "): " +  "Config file (.yaml) has syntax errors");
+        out.println("    " + "CONFIG_FILE_SCHEMA_ERROR (" + JavaSee.ExitStatus.CONFIG_FILE_SCHEMA_ERROR.getInt() + "): " +  "Config file (.yaml) has schema errors");
+        out.println("    " + "CONFIG_FILE_UNKNOWN_ERROR (" + JavaSee.ExitStatus.CONFIG_FILE_UNKNOWN_ERROR.getInt() + "): " +  "Config file (.yaml) has unknown errors");
         return JavaSee.ExitStatus.OK;
     }
 }
