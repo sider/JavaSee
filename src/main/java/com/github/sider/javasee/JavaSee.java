@@ -32,8 +32,12 @@ public class JavaSee {
 
     public enum ExitStatus {
         OK(0),
+        ERROR(1),
         FAILURE(2),
-        ERROR(1);
+        CONFIG_FILE_NOT_FOUND(3),
+        CONFIG_FILE_SYNTAX_ERROR(4),
+        CONFIG_FILE_SCHEMA_ERROR(5),
+        CONFIG_FILE_UNKNOWN_ERROR(6);
 
         private final int id;
 

@@ -1,14 +1,11 @@
 package com.github.sider.javasee;
 
 import com.github.sider.javasee.command.CheckCommand;
-import com.github.sider.javasee.command.TestCommand;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 

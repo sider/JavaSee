@@ -2,13 +2,10 @@ package com.github.sider.javasee;
 
 import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.parser.JavaSeeParser;
-import jdk.jfr.Description;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
-import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
