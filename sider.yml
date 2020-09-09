@@ -1,3 +1,4 @@
 linter:
   checkstyle:
     config: sun
+    dir: src/
