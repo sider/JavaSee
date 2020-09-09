@@ -3,6 +3,7 @@
 ## master
 
 * [#100](https://github.com/sider/JavaSee/pull/100) Fix OutOfMemoryError problem when many .java files are processed
+* [#102](https://github.com/sider/JavaSee/pull/102) Implement YAML validation and status code validation
 
 ## 0.1.3 (2019-11-12)
 
