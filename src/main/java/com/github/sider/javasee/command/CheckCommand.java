@@ -33,6 +33,7 @@ public class CheckCommand implements CLICommand {
 
     @Override
     public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
+        File configPath = configPath();
         Formatters.AbstractFormatter formatter;
         switch(optionFormat) {
             case "text":
@@ -47,30 +48,33 @@ public class CheckCommand implements CLICommand {
         formatter.onStart();
 
         try {
-            if(!configPath().isFile()) {
-                err.println("Configuration file " + configPath() + " does not look a file.");
+            if(!configPath.isFile() || !configPath.exists()) {
+                err.println("Configuration file " + configPath + " does not look a file.");
                 err.println("Specify configuration file by -config option.");
-                return JavaSee.ExitStatus.CONFIG_FILE_UNKNOWN_ERROR;
+                return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
             }
-            var rootPath = Optional.ofNullable(optionRoot).map((root) -> new File(root)).orElse(configPath().getParentFile());
+            var rootPath = Optional.ofNullable(optionRoot).map((root) -> new File(root)).orElse(configPath.getParentFile());
             Map<String, Object> yaml;
             Config config = null;
             try {
-                yaml = new Yaml().load(new FileInputStream(configPath()));
+                yaml = new Yaml().load(new FileInputStream(configPath));
                 if(yaml == null) {
-                    System.out.println("YAML file has unknown error");
+                    err.println("YAML file \"" + configPath + "\" has unknown error");
                     return JavaSee.ExitStatus.CONFIG_FILE_UNKNOWN_ERROR;
                 }
-                config = Config.load(yaml, configPath(), rootPath);
+                config = Config.load(configPath, rootPath);
             } catch (Exceptions.YamlValidationException e) {
-                System.out.println("YAML file has schema error: " + e.getMessage());
+                err.println("YAML file \"" + e.configPath + "\" has schema error: " + e.getMessage());
                 return JavaSee.ExitStatus.CONFIG_FILE_SCHEMA_ERROR;
             } catch (FileNotFoundException e) {
-                System.err.println("YAML file is not found: " + e.getMessage());
+                err.println("YAML file is not found: " + e.getMessage());
                 return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
             } catch (YAMLException e) {
-                System.out.println("YAML file has syntax error: " + e.getMessage());
+                err.println("YAML file \"" + configPath + "\" has syntax error: " + e.getMessage());
                 return JavaSee.ExitStatus.CONFIG_FILE_SYNTAX_ERROR;
+            } catch (Exceptions.ConfigFileException e) {
+                err.println(e.getMessage());
+                return e.status;
             }
 
             var analyzer = new Analyzer(config, optionRoot, new ArrayList<>());
