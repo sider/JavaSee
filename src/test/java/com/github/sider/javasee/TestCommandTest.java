@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -15,9 +16,9 @@ public class TestCommandTest {
     StringPrintStream stdout = new StringPrintStream();
     StringPrintStream stderr = new StringPrintStream();
 
-    Config config(String content) {
+    Config config(String content) throws FileNotFoundException  {
         Map<String, Object> map = new Yaml().load(content);
-        return Config.load(map,  new File("foo.yml"), new File("foo/bar/baz"));
+        return Config.load(map, new File("hoge"), new File("foo/bar/baz"));
     }
 
     @Test

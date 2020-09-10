@@ -51,28 +51,31 @@ public class TestCommand implements CLICommand {
     @Override
     public JavaSee.ExitStatus start(PrintStream out, PrintStream err) {
         Config config;
+        var configPath = new File(optionConfig);
         try {
-            var configPath = new File(optionConfig);
             if(!configPath.isFile()) {
-                out.println("There is nothing to test at " + configPath + " ...");
+                err.println("There is nothing to test at " + configPath + " ...");
                 err.println("Make a configuration and run test again!");
                 return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
             }
             Map<String, Object> yaml = new Yaml().load(new FileInputStream(configPath));
             if(yaml == null) {
-                System.out.println("YAML file has unknown error");
+                err.println("YAML file \"" + configPath + "\" has unknown error");
                 return JavaSee.ExitStatus.CONFIG_FILE_UNKNOWN_ERROR;
             }
-            config = Config.load(yaml, configPath, new File("."));
+            config = Config.load(configPath, new File("."));
         } catch (Exceptions.YamlValidationException e) {
-            System.out.println("YAML file has schema error: " + e.getMessage());
+            err.println("YAML file \"" + e.configPath + "\" has schema error: " + e.getMessage());
             return JavaSee.ExitStatus.CONFIG_FILE_SCHEMA_ERROR;
         } catch (FileNotFoundException e) {
-            System.err.println("YAML file is not found: " + e.getMessage());
+            err.println("YAML file is not found: " + e.getMessage());
             return JavaSee.ExitStatus.CONFIG_FILE_NOT_FOUND;
         } catch (YAMLException e) {
-            System.out.println("YAML file has syntax error: " + e.getMessage());
+            err.println("YAML file \"" + configPath + " has syntax error: " + e.getMessage());
             return JavaSee.ExitStatus.CONFIG_FILE_SYNTAX_ERROR;
+        } catch (Exceptions.ConfigFileException e) {
+            err.println(e.getMessage());
+            return e.status;
         }
 
         validateRuleUniqueness(out, config.rules);

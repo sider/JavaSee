@@ -4,6 +4,7 @@ import com.github.sider.javasee.ast.AST;
 import com.github.sider.javasee.parser.JavaSeeParser;
 import com.github.sider.javasee.parser.ParseException;
 
+import java.io.File;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,18 +32,21 @@ public class Rule {
         this.justifications = justifications;
     }
 
-    public static Rule load(Map<String, Object> map) throws Exceptions.MissingKeyException, Exceptions.UnknownKeysException, Exceptions.PatternSyntaxException {
-        Set<String> actualKeys = map.keySet();
-        for(String acutalKey:actualKeys) {
-            if(!KNOWN_KEYS.contains(acutalKey)) {
-                throw new Exceptions.UnknownKeysException(actualKeys, KNOWN_KEYS);
+    public static Rule load(Map<String, Object> map, File configPath) throws Exceptions.MissingKeyException, Exceptions.UnknownKeysException, Exceptions.PatternSyntaxException {
+        Set<String> unknownKeys = new HashSet<>();
+        for(String key:map.keySet()) {
+            if(!KNOWN_KEYS.contains(key)) {
+                unknownKeys.add(key);
             }
+        }
+        if(!unknownKeys.isEmpty()) {
+            throw new Exceptions.UnknownKeysException(configPath, unknownKeys, KNOWN_KEYS);
         }
 
         // Confirm that value of `id` is present
         var id = Optional.ofNullable((String)map.get("id"));
         if(!id.isPresent()){
-            throw new Exceptions.MissingKeyException("id is missing");
+            throw new Exceptions.MissingKeyException(configPath, "id is missing");
         }
 
         // Validate value of `pattern` is String or String[] or null
@@ -54,13 +58,13 @@ public class Rule {
                 List<?> values = (List<?>)value;
                 if(values.stream().allMatch(v -> (v instanceof String))) break validate;
             }
-            throw new Exceptions.InvalidTypeException("pattern should be String or List<String>.  However, it's " + value);
+            throw new Exceptions.InvalidTypeException(configPath, "pattern should be String or List<String>.  However, it's " + value);
         }
         List<?> srcs = valuesOf(map, "pattern");
 
         // Confirm that value of `pattern` is present
         if(srcs.isEmpty()) {
-            throw new Exceptions.MissingKeyException("pattern is missing");
+            throw new Exceptions.MissingKeyException(configPath, "pattern is missing");
         }
 
         int index = 0;
@@ -81,19 +85,20 @@ public class Rule {
                     return new JavaSeeParser(new StringReader(subject.get())).WholeExpression();
                 } else {
                     // Confirm that value of `subject` is present
-                    throw new Exceptions.MissingKeyException("subject");
+                    throw new Exceptions.MissingKeyException(configPath, "subject");
                 }
             } catch (ParseException e) {
                 // Illegal pattern
                 throw new Exceptions.PatternSyntaxException(
-                        "Pattern syntax error: rule=" + map.get("id") + ", index=" + index + ", pattern=" + subject + ", where=" + where, e
+                    configPath,
+                    "Pattern syntax error: rule=" + map.get("id") + ", index=" + index + ", pattern=" + subject + ", where=" + where, e
                 );
             }
 
         }).collect(Collectors.toList());
 
         // Confirm that value of `message` is present
-        var message = Optional.ofNullable((String)map.get("message")).orElseThrow(() -> new Exceptions.MissingKeyException("message"));
+        var message = Optional.ofNullable((String)map.get("message")).orElseThrow(() -> new Exceptions.MissingKeyException(configPath, "message"));
 
         List<String> matchExamples = new ArrayList<>();
         List<String> unmatchExamples = new ArrayList<>();

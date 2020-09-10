@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void testLoadYAML() {
+    public void testLoadYAML() throws FileNotFoundException {
         var yaml = "rules:\n" +
                 "  - id: greeting\n" +
                 "    message: |\n" +
@@ -32,7 +33,7 @@ public class ConfigTest {
                 "    pattern: _.println(...)\n";
         Map<String, Object> map = new Yaml().load(yaml);
 
-        var config = Config.load(map,  new File("foo.yml"), new File("foo/bar/baz"));
+        var config = Config.load(map, new File("hoge"), new File("foo/bar/baz"));
         assertEquals(1, config.rules.size());
 
         var rule = config.rules.get(0);

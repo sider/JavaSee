@@ -2,6 +2,7 @@ package com.github.sider.javasee;
 
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,7 +22,7 @@ public class JavaSee {
             var path = Paths.get(fileName);
             var content = Files.readString(path);
             List<Map<String, Object>> yaml = new Yaml().load(content);
-            var rules = yaml.stream().map((hash) -> Rule.load(hash)).collect(Collectors.toList());
+            var rules = yaml.stream().map((hash) -> Rule.load(hash, new File(fileName))).collect(Collectors.toList());
             requiredRules.addAll(rules);
         }
     }
