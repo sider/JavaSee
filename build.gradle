@@ -46,7 +46,7 @@ dependencies {
     compile 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
     compile 'com.github.javaparser:javaparser-core-serialization:3.13.2'
     compile 'com.github.javaparser:javaparser-core:3.13.2'
-    compile 'org.yaml:snakeyaml:1.24'
+    compile 'org.yaml:snakeyaml:1.27'
     //compile "com.intershop.gradle.javacc:javacc-gradle-plugin:3.0.3"
     compile 'args4j:args4j:2.33'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.0'
