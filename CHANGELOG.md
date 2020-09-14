@@ -5,6 +5,7 @@
 * [#100](https://github.com/sider/JavaSee/pull/100) Fix OutOfMemoryError problem when many .java files are processed
 * [#102](https://github.com/sider/JavaSee/pull/102) Implement YAML validation and status code validation
 * [#104](https://github.com/sider/JavaSee/pull/104) Implement the import feature
+* [#112](https://github.com/sider/JavaSee/pull/112) Bump gradle from 5.2.1 to 6.6.1
 
 ## 0.1.3 (2019-11-12)
 
