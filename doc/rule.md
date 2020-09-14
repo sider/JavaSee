@@ -66,27 +66,27 @@ same as usual config files.  It is usesul to reuse rules.
 
 Note that `rules` cannot be omitted. 
 
-- javasee.yml
+- `javasee.yml`
 
-```
+```yaml
 rules: []
 import:
   - foo.yml
   - bar.yml
 ```
 
-- foo.yml
+- `foo.yml`
 
-```
+```yaml
 rules: 
   - id: foo
     pattern: foo-pattern
     message: Foo
 ```
 
-- bar.yml
+- `bar.yml`
 
-```
+```yaml
 rules: 
   - id: bar
     pattern: bar-pattern
