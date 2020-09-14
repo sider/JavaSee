@@ -18,10 +18,10 @@ sourceSets {
     }
 }
 shadowJar {
-    baseName = 'JavaSee'
+    archiveBaseName = 'JavaSee'
 }
 jar {
-    baseName = 'JavaSee'
+    archiveBaseName = 'JavaSee'
     manifest {
         attributes "Main-Class" : "${packagePrefix}.Main"
     }
@@ -43,14 +43,13 @@ repositories {
     jcenter()
 }
 dependencies {
-    compile 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
-    compile 'com.github.javaparser:javaparser-core-serialization:3.13.2'
-    compile 'com.github.javaparser:javaparser-core:3.13.2'
-    compile 'org.yaml:snakeyaml:1.27'
-    //compile "com.intershop.gradle.javacc:javacc-gradle-plugin:3.0.3"
-    compile 'args4j:args4j:2.33'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
+    implementation 'com.github.javaparser:javaparser-core-serialization:3.13.2'
+    implementation 'com.github.javaparser:javaparser-core:3.13.2'
+    implementation 'org.yaml:snakeyaml:1.27'
+    implementation 'args4j:args4j:2.33'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.4.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
 application {
     mainClassName = "${packagePrefix}.Main"
