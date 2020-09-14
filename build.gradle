@@ -1,8 +1,8 @@
 plugins {
     id 'application'
     id "com.intershop.gradle.javacc" version "3.0.3"
-    id "io.freefair.lombok" version "3.2.0"
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id "io.freefair.lombok" version "5.2.1"
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 def packagePrefix = 'com.github.sider.javasee'
 apply plugin: 'java'
@@ -18,10 +18,10 @@ sourceSets {
     }
 }
 shadowJar {
-    baseName = 'JavaSee'
+    archiveBaseName = 'JavaSee'
 }
 jar {
-    baseName = 'JavaSee'
+    archiveBaseName = 'JavaSee'
     manifest {
         attributes "Main-Class" : "${packagePrefix}.Main"
     }
@@ -43,14 +43,13 @@ repositories {
     jcenter()
 }
 dependencies {
-    compile 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
-    compile 'com.github.javaparser:javaparser-core-serialization:3.13.2'
-    compile 'com.github.javaparser:javaparser-core:3.13.2'
-    compile 'org.yaml:snakeyaml:1.24'
-    //compile "com.intershop.gradle.javacc:javacc-gradle-plugin:3.0.3"
-    compile 'args4j:args4j:2.33'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
+    implementation 'com.github.javaparser:javaparser-core-serialization:3.13.2'
+    implementation 'com.github.javaparser:javaparser-core:3.13.2'
+    implementation 'org.yaml:snakeyaml:1.27'
+    implementation 'args4j:args4j:2.33'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 application {
     mainClassName = "${packagePrefix}.Main"
