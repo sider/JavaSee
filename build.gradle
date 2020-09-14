@@ -48,7 +48,7 @@ dependencies {
     implementation 'com.github.javaparser:javaparser-core:3.13.2'
     implementation 'org.yaml:snakeyaml:1.27'
     implementation 'args4j:args4j:2.33'
-    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.4.0'
+    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
 application {
