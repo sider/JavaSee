@@ -57,3 +57,38 @@ The format is very similar with the format of config file in `check`.  It is dif
 - `tests` has `match` attribute: this attribute represents expected pattern 
 - `tests` has `unmatch` attribute:  this attribute represents not-expected pattern
 - `tests` has `justification` attribute: a message
+
+## Import config files
+
+A config file can import other config files.  For example, the following YAML file
+imports `foo.yml` and `bar.yml` as config files.  The imported config files are
+same as usual config files.  It is usesul to reuse rules.
+
+Note that `rules` cannot be omitted. 
+
+- `javasee.yml`
+
+```yaml
+rules: []
+import:
+  - foo.yml
+  - bar.yml
+```
+
+- `foo.yml`
+
+```yaml
+rules: 
+  - id: foo
+    pattern: foo-pattern
+    message: Foo
+```
+
+- `bar.yml`
+
+```yaml
+rules: 
+  - id: bar
+    pattern: bar-pattern
+    message: Bar
+```
