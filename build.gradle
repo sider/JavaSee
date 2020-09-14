@@ -4,28 +4,19 @@ plugins {
     id "io.freefair.lombok" version "5.2.1"
     id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
+
+version = '0.1.3'
+
 def packagePrefix = 'com.github.sider.javasee'
-apply plugin: 'java'
-apply plugin: 'com.intershop.gradle.javacc'
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java']
-        }
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
-}
-shadowJar {
-    archiveBaseName = 'JavaSee'
-}
+mainClassName = "${packagePrefix}.Main"
+
 jar {
-    archiveBaseName = 'JavaSee'
     manifest {
-        attributes "Main-Class" : "${packagePrefix}.Main"
+        attributes('Implementation-Title': 'JavaSee',
+                   'Implementation-Version': version)
     }
 }
+
 javacc {
     configs {
         template {
@@ -35,32 +26,40 @@ javacc {
         }
     }
 }
+
 test {
     useJUnitPlatform()
 }
+
 repositories {
     mavenCentral()
     jcenter()
 }
+
 dependencies {
     implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
     implementation 'com.github.javaparser:javaparser-core-serialization:3.13.2'
     implementation 'com.github.javaparser:javaparser-core:3.13.2'
     implementation 'org.yaml:snakeyaml:1.27'
     implementation 'args4j:args4j:2.33'
-    testCompileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
-application {
-    mainClassName = "${packagePrefix}.Main"
-}
-run {
-    if (project.hasProperty('args')) {
-        args project.args.split('\\s+')
-    }
-}
+
 compileJava {
     sourceCompatibility = '11'
     targetCompatibility = '11'
     options.fork = true
 }
+
+distributions {
+    shadow {
+        contents {
+            from 'CHANGELOG.md', 'CREDITS', 'LICENSE', 'README.md'
+            from('doc') { into 'doc' }
+            from('example') { into 'example' }
+            from('logo') { into 'logo' }
+        }
+    }
+}
+

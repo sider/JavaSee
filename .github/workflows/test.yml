@@ -19,11 +19,20 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - run: ./gradlew shadowjar
-      - run: ./gradlew test
-      - run: scripts/javasee init -config test.yml
+      - run: ./gradlew build
+      - run: mkdir dist && tar -xvf build/distributions/javasee-shadow-*.tar -C dist --strip-components 1
+      - run: echo "::set-env name=PATH::${PWD}/dist/bin:${PATH}"
+      - run: javasee init
+      - run: javasee test
+      - run: javasee init -config test.yml
+      - run: javasee test -config test.yml
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t javasee:dev .
         env:
-          JAR_PATH: build/libs/JavaSee-all.jar
-      - run: scripts/javasee test -config test.yml
-        env:
-          JAR_PATH: build/libs/JavaSee-all.jar
+          DOCKER_BUILDKIT: 1
+      - run: docker run --rm -v "${PWD}:/work" -t javasee:dev init
+      - run: docker run --rm -v "${PWD}:/work" -t javasee:dev test
