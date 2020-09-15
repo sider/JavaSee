@@ -4,7 +4,7 @@ COPY . /javasee/
 WORKDIR /javasee
 RUN ./gradlew assemble && \
     mkdir dist && \
-    tar -xvf build/distributions/javasee-shadow-*.tar -C dist --strip-components 1
+    tar -xvf build/distributions/JavaSee-bin-*.tar -C dist --strip-components 1
 
 FROM openjdk:14-slim
 

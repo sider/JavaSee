@@ -52,6 +52,14 @@ compileJava {
     options.fork = true
 }
 
+def distBaseName = 'JavaSee-bin'
+shadowDistTar {
+    archiveBaseName = distBaseName
+}
+shadowDistZip {
+    archiveBaseName = distBaseName
+}
+
 distributions {
     shadow {
         contents {
@@ -62,4 +70,3 @@ distributions {
         }
     }
 }
-
