@@ -72,3 +72,4 @@ $ javasee check         # Run the linter.
 3. Commit the updated files. E.g. `git commit -m 'Version 0.2.1'`
 4. Create a tag for the commit. E.g. `git tag -a 0.2.1 -m 'Version 0.2.1'`
 5. Push the commit and tag. E.g. `git push --follow-tags`
+6. Publish the [draft release](https://github.com/sider/JavaSee/releases).
