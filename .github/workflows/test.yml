@@ -22,6 +22,7 @@ jobs:
       - run: ./gradlew build
       - run: mkdir dist && tar -xvf build/distributions/JavaSee-bin-*.tar -C dist --strip-components 1
       - run: echo "::set-env name=PATH::${PWD}/dist/bin:${PATH}"
+      - run: javasee version
       - run: javasee init
       - run: javasee test
       - run: javasee init -config test.yml
@@ -32,7 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: docker build -t javasee:dev .
-        env:
-          DOCKER_BUILDKIT: 1
+      - run: docker run --rm -v "${PWD}:/work" -t javasee:dev version
       - run: docker run --rm -v "${PWD}:/work" -t javasee:dev init
       - run: docker run --rm -v "${PWD}:/work" -t javasee:dev test
