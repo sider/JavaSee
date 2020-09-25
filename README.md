@@ -69,8 +69,8 @@ $ javasee check         # Run the linter.
 
 1. Update the [changelog](CHANGELOG.md) and the [version](build.gradle).
 2. Run the command for test: `./gradlew clean build`
-3. Commit the updated files, e.g. `git commit -m 'Version 0.2.1'`
-4. Open and merge a new pull request including the commit.
-5. Create a tag for the commit, e.g. `git tag -a 0.2.1 -m 'Version 0.2.1'`
+3. Commit the updated files via `./gradlew commit`
+4. Open a new pull request including the commit and merge it when the CI passes.
+5. Create a tag for the commit via `./gradlew tag`
 6. Push the commit and tag, e.g. `git push --follow-tags`
-7. Publish the [draft release](https://github.com/sider/JavaSee/releases).
+7. Edit and publish the [draft release](https://github.com/sider/JavaSee/releases).

@@ -70,3 +70,15 @@ distributions {
         }
     }
 }
+
+task commit(type: Exec) {
+    group = 'Release'
+    description = 'Commit modified files for a new release'
+    commandLine 'git', 'commit', '--all', '--message', "Version ${version}"
+}
+
+task tag(type: Exec) {
+    group = 'Release'
+    description = 'Create a tag for a new release'
+    commandLine 'git', 'tag', '--annotate', version, '-m', "Version ${version}"
+}
