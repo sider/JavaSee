@@ -67,8 +67,8 @@ $ javasee check         # Run the linter.
 
 ## Releasing
 
-1. Run the command for test: `./gradlew clean build`
-2. Update the [changelog](CHANGELOG.md) and the [version](build.gradle).
+1. Update the [changelog](CHANGELOG.md) and the [version](build.gradle).
+2. Run the command for test: `./gradlew clean build`
 3. Commit the updated files, e.g. `git commit -m 'Version 0.2.1'`
 4. Open and merge a new pull request including the commit.
 5. Create a tag for the commit, e.g. `git tag -a 0.2.1 -m 'Version 0.2.1'`

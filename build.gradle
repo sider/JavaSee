@@ -1,11 +1,11 @@
-version = '0.2.0'
-
 plugins {
     id 'application'
     id "com.intershop.gradle.javacc" version "4.0.0"
     id "io.freefair.lombok" version "5.2.1"
     id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
+
+version = '0.2.0'
 
 def packagePrefix = 'com.github.sider.javasee'
 mainClassName = "${packagePrefix}.Main"
