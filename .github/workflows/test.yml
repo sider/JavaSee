@@ -21,7 +21,7 @@ jobs:
           java-version: ${{ matrix.java }}
       - run: ./gradlew build
       - run: mkdir dist && tar -xvf build/distributions/JavaSee-bin-*.tar -C dist --strip-components 1
-      - run: echo "::set-env name=PATH::${PWD}/dist/bin:${PATH}"
+      - run: echo "${PWD}/dist/bin" >> $GITHUB_PATH
       - run: javasee version
       - run: javasee init
       - run: javasee test
