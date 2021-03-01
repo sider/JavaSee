@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.13.2'
     implementation 'com.github.javaparser:javaparser-core-serialization:3.13.2'
     implementation 'com.github.javaparser:javaparser-core:3.13.2'
-    implementation 'org.yaml:snakeyaml:1.27'
+    implementation 'org.yaml:snakeyaml:1.28'
     implementation 'args4j:args4j:2.33'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
